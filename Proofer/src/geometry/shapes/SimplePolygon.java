@@ -3,11 +3,11 @@ package geometry.shapes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import exceptions.CannotResizeObjectException;
+
 import geometry.Dimension;
 import geometry.Vec2;
 import geometry.proofs.Figure;
@@ -106,13 +106,14 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 		setName(b.toString());
 	}
 	
-	public static void main(String[] args) {
-		SimplePolygon poly = new SimplePolygon(Arrays.asList(new Vertex(Vec2.ZERO), new Vertex(new Vec2(10, 0)), new Vertex(new Vec2(0, 10))));
-		poly.setName("ABC");
-		System.out.println(poly.getVertexLoc('C', true));
-		poly.setCenter(new Vec2(100, 100));
-		System.out.println(poly.getVertexLoc('C', true));
-	}
+//	public static void main(String[] args) {
+//		SimplePolygon poly = new SimplePolygon(Arrays.asList(new Vertex(Vec2.ZERO), new Vertex(new Vec2(10, 0)), new Vertex(new Vec2(0, 10))));
+//		poly.setName("ABC");
+//		System.out.println(poly.getVertexLoc('C', true));
+////		poly.setCenter(new Vec2(100, 100));
+//		poly.setVertexLoc('C', Vec2.ZERO, true);
+//		System.out.println(poly.getVertexLoc('C', true));
+//	}
 	
 	@Override
 	public void setName(String name) {
@@ -130,7 +131,7 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 		Vec2 old = getCenter();
 		super.setCenter(loc);
 		// Update the locations of the vertices
-		Vec2 diff = Vec2.sub(getCenter(), old);
+		Vec2 diff = Vec2.sub(loc, old);
 		for (Vertex v : vertices) {
 			v.setCenter(Vec2.add(v.getCenter(), diff));
 		}
@@ -195,8 +196,8 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 	}
 	
 	@Override
-	public List<Vertex> getVertices() {
-		return Collections.unmodifiableList(vertices);
+	public Vertex[] getVertices() {
+		return vertices.toArray(new Vertex[vertices.size()]);
 	}
 	
 	/**
@@ -257,7 +258,7 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 	}
 	
 	@Override
-	public List<Segment> getSides() {
+	public Segment[] getSides() {
 		if (segments == null) {
 			segments = new ArrayList<>();
 			for (int i = 0; i < getName().length()-1; i++) {
@@ -270,7 +271,7 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 					getVertex(getName().charAt(getName().length()-1)))
 			);
 		}
-		return segments;
+		return segments.toArray(new Segment[segments.size()]);
 	}
 	
 	@Override
@@ -291,7 +292,7 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 	}
 	
 	@Override
-	public List<Angle> getAngles() {
+	public Angle[] getAngles() {
 		if (angles == null) {
 			final int NUM_ANGLES = getVertexCount();
 			angles = new ArrayList<>();
@@ -303,7 +304,7 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 			angles.add(new Angle(
 					vertices.get(NUM_ANGLES-1), vertices.get(0), vertices.get(1)));
 		}
-		return angles;
+		return angles.toArray(new Angle[angles.size()]);
 	}
 	
 	@Override
@@ -363,11 +364,18 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 	public List<Figure> getChildren() {
 		if (children == null) {
 			children = new ArrayList<>();
-			children.addAll(getAngles());
-			children.addAll(getSides());
-			children.addAll(getVertices());
+			addArray(children, getAngles());
+			addArray(children, getSides());
+			addArray(children, getVertices());
 		}
 		return children;
+	}
+	
+	// Quick utility method for adding all of the elements of an array to a list
+	private void addArray(List<Figure> list, Figure[] figs) {
+		for (Figure fig : list) {
+			list.add(fig);
+		}
 	}
 
 	@Override

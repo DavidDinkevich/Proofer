@@ -54,15 +54,6 @@ public class Rect extends RectEllipse implements Polygon {
 		setNameLengthRange(4, 4, true);
 	}
 	
-	// Get the vertices in an array format, instead of a list.
-	// Instantiate the array if necessary.
-	private Vertex[] getVerticesArray() {
-		if (vertices == null) {
-			vertices = new Vertex[getVertexCount()];
-		}
-		return vertices;
-	}
-	
 	private Vec2 calculateVertexLocation(int vertIndex, boolean includeScale) {
 		Dimension s = getSize();
 		Vec2 center = includeScale ? getScaledCenter() : getCenter();
@@ -163,17 +154,17 @@ public class Rect extends RectEllipse implements Polygon {
 		}
 		
 		// Create the vertex if it has not been created already
-		if (getVerticesArray()[index] == null) {
+		if (getVertices()[index] == null) {
 			Vertex v = new Vertex(getName().charAt(index));
-			getVerticesArray()[index] = v;
+			getVertices()[index] = v;
 		}
 		
-		// Make the location/scale of the vertex is updated
-		getVerticesArray()[index].setScale(getScale());
+		// Make sure the location/scale of the vertex is updated
+		getVertices()[index].setScale(getScale());
 		Vec2 loc = calculateVertexLocation(index, false);			
-		getVerticesArray()[index].setCenter(loc);
+		getVertices()[index].setCenter(loc);
 		
-		return getVerticesArray()[index];
+		return getVertices()[index];
 	}
 	
 	/**
@@ -287,24 +278,21 @@ public class Rect extends RectEllipse implements Polygon {
 	}
 
 	@Override
-	public List<Vertex> getVertices() {
-		if (verticesListBuff == null) {
-			verticesListBuff = new ArrayList<>(4);
-			for (int i = 0; i < getVertexCount(); i++) {
-				verticesListBuff.add(getVertex(i));
-			}
+	public Vertex[] getVertices() {
+		if (vertices == null) {
+			vertices = new Vertex[getVertexCount()];
 		}
-		return verticesListBuff;
+		return vertices;
 	}
 
 	@Override
 	public Vec2[] getVertexLocations() {
 		if (vertexLocs == null) {
 			vertexLocs = new Vec2[] {
-					getVerticesArray()[0].getScaledCenter(),
-					getVerticesArray()[1].getScaledCenter(),
-					getVerticesArray()[2].getScaledCenter(),
-					getVerticesArray()[3].getScaledCenter()
+					getVertices()[0].getScaledCenter(),
+					getVertices()[1].getScaledCenter(),
+					getVertices()[2].getScaledCenter(),
+					getVertices()[3].getScaledCenter()
 			};
 		}
 		return vertexLocs;
@@ -316,7 +304,7 @@ public class Rect extends RectEllipse implements Polygon {
 	}
 	
 	@Override
-	public List<Segment> getSides() {
+	public Segment[] getSides() {
 		if (segs == null) {
 			segs = new Segment[getVertexCount()];
 			segs[0] = new Segment(getVertex(0), getVertex(1));
@@ -327,6 +315,14 @@ public class Rect extends RectEllipse implements Polygon {
 		return segs;
 	}
 	
+	public static void main(String[] args) {
+		Rect rect = new Rect(Vec2.ZERO, Dimension.TEN);
+		rect.setName("ABCD");
+		System.out.println(rect.getVertexLoc('C', true));
+		rect.setVertexLoc('C', Vec2.ZERO, true);
+		System.out.println(rect.getVertexLoc('C', true));
+	}
+	
 	@Override
 	public Angle getAngle(String name) {
 		// TODO Auto-generated method stub
@@ -334,7 +330,7 @@ public class Rect extends RectEllipse implements Polygon {
 	}
 	
 	@Override
-	public List<Angle> getAngles() {
+	public Angle[] getAngles() {
 		// TODO Auto-generated method stub
 		return null;
 	}

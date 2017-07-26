@@ -96,7 +96,7 @@ public interface Polygon {
 	
 	public String getName();
 	
-	public List<Vertex> getVertices();
+	public Vertex[] getVertices();
 	
 	/**
 	 * Get the {@link Segment} with the given name..
@@ -111,9 +111,9 @@ public interface Polygon {
 	/**
 	 * Get a list of  all the sides of this {@link Polygon}
 	 */
-	public List<Segment> getSides();
+	public Segment[] getSides();
 	
 	public Angle getAngle(String name);
 	
-	public List<Angle> getAngles();
+	public Angle[] getAngles();
 }
