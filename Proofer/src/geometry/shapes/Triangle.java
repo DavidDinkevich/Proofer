@@ -22,6 +22,10 @@ public class Triangle extends SimplePolygon {
 		init();
 	}
 	
+	public Triangle(Vertex vert0, Vertex vert1, Vertex vert2) {
+		this(Arrays.asList(vert0, vert1, vert2));
+	}
+	
 	public Triangle() {
 		super(3);
 		init();
@@ -70,12 +74,12 @@ public class Triangle extends SimplePolygon {
 
 	@Override
 	public float getArea() {
-		final float x1 = getVertices().get(0).getScaledCenter().getX(),
-					y1 = getVertices().get(0).getScaledCenter().getY(),
-					x2 = getVertices().get(1).getScaledCenter().getX(),
-					y2 = getVertices().get(1).getScaledCenter().getY(),
-					x3 = getVertices().get(2).getScaledCenter().getX(),
-					y3 = getVertices().get(2).getScaledCenter().getY();
+		final float x1 = getVertexLoc(0, true).getX(),
+					y1 = getVertexLoc(0, true).getY(),
+					x2 = getVertexLoc(1, true).getX(),
+					y2 = getVertexLoc(1, true).getY(),
+					x3 = getVertexLoc(2, true).getX(),
+					y3 = getVertexLoc(2, true).getY();
 		return Math.abs((x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2))/2.0f);
 	}
 
@@ -84,15 +88,15 @@ public class Triangle extends SimplePolygon {
 		Vertex pVertex = new Vertex(point);
 		
 		/* Calculate area of triangle PBC */
-		Vertex[] va1 = { pVertex, getVertices().get(1), getVertices().get(2) };
+		Vertex[] va1 = { pVertex, getVertices()[1], getVertices()[2] };
 		final float A1 = new Triangle(Arrays.asList(va1)).getArea();
 
 		/* Calculate area of triangle PAC */
-		Vertex[] va2 = { getVertices().get(0), pVertex, getVertices().get(2) };
+		Vertex[] va2 = { getVertices()[0], pVertex, getVertices()[2] };
 		final float A2 = new Triangle(Arrays.asList(va2)).getArea();
 
 		/* Calculate area of triangle PAB */
-		Vertex[] va3 = { getVertices().get(0), getVertices().get(1), pVertex };
+		Vertex[] va3 = { getVertices()[0], getVertices()[1], pVertex };
 		final float A3 = new Triangle(Arrays.asList(va3)).getArea();
 
 		// Use ints to minimize error
@@ -110,32 +114,19 @@ public class Triangle extends SimplePolygon {
 		return 3; // Triangles have 3 corners :-)
 	}
 	
-	@Override
-	public Vec2 getCenter() {
-		Vec2 middle = new Vec2(
-			(getVertices().get(0).getCenter().getX() + 
-					getVertices().get(1).getCenter().getX() + 
-					getVertices().get(2).getCenter().getX())/3f,
-			(getVertices().get(0).getCenter().getY() + 
-					getVertices().get(1).getCenter().getY() + 
-					getVertices().get(2).getCenter().getY())/3f
-		);
-		super.setCenter(middle);
-		return middle;
-	}
-	
-	@Override
-	public void setCenter(Vec2 newLoc) {
-		if (newLoc.equals(getCenter()))
-			return;
-		
-		Vec2 diff = Vec2.sub(newLoc, getCenter());
-		for (int i = 0; i < getVertices().size(); i++) {
-			Vec2 p = getVertices().get(i).getCenter();
-			getVertices().get(i).setCenter(Vec2.add(p, diff));
-		}
-		super.setCenter(newLoc);
-	}
+//	@Override
+//	public void setCenter(Vec2 newLoc) {
+//		if (newLoc.equals(getCenter()))
+//			return;
+//		
+//		Vec2 diff = Vec2.sub(newLoc, getCenter());
+//		for (int i = 0; i < getVertexCount(); i++) {
+//			Vec2 p = getVertexLoc(i, false);
+////			setVertexLoc(i, Vec2.add(p, diff), false);
+//			getVertices()[i].setCenter(Vec2.add(p, diff));
+//		}
+//		super.setCenter(newLoc);
+//	}
 	
 	@Override
 	public void setScale(Vec2 scale, Vec2 dilationPoint) {
