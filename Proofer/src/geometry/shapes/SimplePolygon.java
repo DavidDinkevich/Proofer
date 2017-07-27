@@ -128,27 +128,32 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 	
 	@Override
 	public void setCenter(Vec2 loc) {
-		Vec2 old = getCenter();
-		super.setCenter(loc);
+		if (loc.equals(getCenter()))
+			return;
+		Vec2 old = super.getCenter();
 		// Update the locations of the vertices
 		Vec2 diff = Vec2.sub(loc, old);
-		for (Vertex v : vertices) {
+		for (Vertex v : getVertices()) {
 			v.setCenter(Vec2.add(v.getCenter(), diff));
 		}
+		super.setCenter(loc);
 	}
 	
 	@Override
 	public Vec2 getCenter() {
+		// The center is the x and y average of the vertices
 		Vec2.Mutable center = new Vec2.Mutable();
 		for (Vertex v : vertices)
 			center.add(v.getCenter());
 		center.div(getVertexCount());
+		// Update the internal center variable
+		super.setCenter(center);
 		return center;
 	}
 	
 	@Override
 	public int getVertexCount() {
-		return 3; // Triangles have 3 corners.
+		return getName().length();
 	}
 	
 	private Vertex getVertex(char name) {
@@ -261,11 +266,14 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 	public Segment[] getSides() {
 		if (segments == null) {
 			segments = new ArrayList<>();
-			for (int i = 0; i < getName().length()-1; i++) {
-				char c0 = getName().charAt(i);
-				char c1 = getName().charAt(i+1);
+			final int NUM_SEGS = getVertexCount();
+			// First three segs
+			for (int i = 0; i < NUM_SEGS-1; i++) {
+				final char c0 = getName().charAt(i);
+				final char c1 = getName().charAt(i+1);
 				segments.add(new Segment(getVertex(c0), getVertex(c1)));
 			}
+			// Last seg (the seg that seals the shape)
 			segments.add(new Segment(
 					getVertex(getName().charAt(0)),
 					getVertex(getName().charAt(getName().length()-1)))
@@ -357,31 +365,25 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 
 	@Override
 	public boolean isValidName(String name) {
-		return true; // TODO: What defines a valid name for a polygon?
+		return name.length() > 1; // TODO: What defines a valid name for a polygon?
 	}
-
+	
 	@Override
 	public List<Figure> getChildren() {
 		if (children == null) {
 			children = new ArrayList<>();
-			addArray(children, getAngles());
-			addArray(children, getSides());
-			addArray(children, getVertices());
+			children.addAll(Arrays.asList(getVertices()));
+			children.addAll(Arrays.asList(getAngles()));
+			children.addAll(Arrays.asList(getSides()));
 		}
 		return children;
 	}
 	
-	// Quick utility method for adding all of the elements of an array to a list
-	private void addArray(List<Figure> list, Figure[] figs) {
-		for (Figure fig : list) {
-			list.add(fig);
-		}
-	}
 
 	@Override
 	public Figure getChild(String name) {
 		if (name.length() == 1)
-			return getVertex(name.charAt(0));
+			return getVertex(name.charAt(0)); // Convert name to char
 		if (name.length() == 2)
 			return getSide(name);
 		if (name.length() == 3)
