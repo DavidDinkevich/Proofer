@@ -10,7 +10,7 @@ import geometry.proofs.Figure;
  * Represents a geometric vertex, with an identification label (char).
  * @author David Dinkevich
  */
-public class Vertex extends Shape {	
+public class Vertex extends AbstractShape {	
 	public Vertex(char name, Vec2 loc) {
 		super(loc);
 		setNameLengthRange(1, 1, false);
@@ -27,12 +27,6 @@ public class Vertex extends Shape {
 	}
 	public Vertex(Vertex shape) {
 		super(shape);
-	}
-	
-	@Override
-	public void setName(String name) {
-		// Vertices are labeled with upper case chars
-		super.setName(name.toUpperCase());
 	}
 	
 	public void setName(char name) {
