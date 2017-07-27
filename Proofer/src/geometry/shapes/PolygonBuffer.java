@@ -21,7 +21,7 @@ public class PolygonBuffer implements Iterable<Polygon> {
 	
 	private void removeChars(Polygon shape) {
 		for (int i = 0; i < shape.getVertexCount(); i++) {
-			charList.removeChar(shape.getVertex(i).getNameChar());
+			charList.removeChar(shape.getVertexName(i));
 		}
 		updateVertexNames();
 	}
@@ -123,7 +123,7 @@ public class PolygonBuffer implements Iterable<Polygon> {
 	 * the vertexName, false otherwise.
 	 */
 	public boolean demergeVertices(Polygon p, char vertexName) {
-		if (!pgons.contains(p) || p.getVertex(vertexName) == null)
+		if (!pgons.contains(p) || p.containsVertex(vertexName))
 			return false;
 		
 		// If there is more than one vertex with the given name
