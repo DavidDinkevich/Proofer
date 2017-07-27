@@ -13,6 +13,16 @@ public final class Utils {
 	private Utils() {
 		throw new AssertionError("Do NOT instantiate an object of this class!");
 	}
+	
+	public static float degreesToRadians(float degrees) {
+		final float PI = (float)Math.PI;
+		return degrees * (PI/180.0f);
+	}
+	
+	public static float radiansToDegrees(float radians) {
+		final float PI = (float)Math.PI;
+		return radians * (180.0f/PI);
+	}
 
 	public static int max(int[] list) {
 		if (list.length == 0) {
