@@ -1,7 +1,5 @@
 package geometry.shapes;
 
-import java.util.List;
-
 import geometry.Vec2;
 
 /**
@@ -15,20 +13,6 @@ public interface Polygon {
 	 * Get the number of {@link Vertex}es.
 	 */
 	public int getVertexCount();
-	/**
-	 * Returns the {@link Vertex} with the given name.
-	 * @param name the name of the requested {@link Vertex}.
-	 * @return the {@link Vertex} with the given name, or null if
-	 * a {@link Vertex} with the given name is not contained.
-	 */
-//	public Vertex getVertex(char name);
-	/**
-	 * Get the {@link Vertex} at the given index.
-	 * @param index the index of the requested {@link Vertex}.
-	 * @return the {@link Vertex}.
-	 */
-//	public Vertex getVertex(int index);
-	
 	/**
 	 * Get the location of the {@link Vertex} with the given name.
 	 * @param vertexName the location of the requested {@link Vertex}.
@@ -97,6 +81,16 @@ public interface Polygon {
 	public String getName();
 	
 	public Vertex[] getVertices();
+	
+	/**
+	 * Get whether this {@link Polygon} contains a vertex with the given name.
+	 * @param vertexName the name of the vertex being checked
+	 * @return whether or not this {@link Polygon} contains a vertex with
+	 * the given name.
+	 */
+	default public boolean containsVertex(char vertexName) {
+		return getName().contains(vertexName);
+	}
 	
 	/**
 	 * Get the {@link Segment} with the given name..
