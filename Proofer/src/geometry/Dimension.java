@@ -288,8 +288,8 @@ public class Dimension {
 		 * @return this mutable dimension
 		 */
 		public Mutable set(float w, float h, boolean allowNegatives) {
-			width = w;
-			height = h;
+			width = allowNegatives ? w : Math.abs(w);
+			height = allowNegatives ? h : Math.abs(h);
 			allowNegativeVals = allowNegatives;
 			return this;
 		}
