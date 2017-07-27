@@ -3,6 +3,7 @@ package ui.canvas.selection;
 import processing.core.PConstants;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
+
 import ui.canvas.Brush;
 import ui.canvas.Canvas;
 import ui.canvas.DiagramCanvas;
@@ -325,36 +326,50 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 	}
 	
 	private boolean fixVertexName(Polygon poly, char vertexName) {
-		Vertex v = poly.getVertex(vertexName);
-		if (v == null)
-			return false; // Given polygon doesn't contain given vertex name, return error
+		// If given polygon doesn't contain given vertex name, return error
+		if (!poly.containsVertex(vertexName))
+			return false;
 		
-		Vec2 loc = v.getScaledCenter();
+		Vec2 vertexLoc = poly.getVertexLoc(vertexName, true);
 		
 		PolygonBuffer buff = canvas.getPolygonBuffer();
 		
 		// Check if the knob is snapped to the canvas's grid
-		if (canvas.getCanvasGrid().pointIsSnapped(loc)) {
-			// See if any other vertex shares the knob's location
-			Vertex otherVertex = null;
+		if (canvas.getCanvasGrid().pointIsSnapped(vertexLoc)) {
+			// See if any other vertex shares the given vertex's location
+			boolean otherVertSharesLoc = false;
+			char otherVertName = '\n';
 			outer:
 			for (Polygon p : buff) {
-				for (int i = 0; i < p.getVertexCount(); i++) {
-					Vertex pv = p.getVertex(i);
+				// For each OTHER vertex
+				for (Vertex otherVert : p.getVertices()) {
+					Vec2 otherVertLoc = otherVert.getScaledCenter();
+					otherVertName = otherVert.getNameChar();
 					// If the vertices overlap and have different names
-					if (!(vertexName == pv.getNameChar()) && loc.equals(pv.getScaledCenter())) {
-						otherVertex = pv;
+					if (otherVertName != vertexName && otherVertLoc.equals(vertexLoc)) {
+						otherVertSharesLoc = true;
 						break outer;
 					}
 				}
+//				for (int i = 0; i < p.getVertexCount(); i++) {
+//					Vec2 vLoc = p.getVertexLoc(i, true);
+//					final char vName = p.getVertexName(i);
+//					// If the vertices overlap and have different names
+//					if (!(vertexName == vName) && vertexLoc.equals(vLoc)) {
+//						otherVertexName = vName;
+//						otherVertLoc = vLoc;
+////						otherVert = pv;
+//						break outer;
+//					}
+//				}
 			}
 			
-			// If no other vertex shares knob's location
-			if (otherVertex == null)
+			// If no other vertex shares given vertex's location
+			if (!otherVertSharesLoc)
 				return true; // Vertex safely moved
 			
-			// We found another vertex in the same position as the knob
-			buff.mergeVertices(poly, vertexName, otherVertex.getNameChar());
+			// We found another vertex with the same loc as the given vertex
+			buff.mergeVertices(poly, vertexName, otherVertName);
 			return true;
 		} else {
 			buff.demergeVertices(poly, vertexName);
@@ -364,7 +379,7 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 	
 	private void fixVertexNames(Polygon p) {
 		for (int i = 0; i < p.getVertexCount(); i++) {
-			fixVertexName(p, p.getVertex(i).getNameChar());
+			fixVertexName(p, p.getVertexName(i));
 		}
 	}
 	

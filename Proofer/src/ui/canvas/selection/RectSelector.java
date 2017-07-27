@@ -91,10 +91,10 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 		Vec2[] positions = {
 				// Corners
 				
-				getShape().getVertex(0).getScaledCenter(),
-				getShape().getVertex(1).getScaledCenter(),
-				getShape().getVertex(2).getScaledCenter(),
-				getShape().getVertex(3).getScaledCenter(),
+				getShape().getVertexLoc(0, true),
+				getShape().getVertexLoc(1, true),
+				getShape().getVertexLoc(2, true),
+				getShape().getVertexLoc(3, true),
 				
 				// Middle knobs
 				

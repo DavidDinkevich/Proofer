@@ -217,7 +217,8 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 	 */
 	public void snapToGrid(Polygon shape) {
 		for (int i = 0; i < shape.getVertexCount(); i++) {
-			snapToGrid(shape.getVertex(i));
+			Vec2 vertLoc = shape.getVertexLoc(i, true);
+			shape.setVertexLoc(i, getNearestSnapPoint(vertLoc), true);
 		}
 	}
 	
