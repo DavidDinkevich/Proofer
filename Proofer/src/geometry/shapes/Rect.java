@@ -5,20 +5,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import exceptions.CannotResizeObjectException;
+
 import geometry.Dimension;
 import geometry.Vec2;
 import geometry.proofs.Figure;
 
 public class Rect extends RectEllipse implements Polygon {
 	private Vertex[] vertices;
-	// Buffer for storing the vertices in a List<Vertex> format
-	private List<Vertex> verticesListBuff;
 	// Buffer for storing the locations of the vertices
 	private Vec2[] vertexLocs;
 	// Buffer for storing the sides of this rect (Segments)
 	private Segment[] segs;
 	// Buffer for storing the angles of this rect (Angles)
 	private Angle[] angles;
+	// Buffer for storing the children of this rect (angles, segs, vertices
+	private List<Figure> children;
 	
 	public Rect(Vec2 loc, Dimension size) {
 		super(loc, size);
@@ -299,11 +300,6 @@ public class Rect extends RectEllipse implements Polygon {
 	}
 	
 	@Override
-	public Segment getSide(String name) {
-		return null;
-	}
-	
-	@Override
 	public Segment[] getSides() {
 		if (segs == null) {
 			segs = new Segment[getVertexCount()];
@@ -315,42 +311,70 @@ public class Rect extends RectEllipse implements Polygon {
 		return segs;
 	}
 	
-	public static void main(String[] args) {
-		Rect rect = new Rect(Vec2.ZERO, Dimension.TEN);
-		rect.setName("ABCD");
-		System.out.println(rect.getVertexLoc('C', true));
-		rect.setVertexLoc('C', Vec2.ZERO, true);
-		System.out.println(rect.getVertexLoc('C', true));
+	@Override
+	public Angle[] getAngles() {
+		if (angles == null) {
+			angles = new Angle[getVertexCount()];
+			angles[0] = new Angle(getVertex(1), getVertex(0), getVertex(3));
+			angles[1] = new Angle(getVertex(0), getVertex(1), getVertex(2));
+			angles[2] = new Angle(getVertex(1), getVertex(2), getVertex(3));
+			angles[3] = new Angle(getVertex(0), getVertex(3), getVertex(2));
+		}
+		return angles;
 	}
 	
 	@Override
 	public Angle getAngle(String name) {
-		// TODO Auto-generated method stub
+		for (Angle a : getAngles()) {
+			if (a.isValidName(name))
+				return a;
+		}
 		return null;
 	}
 	
 	@Override
-	public Angle[] getAngles() {
-		// TODO Auto-generated method stub
+	public Segment getSide(String name) {
+		for (Segment seg : getSides()) {
+			if (seg.isValidName(name))
+				return seg;
+		}
 		return null;
 	}
 	
 	@Override
 	public List<Figure> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
+		if (children == null) {
+			children = new ArrayList<>();
+			children.addAll(Arrays.asList(getVertices()));
+			children.addAll(Arrays.asList(getAngles()));
+			children.addAll(Arrays.asList(getSides()));
+		}
+		return children;
 	}
 
 	@Override
 	public Figure getChild(String name) {
-		// TODO Auto-generated method stub
+		if (name.length() == 1)
+			return getVertex(name.charAt(0)); // Convert name to char
+		if (name.length() == 2)
+			return getSide(name);
+		if (name.length() == 3)
+			return getAngle(name);
 		return null;
 	}
 
 
 	@Override
 	public boolean isValidName(String name) {
-		// TODO Auto-generated method stub
-		return false;
+		if (name.length() != 4)
+			return false;
+		boolean contains = true;
+		for (int i = 0; i < name.length(); i++) {
+			if (getName().indexOf(name.charAt(i)) > -1)
+				continue;
+			contains = false;
+			break;
+		}
+		return contains;
 	}
 }
