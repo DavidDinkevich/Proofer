@@ -104,6 +104,7 @@ public abstract class AbstractShape implements Shape {
 	public void setName(String name) {
 		if (name == null)
 			throw new NullPointerException("A Shape's name cannot be null.");
+		name = name.toUpperCase();
 		this.name = Utils.mergeStringsAndEnsureCapacity(minNameLength, maxNameLength, this.name, name);
 	}
 	
