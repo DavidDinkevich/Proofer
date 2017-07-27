@@ -2,7 +2,7 @@ package ui.canvas.selection;
 
 import exceptions.IllegalSelectionException;
 import geometry.Vec2;
-import geometry.shapes.Shape2D;
+import geometry.shapes.AbstractShape2D;
 import ui.canvas.Canvas;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsShape2D;
@@ -12,7 +12,7 @@ import ui.canvas.StyleManager;
  * {@linkplain Selector}s select {@link GraphicsShape}s.
  * @author David Dinkevich
  */
-public abstract class Selector<SelShape extends Shape2D, TargetType extends GraphicsShape2D<?>>
+public abstract class Selector<SelShape extends AbstractShape2D, TargetType extends GraphicsShape2D<?>>
 extends GraphicsShape2D<SelShape> {
 
 	public static final String LAYER_NAME;
