@@ -2,7 +2,7 @@ package ui.canvas.selection;
 
 import geometry.Vec2;
 import geometry.shapes.Rect;
-import geometry.shapes.Shape2D;
+import geometry.shapes.AbstractShape2D;
 import geometry.shapes.Triangle;
 import ui.canvas.GraphicsRect;
 import ui.canvas.StyleManager;
@@ -39,7 +39,7 @@ public class SelectionBox extends GraphicsRect {
 	 * Check if the given object is covered by this {@link SelectionBox}.
 	 * @param incorporateScale whether or not to incorporate the given object's scale
 	 */
-	public boolean coversObject(Shape2D object, boolean incorporateScale) {
+	public boolean coversObject(AbstractShape2D object, boolean incorporateScale) {
 		if (object instanceof Triangle) {
 			return Triangle.overlap(getShape(), (Triangle)object, incorporateScale);
 		}
