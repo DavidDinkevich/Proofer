@@ -250,16 +250,16 @@ public class Canvas extends PApplet {
 	}
 	public void triangle(Triangle o) {
 		triangle(new Vec2[] {
-				o.getVertex(0).getScaledCenter(),
-				o.getVertex(1).getScaledCenter(),
-				o.getVertex(2).getScaledCenter()
+				o.getVertexLoc(0, true),
+				o.getVertexLoc(1, true),
+				o.getVertexLoc(2, true)
 		});
 	}
 	public void line(Vec2 point1, Vec2 point2) {
 		line(point1.getX(), point1.getY(), point2.getX(), point2.getY());
 	}
 	public void line(Segment seg) {
-		line(seg.getVertex(0).getScaledCenter(), seg.getVertex(1).getScaledCenter());
+		line(seg.getVertexLoc(0, true), seg.getVertexLoc(1, true));
 	}
 	
 	public void vertex(Vec2 loc) {
@@ -272,7 +272,7 @@ public class Canvas extends PApplet {
 	public void polygon(Polygon p) {
 		beginShape();
 		for (int i = 0; i < p.getVertexCount(); i++) {
-			vertex(p.getVertex(i));
+			vertex(p.getVertexLoc(i, true));
 		}
 		endShape(PConstants.CLOSE);
 	}
