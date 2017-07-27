@@ -2,17 +2,17 @@ package geometry.shapes;
 
 import geometry.Vec2;
 
-public abstract class Shape2D extends Shape implements Resizeable {
-	/** Determines whether this {@link Shape2D} is resizeable or not. */
+public abstract class AbstractShape2D extends AbstractShape implements Resizeable {
+	/** Determines whether this {@link AbstractShape2D} is resizeable or not. */
 	private boolean resizeable = true;
 	
-	public Shape2D(Vec2 loc) {
+	public AbstractShape2D(Vec2 loc) {
 		super(loc);
 	}
-	public Shape2D() {
+	public AbstractShape2D() {
 		super();
 	}
-	public Shape2D(Shape2D shape) {
+	public AbstractShape2D(AbstractShape2D shape) {
 		super(shape);
 		resizeable = shape.resizeable;
 	}
@@ -21,7 +21,7 @@ public abstract class Shape2D extends Shape implements Resizeable {
 	public boolean equals(Object o) {
 		if (!super.equals(o))
 			return false;
-		Shape2D shape = (Shape2D)o;
+		AbstractShape2D shape = (AbstractShape2D)o;
 		return shape.resizeable = resizeable;
 	}
 	
@@ -34,19 +34,19 @@ public abstract class Shape2D extends Shape implements Resizeable {
 	}
 	
 	/**
-	 * Get the perimeter of this {@link Shape2D}.
+	 * Get the perimeter of this {@link AbstractShape2D}.
 	 * @return the perimeter
 	 */
 	public abstract float getPerimeter();
 	
 	/**
-	 * Get the area of this {@link Shape2D}.
+	 * Get the area of this {@link AbstractShape2D}.
 	 * @return the area
 	 */
 	// TODO: separate this into two methods: getArea(), getScaledArea()
 	public abstract float getArea();
 	/**
-	 * Returns a {@link Rect} surrounding this {@link Shape2D} as closely
+	 * Returns a {@link Rect} surrounding this {@link AbstractShape2D} as closely
 	 * as possible.
 	 */
 	public abstract Rect getBoundaryRect();
