@@ -1,27 +1,31 @@
 package ui.canvas;
 
 import geometry.Vec2;
-import geometry.shapes.AbstractShape;
+import geometry.shapes.Vertex;
 
-public class GraphicsVertex extends GraphicsShape<AbstractShape> {
+public class GraphicsVertex extends GraphicsShape<Vertex> {
 	private TextFont textFont;
 	
-	public GraphicsVertex(Brush brush, AbstractShape shape) {
+	public GraphicsVertex(Brush brush, Vertex shape) {
 		super(brush, shape);
-		textFont = new TextFont(10);
+		textFont = new TextFont();
 	}
-	public GraphicsVertex(AbstractShape shape) {
+	
+	public GraphicsVertex(Vertex shape) {
 		super(shape);
-		textFont = new TextFont(10);
+		textFont = new TextFont();
 	}
+	
 	public GraphicsVertex(Brush brush) {
 		super(brush);
-		textFont = new TextFont(10);
+		textFont = new TextFont();
 	}
+	
 	public GraphicsVertex() {
 		super();
-		textFont = new TextFont(10);
+		textFont = new TextFont();
 	}
+	
 	public GraphicsVertex(GraphicsVertex o) {
 		super(o);
 		textFont = o.textFont;
@@ -33,14 +37,17 @@ public class GraphicsVertex extends GraphicsShape<AbstractShape> {
 		c.textAlign(textFont.getAlignmentX(), textFont.getAlignmentY());
 		c.textSize(textFont.getSize());
 		
-		Vec2 loc = getShape().getCenter(true);
-		Vec2 labelLoc = new Vec2(loc.getX() + 10, loc.getY() - 26);
+		Vec2 center = getShape().getCenter(true);
+		Vec2 offset = new Vec2(10, -26);
+		Vec2 labelLoc = Vec2.add(center, offset);
+		
 		c.text(getShape().getName(), labelLoc);
 	}
 	
 	public TextFont getTextFont() {
 		return textFont;
 	}
+	
 	public void setTextFont(TextFont textFont) {
 		this.textFont = textFont;
 	}
