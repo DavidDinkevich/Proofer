@@ -113,30 +113,4 @@ public class Triangle extends SimplePolygon {
 	public final int getVertexCount() {
 		return 3; // Triangles have 3 corners :-)
 	}
-	
-//	@Override
-//	public void setCenter(Vec2 newLoc) {
-//		if (newLoc.equals(getCenter()))
-//			return;
-//		
-//		Vec2 diff = Vec2.sub(newLoc, getCenter());
-//		for (int i = 0; i < getVertexCount(); i++) {
-//			Vec2 p = getVertexLoc(i, false);
-////			setVertexLoc(i, Vec2.add(p, diff), false);
-//			getVertices()[i].setCenter(Vec2.add(p, diff));
-//		}
-//		super.setCenter(newLoc);
-//	}
-	
-	@Override
-	public void setScale(Vec2 scale, Vec2 dilationPoint) {
-		if (scale.equals(getScale()) || dilationPoint.equals(getDilationPoint())) {
-			return;
-		}
-		super.setScale(scale, dilationPoint);
-		
-		for (Vertex v : getVertices()) {
-			v.setScale(getScale(), dilationPoint);
-		}		
-	}
 }
