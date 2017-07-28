@@ -362,19 +362,4 @@ public class Rect extends RectEllipse implements Polygon {
 			return getAngle(name);
 		return null;
 	}
-
-
-	@Override
-	public boolean isValidName(String name) {
-		if (name.length() != 4)
-			return false;
-		boolean contains = true;
-		for (int i = 0; i < name.length(); i++) {
-			if (getName().indexOf(name.charAt(i)) > -1)
-				continue;
-			contains = false;
-			break;
-		}
-		return contains;
-	}
 }
