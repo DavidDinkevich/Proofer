@@ -3,6 +3,7 @@ package ui.canvas.selection;
 import geometry.Dimension;
 import geometry.Vec2;
 import geometry.shapes.Ellipse;
+
 import ui.canvas.GraphicsEllipse;
 import ui.canvas.GraphicsShape;
 import ui.canvas.StyleManager;
