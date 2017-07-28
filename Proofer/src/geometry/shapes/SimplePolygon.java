@@ -18,18 +18,20 @@ import geometry.proofs.Figure;
  * {@link Vertex}es by name (char) and by index.
  * @author David Dinkevich
  */
-public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> {
+public class SimplePolygon extends AbstractShape2D implements Polygon, Iterable<Vertex> {
 	protected List<Vertex> vertices;
 	
 	private List<Figure> children;
 	private List<Segment> segments;
 	private List<Angle> angles;
 	
+	private static int MIN_VERT_COUNT = 3;
+	
 	public SimplePolygon(String name) {
-		// The following is NO LONGER TRUE (in this program)
-//		if (name.length() < 3) {
-//			throw new IllegalArgumentException("A polygon must have at least three vertices.");
-//		}
+		// Ensure name is long enough to be valid
+		if (name.length() < MIN_VERT_COUNT) {
+			throw new IllegalArgumentException(tooFewVerticesMessage());
+		}
 		vertices = new ArrayList<>();
 		for (int i = 0; i < name.length(); i++) {
 			vertices.add(new Vertex(name.charAt(i)));
@@ -43,10 +45,10 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 	}
 	
 	public SimplePolygon(Collection<Vertex> verts) {
-		// The following is NO LONGER TRUE (in this program)
-		//		if (verts.size() < 3) {
-//			throw new IllegalArgumentException("A polygon must have at least three vertices.");
-//		}
+		// Ensure list of vertices is long enough to be valid
+		if (verts.size() < MIN_VERT_COUNT) {
+			throw new IllegalArgumentException(tooFewVerticesMessage());
+		}
 		vertices = new ArrayList<>(verts);
 		init();
 		syncNameWithVertexNames();
@@ -67,12 +69,11 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 	}
 	
 	private void init() {
-		/*
-		 * Min name length of 2, even though technically a polygon must have at least
-		 * 3 vertices. The reason for this is because I cheat a little with the segment
-		 * class by making it extend SimplePolygon (even though segments aren't polygons).
-		 */
-		setNameLengthRange(2, -1, false);
+		setNameLengthRange(MIN_VERT_COUNT, -1, false);
+	}
+	
+	private String tooFewVerticesMessage() {
+		return "A polygon must have at least " + MIN_VERT_COUNT + " vertices.";
 	}
 	
 	@Override
@@ -82,7 +83,7 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 		if (!(o instanceof SimplePolygon))
 			return false;
 		SimplePolygon p = (SimplePolygon)o;
-		return vertices.equals(p.vertices); // TODO: must check equality of contents as well
+		return vertices.equals(p.vertices);
 	}
 	
 	@Override
@@ -106,18 +107,9 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 		setName(b.toString());
 	}
 	
-//	public static void main(String[] args) {
-//		SimplePolygon poly = new SimplePolygon(Arrays.asList(new Vertex(Vec2.ZERO), new Vertex(new Vec2(10, 0)), new Vertex(new Vec2(0, 10))));
-//		poly.setName("ABC");
-//		System.out.println(poly.getVertexLoc('C', true));
-////		poly.setCenter(new Vec2(100, 100));
-//		poly.setVertexLoc('C', Vec2.ZERO, true);
-//		System.out.println(poly.getVertexLoc('C', true));
-//	}
-	
 	@Override
 	public void setName(String name) {
-		super.setName(name.toUpperCase());
+		super.setName(name);
 		// Update vertices names
 		if (vertices != null) {
 			for (int i = 0; i < vertices.size() && i < getName().length(); i++) {
@@ -363,11 +355,6 @@ public class SimplePolygon extends Shape2D implements Polygon, Iterable<Vertex> 
 		return new Rect(rectLoc, rectSize);
 	}
 
-	@Override
-	public boolean isValidName(String name) {
-		return name.length() > 1; // TODO: What defines a valid name for a polygon?
-	}
-	
 	@Override
 	public List<Figure> getChildren() {
 		if (children == null) {
