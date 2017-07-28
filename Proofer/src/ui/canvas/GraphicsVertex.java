@@ -1,16 +1,16 @@
 package ui.canvas;
 
 import geometry.Vec2;
-import geometry.shapes.Shape;
+import geometry.shapes.AbstractShape;
 
-public class GraphicsVertex extends GraphicsShape<Shape> {
+public class GraphicsVertex extends GraphicsShape<AbstractShape> {
 	private TextFont textFont;
 	
-	public GraphicsVertex(Brush brush, Shape shape) {
+	public GraphicsVertex(Brush brush, AbstractShape shape) {
 		super(brush, shape);
 		textFont = new TextFont(10);
 	}
-	public GraphicsVertex(Shape shape) {
+	public GraphicsVertex(AbstractShape shape) {
 		super(shape);
 		textFont = new TextFont(10);
 	}
