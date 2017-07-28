@@ -34,11 +34,6 @@ public abstract class RectEllipse extends AbstractShape2D {
 	}
 	
 	@Override
-	public void setName(String name) {
-		super.setName(name.toUpperCase());
-	}
-	
-	@Override
 	public boolean equals(Object o) {
 		if (!super.equals(o))
 			return false;
