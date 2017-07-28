@@ -58,9 +58,4 @@ public class Vertex extends AbstractShape {
 	public Figure getChild(String name) {
 		return null;
 	}
-	
-	@Override
-	public boolean isValidName(String name) {
-		return getName().equals(name);
-	}
 }
