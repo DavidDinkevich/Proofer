@@ -8,18 +8,6 @@ import geometry.proofs.Figure;
  * @author David Dinkevich
  */
 public interface Shape extends Scalable, Figure {
-	/**
-	 * Get the name of this {@link Shape}.
-	 * @return the name
-	 */
-	public String getName();
-	
-	/**
-	 * Set the name of this {@link Shape}.
-	 * @param the new name
-	 */
-	public void setName(String name);
-	
 	/*
 	 * Force implementing classes to override these Object methods
 	 */
