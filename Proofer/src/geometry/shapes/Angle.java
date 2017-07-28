@@ -107,22 +107,6 @@ public final class Angle implements Figure {
 	public String toString() {
 		return getName();
 	}
-
-	@Override
-	public boolean isValidName(String name) {
-		if (name.length() != 3)
-			return false;
-		if (!(getName().charAt(1) == name.charAt(1)))
-			return false;
-		boolean contains = true;
-		for (char c : name.toCharArray()) {
-			if (getName().indexOf(c) > -1)
-				continue;
-			contains = false;
-			break;
-		}
-		return contains;
-	}
 	
 	public String getNameShort() {
 		return String.valueOf(getName().charAt(1));
