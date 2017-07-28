@@ -1,8 +1,11 @@
 package ui.canvas;
 
+import java.util.Arrays;
+
+import geometry.shapes.Polygon;
 import geometry.shapes.SimplePolygon;
 
-public class GraphicsPolygon<T extends SimplePolygon> extends GraphicsShape2D<T> {
+public class GraphicsPolygon<T extends Polygon> extends GraphicsShape2D<T> {
 	private TextFont vertexTextFont;
 	private GraphicsVertex[] vertices;
 	private boolean drawVertices = true;
@@ -23,6 +26,10 @@ public class GraphicsPolygon<T extends SimplePolygon> extends GraphicsShape2D<T>
 	// Package private
 	GraphicsPolygon(GraphicsPolygon<T> other) {
 		super(other);
+		vertexTextFont = other.vertexTextFont;
+		vertices = Arrays.copyOf(other.vertices, other.vertices.length);
+		drawVertices = other.drawVertices;
+		drawName = other.drawName;
 	}
 	
 	@Override
