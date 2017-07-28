@@ -144,6 +144,18 @@ public class SimplePolygon extends AbstractShape2D implements Polygon, Iterable<
 	}
 	
 	@Override
+	public void setScale(Vec2 scale, Vec2 dilationPoint) {
+		if (scale.equals(getScale()) || dilationPoint.equals(getDilationPoint())) {
+			return;
+		}
+		super.setScale(scale, dilationPoint);
+		
+		for (Vertex v : getVertices()) {
+			v.setScale(getScale(), getDilationPoint());
+		}
+	}
+	
+	@Override
 	public int getVertexCount() {
 		return getName().length();
 	}
