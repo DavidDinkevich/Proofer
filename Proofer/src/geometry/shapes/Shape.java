@@ -18,30 +18,18 @@ public interface Shape extends Scalable, Figure {
 	/**
 	 * Get the center location of this {@link Shape} (without incorporating this
 	 * {@link Shape}'s scale).
+	 * @param includeScale whether to pay attention to scale
 	 * @return the center location as a {@link Vec2}.
 	 */
-	public Vec2 getCenter();
+	public Vec2 getCenter(boolean includeScale);
 	
 	/**
 	 * Set the center location of this {@link Shape} (without incorporating this
 	 * {@link Shape}'s scale).
+	 * @param includeScale whether to pay attention to scale
 	 * @param loc the new center location as a {@link Vec2}.
 	 */
-	public void setCenter(Vec2 loc);
-	
-	/**
-	 * Get the center location of this {@link Shape} and incorporate this
-	 * {@link Shape}'s scale.
-	 * @return the center location as a {@link Vec2}.
-	 */
-	public Vec2 getScaledCenter();
-	
-	/**
-	 * Set the center location of this {@link Shape} and incorporate this
-	 * {@link Shape}'s scale.
-	 * @param loc the new center location
-	 */
-	public void setScaledCenter(Vec2 loc);
+	public void setCenter(Vec2 loc, boolean includeScale);
 	
 	/**
 	 * Get whether the given point lies within this {@link Shape}.
