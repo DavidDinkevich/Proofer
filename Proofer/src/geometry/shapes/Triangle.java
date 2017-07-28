@@ -139,18 +139,4 @@ public class Triangle extends SimplePolygon {
 			v.setScale(getScale(), dilationPoint);
 		}		
 	}
-	
-	@Override
-	public boolean isValidName(String name) {
-		if (name.length() != 3)
-			return false;
-		boolean contains = true;
-		for (int i = 0; i < name.length(); i++) {
-			if (getName().indexOf(name.charAt(i)) > -1)
-				continue;
-			contains = false;
-			break;
-		}
-		return contains;
-	}
 }
