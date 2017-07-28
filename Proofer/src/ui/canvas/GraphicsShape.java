@@ -2,14 +2,14 @@ package ui.canvas;
 
 import geometry.Vec2;
 import geometry.shapes.AbstractShape;
-
+import geometry.shapes.Shape;
 import util.IdentifiableObject;
 
 /**
  * A graphical representation of a {@link AbstractShape}.
  * @author David Dinkevich
  */
-public abstract class GraphicsShape<T extends AbstractShape> extends IdentifiableObject
+public abstract class GraphicsShape<T extends Shape> extends IdentifiableObject
 implements Drawable {	
 
 	private T shape;
