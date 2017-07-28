@@ -41,7 +41,8 @@ public class PolygonSelector extends Selector<SimplePolygon, GraphicsPolygon<?>>
 			getKnobs()[i] = new PolygonSelectorKnob();
 			getKnobs()[i].setLoc(locs[i]);
 			getKnobs()[i].setSelector(this);
-			((PolygonSelectorKnob)getKnobs()[i]).setControlledVertex(getShape().getVertex(i));
+			PolygonSelectorKnob knob = (PolygonSelectorKnob)getKnobs()[i];
+			knob.setControlledVertex(getShape().getVertex(i));
 		}
 	}
 
