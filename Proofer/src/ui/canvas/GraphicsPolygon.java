@@ -13,7 +13,7 @@ public class GraphicsPolygon<T extends SimplePolygon> extends GraphicsShape2D<T>
 		vertexTextFont = StyleManager.getTextFont();
 		vertices = new GraphicsVertex[shape.getVertexCount()];
 		for (int i = 0; i < vertices.length; i++) {
-			vertices[i] = new GraphicsVertex(getShape().getVertex(i));
+			vertices[i] = new GraphicsVertex(getShape().getVertices()[i]);
 			vertices[i].setTextFont(vertexTextFont);
 		}
 	}
