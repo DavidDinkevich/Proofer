@@ -72,6 +72,23 @@ public final class Utils {
 		return min;
 	}
 	
+	/**
+	 * Get whether the given string (first string param) contains all
+	 * of the chars in the second string parameter.
+	 */
+	public static boolean containsAllChars(String string0, String chars) {
+		if (string0.length() != chars.length())
+			return false;
+		boolean containsAllChars = true;
+		for (int i = 0; i < string0.length(); i++) {
+			if (string0.indexOf(chars.charAt(i)) > -1)
+				continue;
+			containsAllChars = false;
+			break;
+		}
+		return containsAllChars;
+	}
+	
 	public static String mergeStringsAndEnsureCapacity(
 			int minLength, int maxLength, String original, String newStr) {
 		final boolean tooShort = newStr.length() < minLength && minLength > 0;
