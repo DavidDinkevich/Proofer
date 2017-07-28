@@ -53,18 +53,12 @@ implements Drawable {
 		this.shape = shape;
 	}
 	
-	/**
-	 * Delegate method for GraphicsObject.getShape().getCenterPoint().
-	 * @return the center point of this {@link GraphicsShape}.
-	 */
 	public Vec2 getLoc() {
-		return shape.getScaledCenter();
+		return shape.getCenter(true);
 	}
-	/**
-	 * Delegate method for GraphicsObject.getShape().setCenterPoint().
-	 */
+
 	public void setLoc(Vec2 loc) {
-		shape.setScaledCenter(loc);
+		shape.setCenter(loc, true);
 	}
 	
 	/**

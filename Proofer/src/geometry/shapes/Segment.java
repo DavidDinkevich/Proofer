@@ -86,56 +86,41 @@ public class Segment extends AbstractShape {
 	}
 	
 	@Override
-	public boolean containsPoint(Vec2 point, boolean incorporateScale) {
+	public boolean containsPoint(Vec2 point, boolean includeScale) {
 		final float dist1 = Vec2.dist(
-				incorporateScale ? vertices[0].getScaledCenter() : vertices[0].getCenter(), point);
+				vertices[0].getCenter(includeScale), point);
 		final float dist2 = Vec2.dist(
-				incorporateScale ? vertices[1].getScaledCenter() : vertices[1].getCenter(), point);
-		return dist1 + dist2 == getLength();
+				vertices[1].getCenter(includeScale), point);
+		return dist1 + dist2 == getLength(includeScale);
 	}
 	
-	public float getLength() {
-		return Vec2.dist(vertices[0].getScaledCenter(), vertices[1].getScaledCenter());
-	}
-	
-	@Override
-	public void setScaledCenter(Vec2 loc) {
-		Vec2 offset = Vec2.sub(loc, getScaledCenter());
-		vertices[0].setScaledCenter(Vec2.add(vertices[0].getScaledCenter(), offset));
-		vertices[1].setScaledCenter(Vec2.add(vertices[1].getScaledCenter(), offset));
+	public float getLength(boolean includeScale) {
+		return Vec2.dist(vertices[0].getCenter(includeScale),
+				vertices[1].getCenter(includeScale));
 	}
 	
 	@Override
-	public Vec2 getScaledCenter() {
-		Vec2 point1 = vertices[0].getScaledCenter();
-		Vec2 point2 = vertices[1].getScaledCenter();
+	public Vec2 getCenter(boolean includeScale) {
+		Vec2 point1 = vertices[0].getCenter(includeScale);
+		Vec2 point2 = vertices[1].getCenter(includeScale);
 		return new Vec2((point1.getX() + point2.getX())/2, (point1.getY() + point2.getY())/2);
 	}
 	
 	@Override
-	public Vec2 getCenter() {
-//		updateCenter();
-//		return super.getCenter();
-		Vec2 point1 = vertices[0].getCenter();
-		Vec2 point2 = vertices[1].getCenter();
-		return new Vec2((point1.getX() + point2.getX())/2, (point1.getY() + point2.getY())/2);
-	}
-	
-	@Override
-	public void setCenter(Vec2 newLoc) {
-		Vec2 old = getCenter();		
+	public void setCenter(Vec2 newLoc, boolean includeScale) {
+		Vec2 old = getCenter(includeScale);		
 		if (newLoc.equals(old))
 			return;
 		// Update the locations of the vertices
 		Vec2 diff = Vec2.sub(newLoc, old);
 		for (Vertex v : getVertices()) {
-			v.setCenter(Vec2.add(v.getCenter(), diff));
+			v.setCenter(Vec2.add(v.getCenter(includeScale), diff), includeScale);
 		}
-		super.setCenter(newLoc);
+		super.setCenter(newLoc, includeScale);
 	}
 	
 	public Vec2 getSlope() {
-		return Vec2.sub(vertices[1].getScaledCenter(), vertices[0].getScaledCenter());
+		return Vec2.sub(vertices[1].getCenter(false), vertices[0].getCenter(false));
 	}
 	
 	public boolean containsVertex(char name) {
@@ -154,8 +139,7 @@ public class Segment extends AbstractShape {
 	 * @return the {@link Vertex}'s location.
 	 */
 	public Vec2 getVertexLoc(int index, boolean includeScale) {
-		return includeScale ? vertices[index].getScaledCenter()
-				: vertices[index].getCenter();
+		return vertices[index].getCenter(includeScale);
 	}
 	
 	/**
@@ -177,13 +161,14 @@ public class Segment extends AbstractShape {
 	 * @return the locations as an array of {@link Vec2}s.
 	 */
 	public Vec2[] getVertexLocations() {
-		return new Vec2[] { vertices[0].getScaledCenter(), vertices[1].getScaledCenter() };
+		return new Vec2[] { vertices[0].getCenter(true), vertices[1].getCenter(true) };
 	}
 	
 	private void updateCenter() {
-		Vec2 point1 = vertices[0].getCenter();
-		Vec2 point2 = vertices[1].getCenter();
-		setCenter(new Vec2((point1.getX() + point2.getX())/2, (point1.getY() + point2.getY())/2));
+		Vec2 point1 = vertices[0].getCenter(false);
+		Vec2 point2 = vertices[1].getCenter(false);
+		setCenter(new Vec2((point1.getX() + point2.getX())/2, 
+				(point1.getY() + point2.getY())/2), false);
 	}
 	
 	/**
@@ -197,10 +182,7 @@ public class Segment extends AbstractShape {
 //		if (!isResizeable())
 //			throw new CannotResizeObjectException();
 		Vertex v = vertices[index];
-		if (includeScale)
-			v.setScaledCenter(newLoc);
-		else
-			v.setCenter(newLoc);
+		v.setCenter(newLoc, includeScale);
 		updateCenter(); // Update the center of this segment
 	}
 	

@@ -46,7 +46,7 @@ public class Vertex extends AbstractShape {
 
 	@Override
 	public boolean containsPoint(Vec2 point, boolean incorporateScale) {
-		return incorporateScale ? getScaledCenter().equals(point) : getCenter().equals(point);
+		return getCenter(incorporateScale).equals(point);
 	}
 	
 	@Override

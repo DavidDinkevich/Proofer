@@ -343,7 +343,7 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 			for (Polygon p : buff) {
 				// For each OTHER vertex
 				for (Vertex otherVert : p.getVertices()) {
-					Vec2 otherVertLoc = otherVert.getScaledCenter();
+					Vec2 otherVertLoc = otherVert.getCenter(true);
 					otherVertName = otherVert.getNameChar();
 					// If the vertices overlap and have different names
 					if (otherVertName != vertexName && otherVertLoc.equals(vertexLoc)) {

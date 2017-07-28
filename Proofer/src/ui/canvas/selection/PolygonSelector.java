@@ -63,8 +63,8 @@ public class PolygonSelector extends Selector<SimplePolygon, GraphicsPolygon<?>>
 			return;
 		}
 		// Update selector shape
-		getShape().setVertexLoc(vertexLabel, point);
+		getShape().setVertexLoc(vertexLabel, point, true);
 		// Update target object shape
-		getTargetObject().getShape().setVertexLoc(vertexLabel, point);
+		getTargetObject().getShape().setVertexLoc(vertexLabel, point, true);
 	}
 }

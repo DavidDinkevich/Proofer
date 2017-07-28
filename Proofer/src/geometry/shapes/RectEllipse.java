@@ -49,7 +49,7 @@ public abstract class RectEllipse extends AbstractShape2D {
 	}
 
 	public Rect getBoundaryRect() {
-		Rect rect = new Rect(getScaledCenter(), getSizeIncludeScale());
+		Rect rect = new Rect(getCenter(false), getSize());
 		rect.setScale(getScale());
 		return rect;
 	}

@@ -55,9 +55,13 @@ public class Rect extends RectEllipse implements Polygon {
 		setNameLengthRange(4, 4, true);
 	}
 	
+	public static void main(String[] args) {
+		
+	}
+	
 	private Vec2 calculateVertexLocation(int vertIndex, boolean includeScale) {
-		Dimension s = getSize();
-		Vec2 center = includeScale ? getScaledCenter() : getCenter();
+		Dimension s = includeScale ? getSizeIncludeScale() : getSize();
+		Vec2 center = getCenter(includeScale);
 		Vec2 loc;
 		
 		switch (vertIndex) {
@@ -104,11 +108,11 @@ public class Rect extends RectEllipse implements Polygon {
 	 * @param incorporateScale whether or not to incorporate the rects' scale
 	 * @return true if the rects overlap, false otherwise.
 	 */
-	public static boolean rectsOverlap(Rect r1, Rect r2, boolean incorporateScale) {
-		Vec2 loc1 = incorporateScale ? r1.getScaledCenter() : r1.getCenter();
-		Vec2 loc2 = incorporateScale ? r2.getScaledCenter() : r2.getCenter();
-		Dimension size1 = incorporateScale ? r1.getSizeIncludeScale() : r1.getSize();
-		Dimension size2 = incorporateScale ? r2.getSizeIncludeScale() : r2.getSize();
+	public static boolean rectsOverlap(Rect r1, Rect r2, boolean includeScale) {
+		Vec2 loc1 = r1.getCenter(includeScale);
+		Vec2 loc2 = r2.getCenter(includeScale);
+		Dimension size1 = includeScale ? r1.getSizeIncludeScale() : r1.getSize();
+		Dimension size2 = includeScale ? r2.getSizeIncludeScale() : r2.getSize();
 		
 		return loc1.getX() + size1.getWidth()/2 > loc2.getX() - size2.getWidth()/2
 				&& loc1.getX() - size1.getWidth()/2 < loc2.getX() + size2.getWidth()/2
@@ -127,9 +131,9 @@ public class Rect extends RectEllipse implements Polygon {
 	}
 	
 	@Override
-	public boolean containsPoint(Vec2 point, boolean incorporateScale) {
-		Dimension size = incorporateScale ? getSizeIncludeScale() : getSize();
-		Vec2 loc = incorporateScale ? getScaledCenter() : getCenter();
+	public boolean containsPoint(Vec2 point, boolean includeScale) {
+		Dimension size = includeScale ? getSizeIncludeScale() : getSize();
+		Vec2 loc = getCenter(includeScale);
 		return point.getX() > loc.getX() - size.getWidth()/2f && point.getX() < loc.getX() + size.getWidth()/2f 
 				&& point.getY() > loc.getY() - size.getHeight()/2f && point.getY() < loc.getY() + 
 				size.getHeight()/2f;
@@ -162,8 +166,10 @@ public class Rect extends RectEllipse implements Polygon {
 		
 		// Make sure the location/scale of the vertex is updated
 		getVertices()[index].setScale(getScale());
-		Vec2 loc = calculateVertexLocation(index, false);			
-		getVertices()[index].setCenter(loc);
+		Vec2 loc = calculateVertexLocation(index, false);
+		// Above: "false" because since we already set the scale in the previous line, we
+		// don't need to use it now
+		getVertices()[index].setCenter(loc, false);
 		
 		return getVertices()[index];
 	}
@@ -213,15 +219,12 @@ public class Rect extends RectEllipse implements Polygon {
 		}
 		
 		Vertex opp = getVertex(oppIndex);
-		Vec2 oppLoc = includeScale ? opp.getScaledCenter() : opp.getScaledCenter();
+		Vec2 oppLoc = opp.getCenter(includeScale);
 		
-		Vec2 loc = new Vec2(newLoc.getX() - (newLoc.getX()-oppLoc.getX())/2,
+		Vec2 newCenter = new Vec2(newLoc.getX() - (newLoc.getX()-oppLoc.getX())/2,
 				newLoc.getY() - (newLoc.getY()-oppLoc.getY())/2);
 		// Set the scale
-		if (includeScale)
-			setScaledCenter(loc);
-		else
-			setCenter(loc);
+		setCenter(newCenter, includeScale);
 		// Update the size of the rect
 		setSize(oppLoc.getX()-newLoc.getX(), newLoc.getY()-oppLoc.getY());
 	}
@@ -236,8 +239,7 @@ public class Rect extends RectEllipse implements Polygon {
 
 	@Override
 	public Vec2 getVertexLoc(int index, boolean includeScale) {
-		return includeScale ? getVertex(index).getScaledCenter()
-				: getVertex(index).getCenter();
+		return getVertex(index).getCenter(includeScale);
 	}
 
 	@Override
@@ -290,10 +292,10 @@ public class Rect extends RectEllipse implements Polygon {
 	public Vec2[] getVertexLocations() {
 		if (vertexLocs == null) {
 			vertexLocs = new Vec2[] {
-					getVertices()[0].getScaledCenter(),
-					getVertices()[1].getScaledCenter(),
-					getVertices()[2].getScaledCenter(),
-					getVertices()[3].getScaledCenter()
+					getVertices()[0].getCenter(true),
+					getVertices()[1].getCenter(true),
+					getVertices()[2].getCenter(true),
+					getVertices()[3].getCenter(true)
 			};
 		}
 		return vertexLocs;

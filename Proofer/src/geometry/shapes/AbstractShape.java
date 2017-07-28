@@ -71,7 +71,7 @@ public abstract class AbstractShape implements Shape {
 		 * Check if the name of the other shape is a valid name for this shape
 		 * (not for name equality). Do this FIRST--before anything else
 		 */
-		return isValidName(s.getName()) && getCenter().equals(s.getCenter())
+		return isValidName(s.getName()) && getCenter(false).equals(s.getCenter(false))
 				&& scale.equals(s.scale);
 	}
 	
@@ -91,8 +91,7 @@ public abstract class AbstractShape implements Shape {
 	
 	@Override
 	public boolean containsPoint(Vec2 point, boolean incorporateScale) {
-		return incorporateScale ? getScaledCenter().equals(point)
-				: getCenter().equals(point);
+		return getCenter(incorporateScale).equals(point);
 	}
 	
 	@Override
@@ -134,25 +133,18 @@ public abstract class AbstractShape implements Shape {
 	}
 
 	@Override
-	public Vec2 getCenter() {
-		return center;
+	public Vec2 getCenter(boolean includeScale) {
+		return includeScale ? center : Vec2.mult(center, scale);
 	}
 
 	@Override
-	public void setCenter(Vec2 loc) {
+	public void setCenter(Vec2 loc, boolean includeScale) {
 		if (loc == null)
 			throw new NullPointerException("A Shape's location cannot be null.");
-		this.center.set(loc);
-	}
-	
-	@Override
-	public Vec2 getScaledCenter() {
-		return Vec2.mult(getCenter(), scale);
-	}
-	
-	@Override
-	public void setScaledCenter(Vec2 loc) {
-		setCenter(Vec2.div(loc, scale));
+		if (includeScale)
+			this.center.set(loc);
+		else
+			this.center.set(Vec2.div(loc, scale));
 	}
 	
 	@Override

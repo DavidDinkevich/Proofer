@@ -41,7 +41,7 @@ public class GraphicsPolygon<T extends SimplePolygon> extends GraphicsShape2D<T>
 		
 		// Draw name at center of triangle
 		if (drawName)
-			c.text(getShape().getName(), getShape().getScaledCenter());
+			c.text(getShape().getName(), getShape().getCenter(true));
 	}
 	public TextFont getVertexTextFont() {
 		return vertexTextFont;

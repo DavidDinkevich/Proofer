@@ -33,7 +33,7 @@ public class GraphicsVertex extends GraphicsShape<AbstractShape> {
 		c.textAlign(textFont.getAlignmentX(), textFont.getAlignmentY());
 		c.textSize(textFont.getSize());
 		
-		Vec2 loc = getShape().getScaledCenter();
+		Vec2 loc = getShape().getCenter(true);
 		Vec2 labelLoc = new Vec2(loc.getX() + 10, loc.getY() - 26);
 		c.text(getShape().getName(), labelLoc);
 	}

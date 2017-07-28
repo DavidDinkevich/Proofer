@@ -119,27 +119,27 @@ public class SimplePolygon extends AbstractShape2D implements Polygon, Iterable<
 	}
 	
 	@Override
-	public void setCenter(Vec2 loc) {
-		if (loc.equals(getCenter()))
+	public void setCenter(Vec2 loc, boolean includeScale) {
+		if (loc.equals(getCenter(includeScale)))
 			return;
-		Vec2 old = super.getCenter();
+		Vec2 old = super.getCenter(includeScale);
 		// Update the locations of the vertices
 		Vec2 diff = Vec2.sub(loc, old);
 		for (Vertex v : getVertices()) {
-			v.setCenter(Vec2.add(v.getCenter(), diff));
+			v.setCenter(Vec2.add(v.getCenter(includeScale), diff), includeScale);
 		}
-		super.setCenter(loc);
+		super.setCenter(loc, includeScale);
 	}
 	
 	@Override
-	public Vec2 getCenter() {
+	public Vec2 getCenter(boolean includeScale) {
 		// The center is the x and y average of the vertices
 		Vec2.Mutable center = new Vec2.Mutable();
 		for (Vertex v : vertices)
-			center.add(v.getCenter());
+			center.add(v.getCenter(includeScale));
 		center.div(getVertexCount());
 		// Update the internal center variable
-		super.setCenter(center);
+		super.setCenter(center, includeScale);
 		return center;
 	}
 	
@@ -166,8 +166,7 @@ public class SimplePolygon extends AbstractShape2D implements Polygon, Iterable<
 	
 	@Override
 	public Vec2 getVertexLoc(int index, boolean includeScale) {
-		return includeScale ? vertices.get(index).getScaledCenter()
-				: vertices.get(index).getCenter();
+		return vertices.get(index).getCenter(includeScale);
 	}
 	
 	@Override
@@ -186,10 +185,7 @@ public class SimplePolygon extends AbstractShape2D implements Polygon, Iterable<
 		if (!isResizeable())
 			throw new CannotResizeObjectException();
 		Vertex v = vertices.get(index);
-		if (includeScale)
-			v.setScaledCenter(newLoc);
-		else
-			v.setCenter(newLoc);
+		v.setCenter(newLoc, includeScale);
 	}
 	
 	@Override
@@ -311,7 +307,7 @@ public class SimplePolygon extends AbstractShape2D implements Polygon, Iterable<
 	public Vec2[] getVertexLocations() {
 		Vec2[] locs = new Vec2[vertices.size()];
 		for (int i = 0; i < locs.length; i++) {
-			locs[i] = vertices.get(i).getScaledCenter();
+			locs[i] = vertices.get(i).getCenter(true);
 		}
 		return locs;
 	}
@@ -325,7 +321,7 @@ public class SimplePolygon extends AbstractShape2D implements Polygon, Iterable<
 	public float getPerimeter() {
 		float perim = 0;
 		for (Segment seg : getSides()) {
-			perim += seg.getLength();
+			perim += seg.getLength(true);
 		}
 		return perim;
 	}

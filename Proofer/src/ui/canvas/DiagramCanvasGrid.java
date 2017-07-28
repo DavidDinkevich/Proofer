@@ -206,7 +206,7 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 	 * @param v the vertex
 	 */
 	public void snapToGrid(Vertex v) {
-		v.setScaledCenter(getNearestSnapPoint(v.getScaledCenter()));
+		v.setCenter(getNearestSnapPoint(v.getCenter(true)), true);
 	}
 	
 	/**

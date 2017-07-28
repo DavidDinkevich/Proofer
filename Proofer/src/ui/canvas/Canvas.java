@@ -4,6 +4,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
+
 import ui.canvas.event.CanvasListener;
 import ui.canvas.selection.SelectionManager;
 
@@ -231,7 +232,7 @@ public class Canvas extends PApplet {
 		ellipse(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
 	}
 	public void ellipse(Ellipse o) {
-		ellipse(o.getScaledCenter(), o.getSizeIncludeScale());
+		ellipse(o.getCenter(true), o.getSizeIncludeScale());
 	}
 	public void circle(Vec2 loc, float diam) {
 		ellipse(loc.getX(), loc.getY(), diam, diam);
@@ -240,7 +241,7 @@ public class Canvas extends PApplet {
 		rect(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
 	}
 	public void rect(Rect rect) {
-		rect(rect.getScaledCenter(), rect.getSizeIncludeScale());
+		rect(rect.getCenter(true), rect.getSizeIncludeScale());
 	}
 	public void triangle(Vec2 p1, Vec2 p2, Vec2 p3) {
 		triangle(p1.getX(), p1.getY(), p2.getX(), p2.getY(), p3.getX(), p3.getY());
@@ -266,7 +267,7 @@ public class Canvas extends PApplet {
 		vertex(loc.getX(), loc.getY());
 	}
 	public void vertex(Vertex v) {
-		vertex(v.getScaledCenter());
+		vertex(v.getCenter(true));
 	}
 	
 	public void polygon(Polygon p) {

@@ -47,15 +47,15 @@ public class Ellipse extends RectEllipse {
 	}
 
 	@Override
-	public boolean containsPoint(Vec2 point, boolean incorporateScale) {
+	public boolean containsPoint(Vec2 point, boolean includeScale) {
 //		float rx = getSize().getWidth() / 2f;
 //		float ry = getSize().getHeight() / 2f;
 //		float tx = (getCenterPoint().x - (getCenterPoint().x + rx)) / rx;
 //		float ty = (getCenterPoint().y - (getCenterPoint().y + ry)) / ry;
 //		return tx * tx + ty * ty < 1f;
 		
-		Vec2 loc = incorporateScale ? getScaledCenter() : getCenter();
-		Dimension size = incorporateScale ? getSizeIncludeScale() : getSize();
+		Vec2 loc = getCenter(includeScale);
+		Dimension size = includeScale ? getSizeIncludeScale() : getSize();
 		if (size.getWidth() == size.getHeight()) { // If this ellipse is a circle
 			return Vec2.dist(loc, point) < size.getWidth()/2f;
 		} else {
@@ -69,7 +69,7 @@ public class Ellipse extends RectEllipse {
 	
 	@Override
 	public Rect getBoundaryRect() {
-		Rect rect = new Rect(getScaledCenter(), getSizeIncludeScale());
+		Rect rect = new Rect(getCenter(true), getSizeIncludeScale());
 		rect.setScale(getScale());
 		return rect;
 	}

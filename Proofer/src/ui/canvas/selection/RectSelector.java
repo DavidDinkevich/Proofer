@@ -86,7 +86,7 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 
 		Dimension size = getShape().getSizeIncludeScale();
 		
-		Vec2 loc = getShape().getScaledCenter();
+		Vec2 loc = getShape().getCenter(true);
 
 		Vec2[] positions = {
 				// Corners
