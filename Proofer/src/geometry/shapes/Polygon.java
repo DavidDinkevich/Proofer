@@ -8,7 +8,7 @@ import geometry.Vec2;
  * {@link Vertex}es by name (char) and by index.
  * @author David Dinkevich
  */
-public interface Polygon {
+public interface Polygon extends Shape {
 	/**
 	 * Get the number of {@link Vertex}es.
 	 */
@@ -89,7 +89,7 @@ public interface Polygon {
 	 * the given name.
 	 */
 	default public boolean containsVertex(char vertexName) {
-		return getName().contains(vertexName);
+		return getName().contains(String.valueOf(vertexName));
 	}
 	
 	/**
