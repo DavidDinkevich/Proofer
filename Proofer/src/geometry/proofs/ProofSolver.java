@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import geometry.shapes.Angle;
 import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
@@ -112,7 +113,7 @@ public class ProofSolver {
 	 * @param a the angle
 	 * @param relations the list of {@link FigureRelationPair}s.
 	 */
-	private void makeRightAngle(AngleFigure a, List<FigureRelationPair> relations) {
+	private void makeRightAngle(Angle a, List<FigureRelationPair> relations) {
 		// Make angle a right angle
 		FigureRelationPair rel = new FigureRelationPair(
 				FigureRelationType.RIGHT,
@@ -222,7 +223,7 @@ public class ProofSolver {
 		// Angle 1
 		String angleName = 
 				String.valueOf(unshared0) + String.valueOf(shared) + String.valueOf(unshared1);
-		AngleFigure angle = (AngleFigure)diagram.getFigure(angleName, AngleFigure.class);
+		Angle angle = (Angle)diagram.getFigure(angleName, Angle.class);
 		makeRightAngle(angle, relations);
 	}
 	

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import geometry.Vec2;
+import geometry.shapes.Angle;
 import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
@@ -88,7 +89,7 @@ public class Preprocessor {
 			if (figIsTri)
 				fig = diagram.getFigure(name.substring(1), Triangle.class);
 			else if (figIsAngle)
-				fig = diagram.getFigure(name.substring(1), Triangle.class);
+				fig = diagram.getFigure(name.substring(1), Angle.class);
 		}
 		// Not triangle or angle
 		else
