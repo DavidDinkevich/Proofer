@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import geometry.shapes.Segment;
+import geometry.shapes.Triangle;
+import geometry.shapes.Vertex;
+
 public class ProofSolver {
 	private boolean proofWasSolved = false;
 	private boolean result = false;
@@ -88,10 +92,10 @@ public class ProofSolver {
 	 * congruent to itself.
 	 * @param fig the figure
 	 * @return the {@link FigureRelationPair}, or null if the given figure is
-	 * a {@link VertexFigure}.
+	 * a {@link Vertex}.
 	 */
 	private FigureRelationPair createReflexiveRelationPair(Figure fig) {
-		if (fig.getClass() != VertexFigure.class) {
+		if (fig.getClass() != Vertex.class) {
 			FigureRelationPair pair = new FigureRelationPair(
 					FigureRelationType.CONGRUENT,
 					fig,
@@ -142,7 +146,7 @@ public class ProofSolver {
 		// Enforce reflexive postulate--every figure is congruent to itself
 		// Vertices cannot be "congruent"
 		for (Figure fig : diagram.getFigures()) {
-			if (fig.getClass() != VertexFigure.class) {
+			if (fig.getClass() != Vertex.class) {
 				FigureRelationPair pair = new FigureRelationPair(
 						FigureRelationType.CONGRUENT,
 						fig,
@@ -180,9 +184,9 @@ public class ProofSolver {
 	
 	private void handleCongruentPair(
 			Collection<FigureRelationPair> fullGiven, FigureRelationPair pair) {
-		if (pair.getFigure0().getClass() == TriangleFigure.class) {
-			TriangleFigure tri0 = (TriangleFigure)pair.getFigure0();
-			TriangleFigure tri1 = (TriangleFigure)pair.getFigure1();
+		if (pair.getFigure0().getClass() == Triangle.class) {
+			Triangle tri0 = (Triangle)pair.getFigure0();
+			Triangle tri1 = (Triangle)pair.getFigure1();
 			for (int i = 0; i < tri0.getChildren().size(); i++) {
 				Figure child0 = tri0.getChildren().get(i);
 				Figure child1 = tri1.getChildren().get(i);
@@ -198,8 +202,8 @@ public class ProofSolver {
 	
 	private void handlePerpendicularPair(
 			List<FigureRelationPair> relations, FigureRelationPair pair) {
-		String seg0 = ((SegmentFigure)pair.getFigure0()).getName();
-		String seg1 = ((SegmentFigure)pair.getFigure1()).getName();
+		String seg0 = ((Segment)pair.getFigure0()).getName();
+		String seg1 = ((Segment)pair.getFigure1()).getName();
 		
 		// Get shared vertex between segments
 		char shared, unshared0, unshared1; // 1 shared, 2 unshared
@@ -224,19 +228,19 @@ public class ProofSolver {
 	
 	private void handleBisectPair(
 			Collection<FigureRelationPair> relations, FigureRelationPair pair) {
-		SegmentFigure seg0 = (SegmentFigure)pair.getFigure0();
-		SegmentFigure seg1 = (SegmentFigure)pair.getFigure1();
+		Segment seg0 = (Segment)pair.getFigure0();
+		Segment seg1 = (Segment)pair.getFigure1();
 		
 		final int index = seg1.getName().indexOf(seg0.getName().charAt(0));
 		char sharedVertexName;
-		VertexFigure vert;
+		Vertex vert;
 		
 		if (index >= 0) {
 			sharedVertexName = seg1.getName().charAt(index);
-			vert = (VertexFigure)seg1.getChild(String.valueOf(sharedVertexName));
+			vert = (Vertex)seg1.getChild(String.valueOf(sharedVertexName));
 		} else {
 			sharedVertexName = seg0.getName().charAt(1);
-			vert = (VertexFigure)seg0.getChild(String.valueOf(sharedVertexName));
+			vert = (Vertex)seg0.getChild(String.valueOf(sharedVertexName));
 		}
 		
 		FigureRelationPair rel = new FigureRelationPair(
@@ -249,13 +253,13 @@ public class ProofSolver {
 	
 	private void handleMidpoint(
 			Collection<FigureRelationPair> relations, FigureRelationPair pair) {
-		VertexFigure vert = (VertexFigure)pair.getFigure0();
-		SegmentFigure seg = (SegmentFigure)pair.getFigure1();
+		Vertex vert = (Vertex)pair.getFigure0();
+		Segment seg = (Segment)pair.getFigure1();
 		
-		SegmentFigure newSeg0 =
-				(SegmentFigure)diagram.getFigure(seg.getName().substring(0, 1) + vert.getName());
-		SegmentFigure newSeg1 =
-				(SegmentFigure)diagram.getFigure(vert.getName() + seg.getName().substring(1));
+		Segment newSeg0 =
+				(Segment)diagram.getFigure(seg.getName().substring(0, 1) + vert.getName());
+		Segment newSeg1 =
+				(Segment)diagram.getFigure(vert.getName() + seg.getName().substring(1));
 		
 		FigureRelationPair rel = new FigureRelationPair(
 				FigureRelationType.CONGRUENT,
