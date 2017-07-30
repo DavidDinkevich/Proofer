@@ -16,16 +16,14 @@ public interface Shape extends Scalable, Figure {
 	public int hashCode();
 	
 	/**
-	 * Get the center location of this {@link Shape} (without incorporating this
-	 * {@link Shape}'s scale).
+	 * Get the center location of this {@link Shape}
 	 * @param includeScale whether to pay attention to scale
 	 * @return the center location as a {@link Vec2}.
 	 */
 	public Vec2 getCenter(boolean includeScale);
 	
 	/**
-	 * Set the center location of this {@link Shape} (without incorporating this
-	 * {@link Shape}'s scale).
+	 * Set the center location of this {@link Shape}
 	 * @param includeScale whether to pay attention to scale
 	 * @param loc the new center location as a {@link Vec2}.
 	 */
