@@ -49,42 +49,51 @@ public abstract class RectEllipse extends AbstractShape2D {
 	}
 
 	public Rect getBoundaryRect() {
-		Rect rect = new Rect(getCenter(false), getSize());
+		Rect rect = new Rect(getCenter(false), getSize(false));
 		rect.setScale(getScale());
 		return rect;
 	}
-
-	public Dimension getSizeIncludeScale() {
-		Dimension scaleDimension = new Dimension(getScale().getX(), getScale().getY());
-		return Dimension.mult(size, scaleDimension, false);
+	
+	public Dimension getSize(boolean includeScale) {
+		if (includeScale) {
+			Dimension scaleDimension = new Dimension(getScale().getX(), getScale().getY());
+			return Dimension.mult(size, scaleDimension, false);
+		} else {
+			return size;
+		}
 	}
 	
-	public Dimension getSize() {
-		return size;
-	}
-	
-	public RectEllipse setSize(Dimension size) {
-		if (isResizeable()) {
+	public RectEllipse setSize(Dimension size, boolean includeScale) {
+		if (!isResizeable())
+			return null;
+		if (includeScale) {
 			// Incorporate scale
 			Dimension scaleDimension = new Dimension(getScale().getX(), getScale().getY());
 			this.size.set(Dimension.div(size, scaleDimension, this.size.allowNegativeVals()));
-//			this.size.div(getScale());
+		} else {
+			this.size.set(size);
 		}
 		return this;
 	}
 	
-	public RectEllipse setSize(float width, float height) {
-		if (isResizeable()) {
+	public RectEllipse setSize(float width, float height, boolean includeScale) {
+		if (!isResizeable()) {
+			return null;
+		}
+		if (includeScale) {
+			// Incorporate scale
+			size.set(width * getScale().getX(), height * getScale().getY());
+		} else {
 			size.set(width, height);
 		}
 		return this;
 	}
 	
-	public RectEllipse setWidth(float width) {
-		return setSize(width, size.getHeight());
+	public RectEllipse setWidth(float width, boolean includeScale) {
+		return setSize(width, size.getHeight(), includeScale);
 	}
 	
-	public RectEllipse setHeight(float height) {
-		return setSize(size.getWidth(), height);
+	public RectEllipse setHeight(float height, boolean includeScale) {
+		return setSize(size.getWidth(), height, includeScale);
 	}
 }
