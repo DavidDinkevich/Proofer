@@ -55,7 +55,7 @@ public class ProofCustomizationPanel extends JComponent {
 	public void requestSolveProof() {
 		if (solutionWindow == null) {
 			Preprocessor preprocessor = new Preprocessor(canvas, figRelationListPanel);
-			Diagram diagram = preprocessor.process();
+			Diagram diagram = preprocessor.generateDiagram();
 			ProofSolveRequestManager.requestSolveProof(new Request(diagram) {
 				@Override
 				public void onRequestCompleted(ProofSolver solver) {
