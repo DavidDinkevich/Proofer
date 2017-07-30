@@ -41,18 +41,21 @@ public class Diagram {
 		return old;
 	}
 	
-	public Figure getFigure(String name) {
+	@SuppressWarnings("unchecked")
+	public <T extends Figure> T getFigure(String name) {
 		for (Figure fig : figures) {
 			if (fig.isValidName(name))
-				return fig;
+				return (T)fig;
 		}
 		return null;
 	}
 	
-	public Figure getFigure(String name, Class<?> c) {
+	@SuppressWarnings("unchecked")
+	public <T extends Figure> T getFigure(String name, Class<T> type) {
 		for (Figure fig : figures) {
-			if (c == fig.getClass() && fig.isValidName(name))
-				return fig;
+			if (type == fig.getClass() && fig.isValidName(name)) {
+				return (T)fig;
+			}
 		}
 		return null;
 	}
@@ -106,7 +109,7 @@ public class Diagram {
 		return getFigure(name) != null;
 	}
 	
-	public boolean containsFigure(String name, Class<?> c) {
+	public boolean containsFigure(String name, Class<? extends Figure> c) {
 		return getFigure(name, c) != null;
 	}
 	
