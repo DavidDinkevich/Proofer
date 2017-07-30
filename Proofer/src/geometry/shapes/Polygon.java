@@ -8,7 +8,7 @@ import geometry.Vec2;
  * {@link Vertex}es by name (char) and by index.
  * @author David Dinkevich
  */
-public interface Polygon extends Shape {
+public interface Polygon extends Shape2D {
 	/**
 	 * Get the number of {@link Vertex}es.
 	 */
