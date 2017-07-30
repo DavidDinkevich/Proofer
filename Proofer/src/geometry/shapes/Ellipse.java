@@ -43,7 +43,7 @@ public class Ellipse extends RectEllipse {
 	@Override
 	public float getArea() {
 		// Specifically for an ellipse, but works for a circle too
-		return ((float)Math.PI)*getSizeIncludeScale().getWidth()*getSizeIncludeScale().getHeight();
+		return ((float)Math.PI)*getSize(true).getWidth()*getSize(true).getHeight();
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class Ellipse extends RectEllipse {
 //		return tx * tx + ty * ty < 1f;
 		
 		Vec2 loc = getCenter(includeScale);
-		Dimension size = includeScale ? getSizeIncludeScale() : getSize();
+		Dimension size = getSize(includeScale);
 		if (size.getWidth() == size.getHeight()) { // If this ellipse is a circle
 			return Vec2.dist(loc, point) < size.getWidth()/2f;
 		} else {
@@ -69,7 +69,7 @@ public class Ellipse extends RectEllipse {
 	
 	@Override
 	public Rect getBoundaryRect() {
-		Rect rect = new Rect(getCenter(true), getSizeIncludeScale());
+		Rect rect = new Rect(getCenter(true), getSize(true));
 		rect.setScale(getScale());
 		return rect;
 	}

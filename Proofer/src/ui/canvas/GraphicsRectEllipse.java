@@ -29,7 +29,7 @@ public abstract class GraphicsRectEllipse<T extends RectEllipse> extends Graphic
 		final float x = getLoc().getX(), y = getLoc().getY();
 		final int w = c.width, h = c.height;
 		
-		Dimension size = getShape().getSizeIncludeScale();
+		Dimension size = getShape().getSize(true);
 		
 		return x - size.getWidth()/2f < 0f || x + size.getWidth()/2 >= w || y - size.getHeight()/2 < 0f
 				|| y + size.getHeight()/2f >= h;
@@ -42,7 +42,7 @@ public abstract class GraphicsRectEllipse<T extends RectEllipse> extends Graphic
 	 * @return the size
 	 */
 	public Dimension getSize() {
-		Dimension size = getShape().getSizeIncludeScale();
+		Dimension size = getShape().getSize(true);
 		return includeStrokeWeightInCalculations() ? Dimension.
 				add(size, getBrush().getStrokeWeight(), false) : size;
 	}
@@ -55,13 +55,5 @@ public abstract class GraphicsRectEllipse<T extends RectEllipse> extends Graphic
 	public Dimension getSize(boolean includeStrokeWeight) {
 		setIncludeStrokeWeightInCalculations(includeStrokeWeight);
 		return getSize();
-	}
-	/**
-	 * Delegate/convenience method for changing the size of this {@link GraphicsRectEllipse}'s
-	 * shape. This does not include/account for the stroke weight.
-	 * @param size the new size
-	 */
-	public void setSize(Dimension size) {
-		getShape().setSize(size);
 	}
 }

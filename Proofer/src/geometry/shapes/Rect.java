@@ -60,7 +60,7 @@ public class Rect extends RectEllipse implements Polygon {
 	}
 	
 	private Vec2 calculateVertexLocation(int vertIndex, boolean includeScale) {
-		Dimension s = includeScale ? getSizeIncludeScale() : getSize();
+		Dimension s = getSize(includeScale);
 		Vec2 center = getCenter(includeScale);
 		Vec2 loc;
 		
@@ -111,8 +111,8 @@ public class Rect extends RectEllipse implements Polygon {
 	public static boolean rectsOverlap(Rect r1, Rect r2, boolean includeScale) {
 		Vec2 loc1 = r1.getCenter(includeScale);
 		Vec2 loc2 = r2.getCenter(includeScale);
-		Dimension size1 = includeScale ? r1.getSizeIncludeScale() : r1.getSize();
-		Dimension size2 = includeScale ? r2.getSizeIncludeScale() : r2.getSize();
+		Dimension size1 = r1.getSize(includeScale);
+		Dimension size2 = r2.getSize(includeScale);
 		
 		return loc1.getX() + size1.getWidth()/2 > loc2.getX() - size2.getWidth()/2
 				&& loc1.getX() - size1.getWidth()/2 < loc2.getX() + size2.getWidth()/2
@@ -122,17 +122,17 @@ public class Rect extends RectEllipse implements Polygon {
 
 	@Override
 	public float getArea() {
-		return getSizeIncludeScale().getWidth() * getSizeIncludeScale().getHeight();
+		return getSize(true).getWidth() * getSize(true).getHeight();
 	}
 
 	@Override
 	public float getPerimeter() {
-		return (getSizeIncludeScale().getWidth()*2) + (getSizeIncludeScale().getHeight()*2);
+		return (getSize(true).getWidth()*2) + (getSize(true).getHeight()*2f);
 	}
 	
 	@Override
 	public boolean containsPoint(Vec2 point, boolean includeScale) {
-		Dimension size = includeScale ? getSizeIncludeScale() : getSize();
+		Dimension size = getSize(includeScale);
 		Vec2 loc = getCenter(includeScale);
 		return point.getX() > loc.getX() - size.getWidth()/2f && point.getX() < loc.getX() + size.getWidth()/2f 
 				&& point.getY() > loc.getY() - size.getHeight()/2f && point.getY() < loc.getY() + 
@@ -226,7 +226,7 @@ public class Rect extends RectEllipse implements Polygon {
 		// Set the scale
 		setCenter(newCenter, includeScale);
 		// Update the size of the rect
-		setSize(oppLoc.getX()-newLoc.getX(), newLoc.getY()-oppLoc.getY());
+		setSize(oppLoc.getX()-newLoc.getX(), newLoc.getY()-oppLoc.getY(), includeScale);
 	}
 	
 	@Override

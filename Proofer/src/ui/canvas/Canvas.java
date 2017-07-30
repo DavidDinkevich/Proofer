@@ -232,7 +232,7 @@ public class Canvas extends PApplet {
 		ellipse(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
 	}
 	public void ellipse(Ellipse o) {
-		ellipse(o.getCenter(true), o.getSizeIncludeScale());
+		ellipse(o.getCenter(true), o.getSize(true));
 	}
 	public void circle(Vec2 loc, float diam) {
 		ellipse(loc.getX(), loc.getY(), diam, diam);
@@ -241,7 +241,7 @@ public class Canvas extends PApplet {
 		rect(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
 	}
 	public void rect(Rect rect) {
-		rect(rect.getCenter(true), rect.getSizeIncludeScale());
+		rect(rect.getCenter(true), rect.getSize(true));
 	}
 	public void triangle(Vec2 p1, Vec2 p2, Vec2 p3) {
 		triangle(p1.getX(), p1.getY(), p2.getX(), p2.getY(), p3.getX(), p3.getY());

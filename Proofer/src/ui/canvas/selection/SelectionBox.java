@@ -20,7 +20,7 @@ public class SelectionBox extends GraphicsRect {
 	public SelectionBox(Vec2 corner1, Vec2 corner2) {
 		super(StyleManager.getSelectionContainerBrush(), new Rect());
 		// Random name - just to be able to tell the difference between each vertex
-		getShape().setName("1234");
+		getShape().setName("ABCD");
 		this.corner1 = corner1;
 		this.corner2 = corner2;
 		resize();
@@ -33,7 +33,7 @@ public class SelectionBox extends GraphicsRect {
 		Vec2 loc = new Vec2(corner1.getX() - (corner1.getX()-corner2.getX())/2,
 				corner1.getY() - (corner1.getY()-corner2.getY())/2);
 		setLoc(loc);
-		getShape().setSize(corner2.getX()-corner1.getX(), corner1.getY()-corner2.getY());
+		getShape().setSize(corner2.getX()-corner1.getX(), corner1.getY()-corner2.getY(), false);
 	}
 	
 	/**

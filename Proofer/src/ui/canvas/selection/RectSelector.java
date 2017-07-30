@@ -84,7 +84,7 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 			return null;
 		}
 
-		Dimension size = getShape().getSizeIncludeScale();
+		Dimension size = getShape().getSize(true);
 		
 		Vec2 loc = getShape().getCenter(true);
 
@@ -124,12 +124,14 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 	 * @return the size, or null
 	 */
 	public Dimension getSize() {
-		return getShape().getSizeIncludeScale() == null ? null : getShape().getSizeIncludeScale();
+		return getShape().getSize(true) == null ? null : getShape().getSize(true);
 	}
 	
 	/**
 	 * Set the size. This also sets the size of the target object (if there is one) to
 	 * the new size, and updates the {@link RectSelectorKnob}s positions.
+	 * <p>
+	 * Default behavior is to include scale in calculations.
 	 * @param size the new size
 	 */
 	public void setSize(Dimension size) {
@@ -155,9 +157,9 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 		}
 		
 		// Update selector shape size
-		getShape().setSize(newSize);
+		getShape().setSize(newSize, true);
 		// Update target object size
-		getTargetObject().getShape().setSize(newSize);
+		getTargetObject().getShape().setSize(newSize, true);
 		// Update the positions of the knobs
 		updateKnobPositions();
 	}
