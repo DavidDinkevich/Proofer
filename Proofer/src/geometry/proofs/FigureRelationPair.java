@@ -4,6 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import geometry.shapes.Angle;
+import geometry.shapes.Segment;
+import geometry.shapes.Triangle;
+import geometry.shapes.Vertex;
+
 public class FigureRelationPair {
 	private final FigureRelationType relType;
 	private final Figure figure0;
@@ -29,28 +34,28 @@ public class FigureRelationPair {
 		switch (relType) {
 		case CONGRUENT:
 			return figure0.getClass() == figure1.getClass()
-			&& figure0.getClass() != VertexFigure.class;
+			&& figure0.getClass() != Vertex.class;
 		case PARALLEL:
 		case PERPENDICULAR:
-			return figure0.getClass() == SegmentFigure.class
-			&& figure1.getClass() == SegmentFigure.class;
+			return figure0.getClass() == Segment.class
+			&& figure1.getClass() == Segment.class;
 		case BISECTS:
-			return figure0.getClass() == SegmentFigure.class &&
-			(figure1.getClass() == SegmentFigure.class ||
-			figure1.getClass() == AngleFigure.class);
+			return figure0.getClass() == Segment.class &&
+			(figure1.getClass() == Segment.class ||
+			figure1.getClass() == Angle.class);
 		case SIMILAR:
-			return figure0.getClass() == TriangleFigure.class &&
-			figure1.getClass() == TriangleFigure.class;
+			return figure0.getClass() == Triangle.class &&
+			figure1.getClass() == Triangle.class;
 		case RIGHT:
-			return figure0.getClass() == AngleFigure.class && figure1 == null;
+			return figure0.getClass() == Angle.class && figure1 == null;
 		case COMPLEMENTARY:
 		case SUPPLEMENTARY:
 		case VERTICAL:
-			return figure0.getClass() == AngleFigure.class && 
-			figure1.getClass() == AngleFigure.class;
+			return figure0.getClass() == Angle.class && 
+			figure1.getClass() == Angle.class;
 		case MIDPOINT:
-			return figure0.getClass() == VertexFigure.class &&
-			figure1.getClass() == SegmentFigure.class;
+			return figure0.getClass() == Vertex.class &&
+			figure1.getClass() == Segment.class;
 		default:
 			return false;
 		}
