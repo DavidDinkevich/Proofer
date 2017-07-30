@@ -92,6 +92,7 @@ public class FigureRelationPairPanel extends JComponent {
 	public JComboBox<FigureRelationType> getRelationBox() {
 		if (relationBox == null) {
 			relationBox = new JComboBox<>(FigureRelationType.values());
+			relationBox.setMaximumRowCount(FigureRelationType.values().length);
 //			relationBox.setEditable(true);
 		}
 		return relationBox;
