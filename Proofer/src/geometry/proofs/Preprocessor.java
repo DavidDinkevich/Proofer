@@ -193,10 +193,9 @@ public class Preprocessor {
 					// Vertices of new segment--farthest apart
 					Vertex[] newSegVerts = getFarthestVertices(segVerts);
 					
-					Segment fig =
-							new Segment(newSegVerts[0].getName()
-									+ newSegVerts[1].getName());
-					segs.add(fig);
+					// The new, combined straight line
+					Segment newStraightLine = new Segment(newSegVerts);
+					segs.add(newStraightLine);
 				}
 			}
 		}
@@ -285,40 +284,10 @@ public class Preprocessor {
 		if (segFig != null) {
 			return new Segment(segFig);
 		}
-		
-		// Search segments in triangles
-		for (GraphicsShape2D<?> gShape : canvas.getDiagramElements()) {
-			// If the shape is a Triangle
-			if (gShape.getShape() instanceof Triangle) {
-				// Cast shape to Triangle
-				Triangle tri = (Triangle)gShape.getShape();
-				// Attempt to retrieve the segment with the given name
-				// from this triangle
-				Segment seg = tri.getSide(name);
-				// If the Triangle contains the segment being searched for
-				if (seg != null) {
-					// Leave
-					return seg;
-				}
-			}
-		}
 		return null;
 	}
 	
 	public Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
-		// Check all triangles for a vertex at the given location
-		for (GraphicsShape2D<?> gShape : canvas.getDiagramElements()) {
-			// If the shape is a triangle
-			if (gShape.getShape() instanceof Triangle) {
-				// Cast shape to triangle
-				Triangle tri = (Triangle)gShape.getShape();
-				// Loop through the triangle's vertices
-				for (Vertex vert : tri.getVertices()) {
-					if (vert.getCenter(true).equals(loc))
-						return vert;
-				}
-			}
-		}
 		// Check for vertex in given diagram
 		for (Figure fig : diag.getFigures()) {
 			// If the shape being checked is a vertex
