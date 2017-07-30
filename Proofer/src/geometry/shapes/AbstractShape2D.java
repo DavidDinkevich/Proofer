@@ -2,7 +2,7 @@ package geometry.shapes;
 
 import geometry.Vec2;
 
-public abstract class AbstractShape2D extends AbstractShape implements Resizeable {
+public abstract class AbstractShape2D extends AbstractShape implements Shape2D {
 	/** Determines whether this {@link AbstractShape2D} is resizeable or not. */
 	private boolean resizeable = true;
 	
@@ -32,24 +32,6 @@ public abstract class AbstractShape2D extends AbstractShape implements Resizeabl
 		result = prime * result + (resizeable ? 1231 : 1237);
 		return result;
 	}
-	
-	/**
-	 * Get the perimeter of this {@link AbstractShape2D}.
-	 * @return the perimeter
-	 */
-	public abstract float getPerimeter();
-	
-	/**
-	 * Get the area of this {@link AbstractShape2D}.
-	 * @return the area
-	 */
-	// TODO: separate this into two methods: getArea(), getScaledArea()
-	public abstract float getArea();
-	/**
-	 * Returns a {@link Rect} surrounding this {@link AbstractShape2D} as closely
-	 * as possible.
-	 */
-	public abstract Rect getBoundaryRect();
 	
 	@Override
 	public boolean isResizeable() {

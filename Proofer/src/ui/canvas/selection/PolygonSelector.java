@@ -1,7 +1,9 @@
 package ui.canvas.selection;
 
 import geometry.Vec2;
+import geometry.shapes.Polygon;
 import geometry.shapes.SimplePolygon;
+
 import ui.canvas.GraphicsShape;
 import ui.canvas.Canvas;
 import ui.canvas.GraphicsPolygon;
@@ -10,7 +12,7 @@ import ui.canvas.GraphicsPolygon;
  * A {@link Selector} to select {@link GraphicsPolygon}s.
  * @author David Dinkevich
  */
-public class PolygonSelector extends Selector<SimplePolygon, GraphicsPolygon<?>> {
+public class PolygonSelector extends Selector<Polygon, GraphicsPolygon<?>> {
 	public PolygonSelector(GraphicsPolygon<?> o) {
 		setTargetObject(o);
 	}

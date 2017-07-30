@@ -3,7 +3,6 @@ package ui.canvas;
 import java.util.Arrays;
 
 import geometry.shapes.Polygon;
-import geometry.shapes.SimplePolygon;
 
 public class GraphicsPolygon<T extends Polygon> extends GraphicsShape2D<T> {
 	private TextFont vertexTextFont;

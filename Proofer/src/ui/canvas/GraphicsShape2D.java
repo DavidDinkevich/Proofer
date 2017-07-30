@@ -1,7 +1,9 @@
 package ui.canvas;
 
 import exceptions.IllegalSelectionException;
-import geometry.shapes.AbstractShape2D;
+
+import geometry.shapes.Shape2D;
+
 import ui.canvas.selection.Selectable;
 import ui.canvas.selection.Selector;
 
@@ -9,7 +11,7 @@ import ui.canvas.selection.Selector;
  * Descendants of this class are 2 dimensional {@link GraphicsShape}s.
  * @author David Dinkevich
  */
-public class GraphicsShape2D<T extends AbstractShape2D> extends GraphicsShape<T> implements Selectable {
+public class GraphicsShape2D<T extends Shape2D> extends GraphicsShape<T> implements Selectable {
 	
 	public static final String LAYER_NAME = "shapes";
 	
