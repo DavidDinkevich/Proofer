@@ -8,7 +8,6 @@ import java.util.List;
 
 import geometry.Vec2;
 import geometry.shapes.Segment;
-import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
@@ -87,9 +86,9 @@ public class Preprocessor {
 			final boolean figIsTri = name.startsWith(Utils.DELTA);
 			final boolean figIsAngle = !figIsTri && name.startsWith(Utils.ANGLE_SYMBOL);
 			if (figIsTri)
-				fig = diagram.getFigure(name.substring(1), TriangleFigure.class);
+				fig = diagram.getFigure(name.substring(1), Triangle.class);
 			else if (figIsAngle)
-				fig = diagram.getFigure(name.substring(1), AngleFigure.class);
+				fig = diagram.getFigure(name.substring(1), Triangle.class);
 		}
 		// Not triangle or angle
 		else
@@ -128,7 +127,7 @@ public class Preprocessor {
 						// Get the second element's shape
 						Triangle tri1 = (Triangle)canvas.getDiagramElements().get(j).getShape();
 						
-						//
+						// Add straight lines to diagram's list of elements
 						for (Vertex sharedVertex : getSharedVertices(tri0, tri1)) {
 							diagram.addFigures(getStraightLines(tri0, tri1, sharedVertex));
 						}
@@ -194,8 +193,8 @@ public class Preprocessor {
 					// Vertices of new segment--farthest apart
 					Vertex[] newSegVerts = getFarthestVertices(segVerts);
 					
-					SegmentFigure fig =
-							new SegmentFigure(newSegVerts[0].getName()
+					Segment fig =
+							new Segment(newSegVerts[0].getName()
 									+ newSegVerts[1].getName());
 					segs.add(fig);
 				}
@@ -230,40 +229,6 @@ public class Preprocessor {
 		return pair;
 	}
 	
-	private Segment getSegment(Diagram diagram, String name) {
-		// Search the list of FIGURES, because it may contain
-		// hidden figures that are not a diagram element
-		SegmentFigure segFig = (SegmentFigure)diagram.getFigure(name);
-		if (segFig != null) {
-			return new Segment(segFig)
-		}
-		
-		// Search segments belonging to triangles
-		for (GraphicsShape2D<?> gShape : canvas.getDiagramElements()) {
-			if (gShape.getShape() instanceof Triangle) {
-				Triangle tri = (Triangle)gShape.getShape();
-				Segment seg = tri.getSegment(name.charAt(0), name.charAt(1));
-				if (seg != null) {
-					return seg;
-				}
-			}
-		}
-		return null;
-	}
-	
-	public Vertex getVertexAtLoc(Vec2 loc) {
-		for (GraphicsShape2D<?> gShape : canvas.getDiagramElements()) {
-			if (gShape.getShape() instanceof Triangle) {
-				Triangle tri = (Triangle)gShape.getShape();
-				for (Vertex vert : tri.getVertices()) {
-					if (vert.getCenter(true).equals(loc))
-						return vert;
-				}
-			}
-		}
-		return null;
-	}
-		
 	private void correctGivenInformation(Diagram diagram) {
 		/*
 		 * Bisecting pairs --> convert "bisect" to "midpoint"
@@ -286,9 +251,9 @@ public class Preprocessor {
 				throw new AssertionError("This shouldn't be possible");
 			
 			// Get the midpoint loc of the second segment (segment being bisecTED)
-			Vec2 midptLoc = seg1.getScaledCenter();
+			Vec2 midptLoc = seg1.getCenter(true);
 			// Get the vertex at that position
-			Vertex midpt = getVertexAtLoc(midptLoc);
+			Vertex midpt = getVertexAtLoc(diagram, midptLoc);
 			
 			if (midpt == null)
 				throw new NullPointerException("No vertex at midpoint");
@@ -307,6 +272,66 @@ public class Preprocessor {
 					segName1
 			);
 		}
+	}
+	
+	private Segment getSegment(Diagram diagram, String name) {
+		// Save time
+		if (!Segment.isValidSegmentName(name))
+			return null;
+		
+		// Search the list of FIGURES, because it may contain
+		// hidden figures that are not a diagram element
+		Segment segFig = diagram.getFigure(name);
+		if (segFig != null) {
+			return new Segment(segFig);
+		}
+		
+		// Search segments in triangles
+		for (GraphicsShape2D<?> gShape : canvas.getDiagramElements()) {
+			// If the shape is a Triangle
+			if (gShape.getShape() instanceof Triangle) {
+				// Cast shape to Triangle
+				Triangle tri = (Triangle)gShape.getShape();
+				// Attempt to retrieve the segment with the given name
+				// from this triangle
+				Segment seg = tri.getSide(name);
+				// If the Triangle contains the segment being searched for
+				if (seg != null) {
+					// Leave
+					return seg;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
+		// Check all triangles for a vertex at the given location
+		for (GraphicsShape2D<?> gShape : canvas.getDiagramElements()) {
+			// If the shape is a triangle
+			if (gShape.getShape() instanceof Triangle) {
+				// Cast shape to triangle
+				Triangle tri = (Triangle)gShape.getShape();
+				// Loop through the triangle's vertices
+				for (Vertex vert : tri.getVertices()) {
+					if (vert.getCenter(true).equals(loc))
+						return vert;
+				}
+			}
+		}
+		// Check for vertex in given diagram
+		for (Figure fig : diag.getFigures()) {
+			// If the shape being checked is a vertex
+			if (fig instanceof Vertex) {
+				// Cast the shape as a vertex
+				Vertex vert = (Vertex)fig;
+				// If the vertex's loc is equal to the given loc
+				if (vert.getCenter(true).equals(loc))
+					// Return the vertex
+					return vert;
+			}
+		}
+		return null;
 	}
 	
 	
