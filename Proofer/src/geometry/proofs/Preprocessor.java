@@ -1,6 +1,7 @@
 package geometry.proofs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -37,25 +38,31 @@ public class Preprocessor {
 		// Add and include all hidden figures
 		addHiddenFigures(diagram);
 		
-		// Determine figures
+		// Gather figures
 		for (GraphicsShape2D<?> shape : canvas.getDiagramElements()) {
-			diagram.addFigure(determineFigure(shape.getShape()));
+			diagram.addFigure(shape.getShape());
 		}
 		
 		// Determine given
 		for (FigureRelationPairPanel panel : figRelPanel.getFigureRelationPairPanels()) {
 			if (!panel.isFilledCompletely())
 				continue;
+			// Figure relation type
 			FigureRelationType relType =
 					(FigureRelationType)panel.getRelationBox().getSelectedItem();
+			// First figure name
 			String figText0 = panel.getFigTextField0().getText();
+			// Second figure name
 			String figText1 = panel.getFigTextField1().getText();
-				
+			
 			FigureRelationPair rel = new FigureRelationPair(
 					relType,
+					// Get first figure
 					searchForFigure(diagram, figText0),
+					// Get second figure
 					searchForFigure(diagram, figText1)
 			);
+			// Add the given
 			diagram.addFigureRelationPair(rel);
 		}
 		
@@ -73,16 +80,9 @@ public class Preprocessor {
 		return diagram;
 	}
 	
-	private Figure determineFigure(Shape shape) {
-		if (shape instanceof Triangle) {
-			return new TriangleFigure(shape.getName());
-		}
-		// TODO: include more shapes
-		return null;
-	}
-	
 	private Figure searchForFigure(Diagram diagram, String name) {
 		Figure fig = null;
+		// Angle or triangle
 		if (name.length() == 4) { // 3 cars and a special character
 			final boolean figIsTri = name.startsWith(Utils.DELTA);
 			final boolean figIsAngle = !figIsTri && name.startsWith(Utils.ANGLE_SYMBOL);
@@ -91,6 +91,7 @@ public class Preprocessor {
 			else if (figIsAngle)
 				fig = diagram.getFigure(name.substring(1), AngleFigure.class);
 		}
+		// Not triangle or angle
 		else
 			fig = diagram.getFigure(name);
 		return fig;
@@ -166,7 +167,7 @@ public class Preprocessor {
 		
 		// Loop through segments in first triangle
 		for (Segment seg0 : tri0.getSides()) {
-			// If the segment DOES NOT contains the shared vertex (given)
+			// If the segment DOES NOT contain the shared vertex (given)
 			if (!seg0.getName().contains(sharedVertex.getName()))
 				continue;
 			// Go through segments of second triangle
@@ -187,8 +188,8 @@ public class Preprocessor {
 					// Combine segments
 					
 					// Vertices of both segments in one list
-					List<Vertex> segVerts = new ArrayList<>(seg0.getVertices());
-					segVerts.addAll(seg1.getVertices());
+					List<Vertex> segVerts = new ArrayList<>(Arrays.asList(seg0.getVertices()));
+					segVerts.addAll(Arrays.asList(seg1.getVertices()));
 					// ---------------------
 					// Vertices of new segment--farthest apart
 					Vertex[] newSegVerts = getFarthestVertices(segVerts);
@@ -204,14 +205,21 @@ public class Preprocessor {
 	}
 	
 	private Vertex[] getFarthestVertices(List<Vertex> vertices) {
+		// The pair of farthest vertices
 		Vertex[] pair = new Vertex[2];
+		// Distance of the previously checked pair of vertices
 		float prevDist = 0f;
 		for (int i = 0; i < vertices.size(); i++) {
 			for (int j = 0; j < vertices.size(); j++) {
+				// Don't wanna compare the same vertices
 				if (i == j)
 					continue;
-				final float newDist = Vec2.dist(vertices.get(i).getScaledCenter(),
-						vertices.get(j).getScaledCenter());
+				// Distance between the two vertices currently being checked
+				final float newDist = Vec2.dist(vertices.get(i).getCenter(true),
+						vertices.get(j).getCenter(true));
+				// If the distance of the vertices currently being checked is greater
+				// than the previously farthest recorded pair of vertices,
+				// update the pair of farthest vertices
 				if (newDist > prevDist) {
 					prevDist = newDist;
 					pair[0] = vertices.get(i);
@@ -248,7 +256,7 @@ public class Preprocessor {
 			if (gShape.getShape() instanceof Triangle) {
 				Triangle tri = (Triangle)gShape.getShape();
 				for (Vertex vert : tri.getVertices()) {
-					if (vert.getScaledCenter().equals(loc))
+					if (vert.getCenter(true).equals(loc))
 						return vert;
 				}
 			}
