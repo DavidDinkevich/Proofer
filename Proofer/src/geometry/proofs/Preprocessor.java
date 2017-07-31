@@ -134,8 +134,6 @@ public class Preprocessor {
 						for (Vertex sharedVertex : getSharedVertices(tri0, tri1)) {
 							diagram.addFigures(getStraightLines(tri0, tri1, sharedVertex));
 						}
-						
-						
 					}
 				}
 			}
@@ -274,11 +272,8 @@ public class Preprocessor {
 				break;
 			default:
 				break;
-			}
-			
-			
+			}	
 		}
-		
 	}
 	
 	/**
