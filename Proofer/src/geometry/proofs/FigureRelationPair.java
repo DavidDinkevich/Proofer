@@ -101,12 +101,16 @@ public class FigureRelationPair {
 		return relType;
 	}
 
-	public Figure getFigure0() {
-		return figure0;
+	// Will crash if misused
+	@SuppressWarnings("unchecked")
+	public <T> T getFigure0() {
+		return (T)figure0;
 	}
 
-	public Figure getFigure1() {
-		return figure1;
+	// Will crash if misused
+	@SuppressWarnings("unchecked")
+	public <T> T getFigure1() {
+		return (T)figure1;
 	}
 	
 	public List<Figure> getFigures() {
