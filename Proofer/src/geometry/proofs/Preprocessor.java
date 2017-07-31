@@ -28,11 +28,7 @@ public class Preprocessor {
 		this.figRelPanel = figRelPanel;
 	}
 	
-	public Diagram process() {
-		return generateDiagram();
-	}
-	
-	private Diagram generateDiagram() {
+	public Diagram generateDiagram() {
 		Diagram diagram = new Diagram();
 		
 		// Add and include all hidden figures
@@ -55,6 +51,12 @@ public class Preprocessor {
 			// Second figure name
 			String figText1 = panel.getFigTextField1().getText();
 			
+			/*
+			 * If there are no  figures that match the names
+			 * of figures given in the figure relation pair panel,
+			 * the following instantiation of a figure relation pair will
+			 * crash.
+			 */
 			FigureRelationPair rel = new FigureRelationPair(
 					relType,
 					// Get first figure
@@ -230,22 +232,27 @@ public class Preprocessor {
 	}
 	
 	private void correctGivenInformation(Diagram diagram) {
-		/*
-		 * Bisecting pairs --> convert "bisect" to "midpoint"
-		 */
-		// Get all bisecting pairs
-		List<FigureRelationPair> bisectingPairs =
-				diagram.getAllRelationPairsWithType(FigureRelationType.BISECTS);
-		// For each bisecting pair
-		for (FigureRelationPair pair : bisectingPairs) {
-			// Get the name of the first segment
-			String segName0 = pair.getFigure0().getName();
-			// Get the name of the second segment
-			String segName1 = pair.getFigure1().getName();
+		// To avoid a ConcurrentModificationException
+		List<FigureRelationPair> buff = new ArrayList<>(diagram.getFigureRelationPairs());
+		// For each figure relation pair
+		for (FigureRelationPair pair : buff) {
+			preprocessIntersectingLines(diagram, pair);
+		}
+	}
+	
+	/**
+	 * Preprocess intersecting lines (bisecting lines, perpendicular lines)
+	 * @param diagram
+	 * @param pair
+	 */
+	private void preprocessIntersectingLines(Diagram diagram, FigureRelationPair pair) {
+		// If the pair type is of type perpendicular or bisecting
+		if (pair.getRelationType() == FigureRelationType.BISECTS
+				|| pair.getRelationType() == FigureRelationType.PERPENDICULAR) {
 			// Get the first segment
-			Segment seg0 = getSegment(diagram, segName0);
+			Segment seg0 = pair.getFigure0();
 			// Get the second segment
-			Segment seg1 = getSegment(diagram, segName1);
+			Segment seg1 = pair.getFigure1();
 			
 			if (seg0 == null || seg1 == null)
 				throw new AssertionError("This shouldn't be possible");
@@ -258,37 +265,79 @@ public class Preprocessor {
 			if (midpt == null)
 				throw new NullPointerException("No vertex at midpoint");
 			
-			/*
-			 * Remove the bisecting pair from the diagram's given information
-			 * (all bisecting pairs are replaced with more specific midpoint
-			 * pairs.
-			 */
-			diagram.removeFigureRelationPair(pair);
+			switch (pair.getRelationType()) {
+			case BISECTS:
+				preprocessBisectingPairs(diagram, pair, midpt, seg1);
+				break;
+			case PERPENDICULAR:
+				preprocessPerpendicularPairs(diagram, pair, midpt);
+				break;
+			default:
+				break;
+			}
 			
-			// Construct/add new midpoint pair
+			
+		}
+		
+	}
+	
+	/**
+	 * Handle bisecting pairs. (Convert bisecting pairs to midpoint pairs.)
+	 * @param diagram the diagram
+	 * @param pair the figure relation pair to be handled
+	 * @param midpt the midpoint of the line being intersected
+	 * @param bisectedSegment the segment being bisected
+	 */
+	private void preprocessBisectingPairs(Diagram diagram, FigureRelationPair pair,
+			Vertex midpt, Segment bisectedSegment) {
+		/*
+		 * Remove the bisecting pair from the diagram's given information
+		 * (all bisecting pairs are replaced with more specific midpoint
+		 * pairs).
+		 */
+		diagram.removeFigureRelationPair(pair);
+				
+		// Construct/add new midpoint pair
+		diagram.addFigureRelationPair(
+				FigureRelationType.MIDPOINT,
+				midpt.getName(),
+				bisectedSegment.getName()
+		);
+	}
+	
+	private void preprocessPerpendicularPairs(Diagram diagram, FigureRelationPair pair,
+			Vertex midpt) {
+		Segment fullBisector = pair.getFigure0();
+		
+		String nonIntersectingVert = "";
+		for (int i = 0; i < fullBisector.getName().length(); i++) {
+			final char c = fullBisector.getName().charAt(i);
+			if (midpt.getNameChar() != c) {
+				nonIntersectingVert = String.valueOf(c);
+				break;
+			}
+		}
+		
+		Segment smallBisector = diagram.getFigure(nonIntersectingVert + midpt.getName());
+		Segment fullBisectedSegment = pair.getFigure1();
+		
+		Segment baseSeg0 =
+				diagram.getFigure(midpt.getName() + fullBisectedSegment.getName().substring(0, 1));
+		Segment baseSeg1 =
+				diagram.getFigure(midpt.getName() + fullBisectedSegment.getName().substring(1));
+		
+		diagram.removeFigureRelationPair(pair);
+		
+		for (int i = 0; i < 2; i++) {
 			diagram.addFigureRelationPair(
-					FigureRelationType.MIDPOINT,
-					midpt.getName(),
-					segName1
+					FigureRelationType.PERPENDICULAR,
+					smallBisector.getName(),
+					(i == 0 ? baseSeg0 : baseSeg1).getName()
 			);
 		}
 	}
 	
-	private Segment getSegment(Diagram diagram, String name) {
-		// Save time
-		if (!Segment.isValidSegmentName(name))
-			return null;
-		
-		// Search the list of FIGURES, because it may contain
-		// hidden figures that are not a diagram element
-		Segment segFig = diagram.getFigure(name);
-		if (segFig != null) {
-			return new Segment(segFig);
-		}
-		return null;
-	}
-	
-	public Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
+	private Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
 		// Check for vertex in given diagram
 		for (Figure fig : diag.getFigures()) {
 			// If the shape being checked is a vertex
@@ -304,18 +353,6 @@ public class Preprocessor {
 		return null;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 	public DiagramCanvas getDiagramCanvas() {
 		return canvas;
 	}
