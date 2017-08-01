@@ -265,7 +265,7 @@ public class Preprocessor {
 			
 			switch (pair.getRelationType()) {
 			case BISECTS:
-				preprocessBisectingPairs(diagram, pair, midpt, seg1);
+				preprocessBisectingPairs(diagram, pair, midpt);
 				break;
 			case PERPENDICULAR:
 				preprocessPerpendicularPairs(diagram, pair, midpt);
@@ -281,52 +281,64 @@ public class Preprocessor {
 	 * @param diagram the diagram
 	 * @param pair the figure relation pair to be handled
 	 * @param midpt the midpoint of the line being intersected
-	 * @param bisectedSegment the segment being bisected
 	 */
 	private void preprocessBisectingPairs(Diagram diagram, FigureRelationPair pair,
-			Vertex midpt, Segment bisectedSegment) {
+			Vertex midpt) {
 		/*
 		 * Remove the bisecting pair from the diagram's given information
 		 * (all bisecting pairs are replaced with more specific midpoint
 		 * pairs).
 		 */
 		diagram.removeFigureRelationPair(pair);
-				
+		
+		Segment bisectedSeg = pair.getFigure1();
+		
 		// Construct/add new midpoint pair
 		diagram.addFigureRelationPair(
 				FigureRelationType.MIDPOINT,
 				midpt.getName(),
-				bisectedSegment.getName()
+				bisectedSeg.getName()
 		);
 	}
 	
+	/**
+	 * Handle perpendicular pairs.
+	 * @param diagram the diagram
+	 * @param pair the figure relation pair to be handled
+	 * @param midpt the midpoint of the line being intersected
+	 */
 	private void preprocessPerpendicularPairs(Diagram diagram, FigureRelationPair pair,
 			Vertex midpt) {
-		Segment fullBisector = pair.getFigure0();
+		// The full intersecting segment
+		Segment fullIntersectingSeg = pair.getFigure0();
 		
+		// The vertex that lies on the segment being intersected
 		String nonIntersectingVert = "";
-		for (int i = 0; i < fullBisector.getName().length(); i++) {
-			final char c = fullBisector.getName().charAt(i);
+		for (int i = 0; i < fullIntersectingSeg.getName().length(); i++) {
+			final char c = fullIntersectingSeg.getName().charAt(i);
 			if (midpt.getNameChar() != c) {
 				nonIntersectingVert = String.valueOf(c);
 				break;
 			}
 		}
 		
-		Segment smallBisector = diagram.getFigure(nonIntersectingVert + midpt.getName());
-		Segment fullBisectedSegment = pair.getFigure1();
+		// 
+		Segment smallIntersectingSeg = diagram.getFigure(nonIntersectingVert + midpt.getName());
+		// The full segment being intersected
+		Segment fullIntersectedSeg = pair.getFigure1();
 		
+		// The first part of the segment 
 		Segment baseSeg0 =
-				diagram.getFigure(midpt.getName() + fullBisectedSegment.getName().substring(0, 1));
+				diagram.getFigure(midpt.getName() + fullIntersectedSeg.getName().substring(0, 1));
 		Segment baseSeg1 =
-				diagram.getFigure(midpt.getName() + fullBisectedSegment.getName().substring(1));
+				diagram.getFigure(midpt.getName() + fullIntersectedSeg.getName().substring(1));
 		
 		diagram.removeFigureRelationPair(pair);
 		
 		for (int i = 0; i < 2; i++) {
 			diagram.addFigureRelationPair(
 					FigureRelationType.PERPENDICULAR,
-					smallBisector.getName(),
+					smallIntersectingSeg.getName(),
 					(i == 0 ? baseSeg0 : baseSeg1).getName()
 			);
 		}
