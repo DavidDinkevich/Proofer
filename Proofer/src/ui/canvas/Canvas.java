@@ -67,6 +67,8 @@ public class Canvas extends PApplet {
 	@Override
 	public void draw() {
 		translate(translation);
+		// Flip the y axis--make canvas coord system = a normal Cartesian coord plane
+//		scale(1, -1);
 		background(background);
 						
 		// Notify listeners
@@ -291,8 +293,8 @@ public class Canvas extends PApplet {
 	}
 	
 	/**
-	 * Returns the given vector as a vector from
-	 * the top left of the screen (0, 0)
+	 * Returns the given vector as a vector starting from
+	 * the translation
 	 * @return the mouse location
 	 */
 	public Vec2 getLocOnGrid(Vec2 loc) {
