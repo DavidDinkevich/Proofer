@@ -56,6 +56,24 @@ public class Segment extends AbstractShape {
 		return name.length() == 2;
 	}
 	
+	/**
+	 * Get the point (as a {@link Vec2}) at which the following two
+	 * {@link Segment}s intersect.
+	 * @param a the first segment
+	 * @param b the second segment
+	 * @return the point at which the two segments meet
+	 */
+	public static Vec2 getPointOfIntersection(Segment a, Segment b) {
+		final float slopeA = a.getSlope().getY() / a.getSlope().getX();
+		final float slopeB = b.getSlope().getY() / b.getSlope().getX();
+		final float yIntA = a.getYIntercept();
+		final float yIntB = b.getYIntercept();
+		
+		final float x = (yIntB - yIntA) / (slopeA - slopeB);
+	    final float y = slopeA * x + yIntA;
+		return new Vec2(x, y);
+	}
+	
 	@Override
 	public void setName(String name) {
 		super.setName(name);
@@ -121,6 +139,14 @@ public class Segment extends AbstractShape {
 	
 	public Vec2 getSlope() {
 		return Vec2.sub(vertices[1].getCenter(false), vertices[0].getCenter(false));
+	}
+	
+	public float getYIntercept() {
+		Vec2 point = vertices[0].getCenter(false);
+		Vec2 slope = getSlope();
+		final float slopeNum = slope.getY() / slope.getX();
+		final float yInt = point.getY() - (slopeNum * point.getX());
+		return yInt;
 	}
 	
 	public boolean containsVertex(char name) {
