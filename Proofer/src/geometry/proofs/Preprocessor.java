@@ -9,6 +9,7 @@ import java.util.List;
 import geometry.Vec2;
 import geometry.shapes.Angle;
 import geometry.shapes.Segment;
+import geometry.shapes.Segment.Slope;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
@@ -180,9 +181,9 @@ public class Preprocessor {
 					continue;
 				// Check if the two segments are parallel
 				// Get slope of segment 0
-				Vec2 seg0Slope = seg0.getSlope();
+				Slope seg0Slope = seg0.getSlope();
 				// Get slope of segment 1
-				Vec2 seg1Slope = seg1.getSlope();
+				Slope seg1Slope = seg1.getSlope();
 				// Compare slopes
 				if (seg0Slope.equals(seg1Slope)) {
 					// Combine segments
@@ -254,21 +255,13 @@ public class Preprocessor {
 			
 			if (seg0 == null || seg1 == null)
 				throw new AssertionError("This shouldn't be possible");
-			
-			// Get the midpoint loc of the second segment (segment being bisecTED)
-			Vec2 midptLoc = seg1.getCenter(true);
-			// Get the vertex at that position
-			Vertex midpt = getVertexAtLoc(diagram, midptLoc);
-			
-			if (midpt == null)
-				throw new NullPointerException("No vertex at midpoint");
-			
+						
 			switch (pair.getRelationType()) {
 			case BISECTS:
-				preprocessBisectingPairs(diagram, pair, midpt);
+				preprocessBisectingPairs(diagram, pair);
 				break;
 			case PERPENDICULAR:
-				preprocessPerpendicularPairs(diagram, pair, midpt);
+				preprocessPerpendicularPairs(diagram, pair);
 				break;
 			default:
 				break;
@@ -280,10 +273,18 @@ public class Preprocessor {
 	 * Handle bisecting pairs. (Convert bisecting pairs to midpoint pairs.)
 	 * @param diagram the diagram
 	 * @param pair the figure relation pair to be handled
-	 * @param midpt the midpoint of the line being intersected
 	 */
-	private void preprocessBisectingPairs(Diagram diagram, FigureRelationPair pair,
-			Vertex midpt) {
+	private void preprocessBisectingPairs(Diagram diagram, FigureRelationPair pair) {
+		// Get the segment being bisecTED
+		Segment seg1 = pair.getFigure1();
+		// Get the midpoint loc of the second segment (segment being bisecTED)
+		Vec2 midptLoc = seg1.getCenter(true);
+		// Get the vertex at that position
+		Vertex midpt = getVertexAtLoc(diagram, midptLoc);
+		
+		if (midpt == null)
+			throw new NullPointerException("No vertex at midpoint");
+
 		/*
 		 * Remove the bisecting pair from the diagram's given information
 		 * (all bisecting pairs are replaced with more specific midpoint
@@ -305,43 +306,59 @@ public class Preprocessor {
 	 * Handle perpendicular pairs.
 	 * @param diagram the diagram
 	 * @param pair the figure relation pair to be handled
-	 * @param midpt the midpoint of the line being intersected
 	 */
-	private void preprocessPerpendicularPairs(Diagram diagram, FigureRelationPair pair,
-			Vertex midpt) {
+	private void preprocessPerpendicularPairs(Diagram diagram, FigureRelationPair pair) {
+		// The two segments in the given figure relation pair
+		Segment seg0 = pair.getFigure0(); // The intersectING segment
+		Segment seg1 = pair.getFigure1(); // The intersectED segment
+		
+		// Get the vertex at the location at which the two segments intersect
+		Vertex poi = getVertexAtLoc(diagram,
+				Segment.getPointOfIntersection(seg0, seg1, true));
+		
 		// The full intersecting segment
 		Segment fullIntersectingSeg = pair.getFigure0();
 		
-		// The vertex that lies on the segment being intersected
-		String nonIntersectingVert = "";
+		// The endpoint(s) of the intersectING segment that do not LIE on the
+		// intersectED segment
+		List<String> nonIntersectingVerts = new ArrayList<>();
+		// Iterate through endpoints of intersectING vertices
 		for (int i = 0; i < fullIntersectingSeg.getName().length(); i++) {
 			final char c = fullIntersectingSeg.getName().charAt(i);
-			if (midpt.getNameChar() != c) {
-				nonIntersectingVert = String.valueOf(c);
-				break;
+			if (poi.getNameChar() != c) {
+				nonIntersectingVerts.add(String.valueOf(c));
 			}
 		}
 		
-		// 
-		Segment smallIntersectingSeg = diagram.getFigure(nonIntersectingVert + midpt.getName());
-		// The full segment being intersected
-		Segment fullIntersectedSeg = pair.getFigure1();
-		
-		// The first part of the segment 
-		Segment baseSeg0 =
-				diagram.getFigure(midpt.getName() + fullIntersectedSeg.getName().substring(0, 1));
-		Segment baseSeg1 =
-				diagram.getFigure(midpt.getName() + fullIntersectedSeg.getName().substring(1));
-		
-		diagram.removeFigureRelationPair(pair);
-		
-		for (int i = 0; i < 2; i++) {
-			diagram.addFigureRelationPair(
-					FigureRelationType.PERPENDICULAR,
-					smallIntersectingSeg.getName(),
-					(i == 0 ? baseSeg0 : baseSeg1).getName()
-			);
-		}
+		// Replace given, original figure relation pair with more specific
+		// ones
+		for (String nonIntersectingVert : nonIntersectingVerts) {
+			// Segment from point of intersection to an endpoint of the intersectING segment
+			// that does not lie on the intersectED segment.
+			Segment smallIntersectingSeg =
+					diagram.getFigure(nonIntersectingVert + poi.getName());
+			
+			// Segment from point of intersection to an endpoint of the intersectED segment
+			Segment baseSeg0 =
+					diagram.getFigure(poi.getName() + seg1.getName().substring(0, 1));
+			// Segment from point of intersection to the other
+			// endpoint of the intersectED segment
+			Segment baseSeg1 =
+					diagram.getFigure(poi.getName() + seg1.getName().substring(1));
+			
+			// Remove the original figure relation pair, replace it with more specific ones
+			// that the proof solver can process
+			diagram.removeFigureRelationPair(pair);
+			
+			// Add more specific figure relation pairs to replace the given one
+			for (int i = 0; i < 2; i++) {
+				diagram.addFigureRelationPair(
+						FigureRelationType.PERPENDICULAR,
+						smallIntersectingSeg.getName(),
+						(i == 0 ? baseSeg0 : baseSeg1).getName()
+				);
+			}
+		}		
 	}
 	
 	private Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
