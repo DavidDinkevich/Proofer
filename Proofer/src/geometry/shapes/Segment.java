@@ -63,16 +63,46 @@ public class Segment extends AbstractShape {
 	 * @param b the second segment
 	 * @return the point at which the two segments meet
 	 */
-	public static Vec2 getPointOfIntersection(Segment a, Segment b) {
-		final float slopeA = a.getSlope().getY() / a.getSlope().getX();
-		final float slopeB = b.getSlope().getY() / b.getSlope().getX();
-		final float yIntA = a.getYIntercept();
-		final float yIntB = b.getYIntercept();
+	public static Vec2 getPointOfIntersection(Segment a, Segment b, boolean includeScale) {
+		Slope slopeA = a.getSlope();
+		Slope slopeB = b.getSlope();
 		
-		final float x = (yIntB - yIntA) / (slopeA - slopeB);
-	    final float y = slopeA * x + yIntA;
+		// If slopes are equal, there is either no point of intersection,
+		// or lines lie on top of each other!
+		if (slopeA.getSlope().equals(slopeB.getSlope())) {
+			return null;
+		}
+		
+		// If one of the lines is vertical, and the other is horizontal,
+		// special way for calculating poi
+		if (slopeA.isHorizontalOrVertical() && slopeB.isHorizontalOrVertical()) {
+			final boolean aVertical = slopeA.isVertical();
+			Vec2 endPointA = a.getVertexLoc(0, includeScale);
+			Vec2 endPointB = b.getVertexLoc(0, includeScale);
+			return aVertical ? new Vec2(endPointA.getX(), endPointB.getY()) : 
+				new Vec2(endPointB.getX(), endPointA.getY());
+		}
+		
+		final float slopeARaw = slopeA.getSlopeRaw();
+		final float slopeBRaw = slopeB.getSlopeRaw();
+		final float yIntA = a.getYIntercept(includeScale);
+		final float yIntB = b.getYIntercept(includeScale);
+		
+		final float x = (yIntB - yIntA) / (slopeARaw - slopeBRaw);
+	    final float y = slopeARaw * x + yIntA;
 		return new Vec2(x, y);
 	}
+	
+//	public static void main(String[] args) {
+//		Vec2 scale = new Vec2(2, 2);
+//		Segment seg0 = new Segment(new Vertex(new Vec2(-3, 2)), new Vertex(new Vec2(7, 2)));
+//		seg0.setScale(scale);
+//		Segment seg1 = new Segment(new Vertex(), new Vertex(new Vec2(3, 3)));
+////		Segment seg1 = new Segment(new Vertex(new Vec2(4, 5)), new Vertex(new Vec2(4, -2)));
+//		seg1.setScale(scale);
+//		
+//		System.out.println(Segment.getPointOfIntersection(seg0, seg1, true));
+//	}
 	
 	@Override
 	public void setName(String name) {
@@ -112,6 +142,15 @@ public class Segment extends AbstractShape {
 		return dist1 + dist2 == getLength(includeScale);
 	}
 	
+	@Override
+	public void setScale(Vec2 scale, Vec2 dilationPoint) {
+		super.setScale(scale, dilationPoint);
+		
+		for (Vertex v : vertices) {
+			v.setScale(getScale(), getDilationPoint());
+		}
+	}
+	
 	public float getLength(boolean includeScale) {
 		return Vec2.dist(vertices[0].getCenter(includeScale),
 				vertices[1].getCenter(includeScale));
@@ -137,14 +176,15 @@ public class Segment extends AbstractShape {
 		super.setCenter(newLoc, includeScale);
 	}
 	
-	public Vec2 getSlope() {
-		return Vec2.sub(vertices[1].getCenter(false), vertices[0].getCenter(false));
+	public Slope getSlope() {
+		return new Slope(
+				Vec2.sub(vertices[1].getCenter(false), vertices[0].getCenter(false)));
 	}
 	
-	public float getYIntercept() {
-		Vec2 point = vertices[0].getCenter(false);
-		Vec2 slope = getSlope();
-		final float slopeNum = slope.getY() / slope.getX();
+	public float getYIntercept(boolean includeScale) {
+		Vec2 point = vertices[0].getCenter(includeScale);
+		Slope slope = getSlope();
+		final float slopeNum = slope.getSlopeRaw();
 		final float yInt = point.getY() - (slopeNum * point.getX());
 		return yInt;
 	}
@@ -278,4 +318,65 @@ public class Segment extends AbstractShape {
 		}
 		return null;
 	}
+	
+	public static class Slope {
+		private Vec2 slope;
+		
+		public Slope(Vec2 slope) {
+			this.slope = slope;
+		}
+		
+		public Slope() {
+			this(new Vec2(1, 1));
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof Slope))
+				return false;
+			return getSlopeRaw() == ((Slope)o).getSlopeRaw();
+		}
+		
+		@Override
+		public int hashCode() {
+			int result = 17;
+			result = 31 * result + slope.hashCode();
+			return result;
+		}
+		
+		@Override
+		public String toString() {
+			return slope.toString();
+		}
+		
+		public Vec2 getSlope() {
+			return slope;
+		}
+		
+		public float getSlopeX() {
+			return slope.getX();
+		}
+		
+		public float getSlopeY() {
+			return slope.getY();
+		}
+		
+		public float getSlopeRaw() {
+			return slope.getY() / slope.getX();
+		}
+		
+		public boolean isHorizontal() {
+			return slope.getY() == 0;
+		}
+		
+		public boolean isVertical() {
+			return slope.getX() == 0;
+		}
+		
+		public boolean isHorizontalOrVertical() {
+			return isHorizontal() || isVertical();
+		}
+	}	
 }
