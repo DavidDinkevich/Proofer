@@ -134,7 +134,7 @@ public abstract class AbstractShape implements Shape {
 
 	@Override
 	public Vec2 getCenter(boolean includeScale) {
-		return includeScale ? center : Vec2.mult(center, scale);
+		return includeScale ? Vec2.mult(center, scale) : center;
 	}
 
 	@Override
