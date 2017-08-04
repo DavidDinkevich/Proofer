@@ -40,10 +40,10 @@ public class ProofSolver {
 		if (diagram.getProofGoal() == null)
 			throw new NullPointerException("Proof goal is null.");
 		// Solve proof here
-		List<FigureRelationPair> fullGiven = new ArrayList<>(diagram.getFigureRelationPairs());
+		List<FigureRelation> fullGiven = new ArrayList<>(diagram.getFigureRelationPairs());
 		doPreAlgorithmOperations(fullGiven);
 		fullGiven.addAll(inflateGiven());
-		for (FigureRelationPair pair : fullGiven) {
+		for (FigureRelation pair : fullGiven) {
 			if (pair.equals(diagram.getProofGoal())) {
 				return proofWasSolved = result = true;
 			}
@@ -52,11 +52,11 @@ public class ProofSolver {
 		return result = false;
 	}
 	
-	private List<FigureRelationPair> inflateGiven() {
-		List<FigureRelationPair> given = diagram.getFigureRelationPairs();
-		List<FigureRelationPair> fullGiven = new ArrayList<>();
+	private List<FigureRelation> inflateGiven() {
+		List<FigureRelation> given = diagram.getFigureRelationPairs();
+		List<FigureRelation> fullGiven = new ArrayList<>();
 				
-		for (FigureRelationPair pair : given) {
+		for (FigureRelation pair : given) {
 			switch (pair.getRelationType()) {
 			case CONGRUENT:
 				handleCongruentPair(fullGiven, pair);
@@ -83,21 +83,21 @@ public class ProofSolver {
 		return fullGiven;
 	}
 	
-	private void doPreAlgorithmOperations(List<FigureRelationPair> relations) {		
+	private void doPreAlgorithmOperations(List<FigureRelation> relations) {		
 		applyReflexivePostulate(relations);
 		makeAllRightAnglesCongruent(relations);
 	}
 	
 	/**
-	 * Creates a {@link FigureRelationPair} rendering the given figure
+	 * Creates a {@link FigureRelation} rendering the given figure
 	 * congruent to itself.
 	 * @param fig the figure
-	 * @return the {@link FigureRelationPair}, or null if the given figure is
+	 * @return the {@link FigureRelation}, or null if the given figure is
 	 * a {@link Vertex}.
 	 */
-	private FigureRelationPair createReflexiveRelationPair(Figure fig) {
+	private FigureRelation createReflexiveRelationPair(Figure fig) {
 		if (fig.getClass() != Vertex.class) {
-			FigureRelationPair pair = new FigureRelationPair(
+			FigureRelation pair = new FigureRelation(
 					FigureRelationType.CONGRUENT,
 					fig,
 					fig
@@ -109,13 +109,13 @@ public class ProofSolver {
 	
 	/**
 	 * Make the given angle a right angle, and make it congruent to all
-	 * other right angles in the given list of {@link FigureRelationPair}s.
+	 * other right angles in the given list of {@link FigureRelation}s.
 	 * @param a the angle
-	 * @param relations the list of {@link FigureRelationPair}s.
+	 * @param relations the list of {@link FigureRelation}s.
 	 */
-	private void makeRightAngle(Angle a, List<FigureRelationPair> relations) {
+	private void makeRightAngle(Angle a, List<FigureRelation> relations) {
 		// Make angle a right angle
-		FigureRelationPair rel = new FigureRelationPair(
+		FigureRelation rel = new FigureRelation(
 				FigureRelationType.RIGHT,
 				a,
 				null
@@ -126,9 +126,9 @@ public class ProofSolver {
 		for (int i = 0; i < relations.size(); i++) {
 			if (i == INDEX)
 				continue;
-			FigureRelationPair pair = relations.get(i);
+			FigureRelation pair = relations.get(i);
 			if (pair.getRelationType() == FigureRelationType.RIGHT) {
-				FigureRelationPair newPair = new FigureRelationPair(
+				FigureRelation newPair = new FigureRelation(
 						FigureRelationType.CONGRUENT,
 						a,
 						pair.getFigure0()
@@ -143,12 +143,12 @@ public class ProofSolver {
 	 * {@link Collection} of {@link Figure}s.
 	 * @param relations the collection of figures.
 	 */
-	private void applyReflexivePostulate(Collection<FigureRelationPair> relations) {
+	private void applyReflexivePostulate(Collection<FigureRelation> relations) {
 		// Enforce reflexive postulate--every figure is congruent to itself
 		// Vertices cannot be "congruent"
 		for (Figure fig : diagram.getFigures()) {
 			if (fig.getClass() != Vertex.class) {
-				FigureRelationPair pair = new FigureRelationPair(
+				FigureRelation pair = new FigureRelation(
 						FigureRelationType.CONGRUENT,
 						fig,
 						fig
@@ -160,18 +160,18 @@ public class ProofSolver {
 	}
 	
 	// List needed for random access
-	private void makeAllRightAnglesCongruent(List<FigureRelationPair> relations) {
+	private void makeAllRightAnglesCongruent(List<FigureRelation> relations) {
 		// Make all right angles congruent
 		for (int i = 0; i < relations.size(); i++) {
-			FigureRelationPair pair0 = relations.get(i);
+			FigureRelation pair0 = relations.get(i);
 			// If this pair marks an angle a right angle
 			if (pair0.getRelationType() == FigureRelationType.RIGHT) {
 				for (int j = 0; j < relations.size(); j++) {
 					if (j == i)
 						continue;
-					FigureRelationPair pair1 = relations.get(j);
+					FigureRelation pair1 = relations.get(j);
 					if (pair1.getRelationType() == FigureRelationType.RIGHT) {
-						FigureRelationPair rel = new FigureRelationPair(
+						FigureRelation rel = new FigureRelation(
 								FigureRelationType.CONGRUENT,
 								pair0.getFigure0(),
 								pair1.getFigure0()
@@ -184,14 +184,14 @@ public class ProofSolver {
 	}
 	
 	private void handleCongruentPair(
-			Collection<FigureRelationPair> fullGiven, FigureRelationPair pair) {
+			Collection<FigureRelation> fullGiven, FigureRelation pair) {
 		if (pair.getFigure0().getClass() == Triangle.class) {
 			Triangle tri0 = (Triangle)pair.getFigure0();
 			Triangle tri1 = (Triangle)pair.getFigure1();
 			for (int i = 0; i < tri0.getChildren().size(); i++) {
 				Figure child0 = tri0.getChildren().get(i);
 				Figure child1 = tri1.getChildren().get(i);
-				FigureRelationPair rel = new FigureRelationPair(
+				FigureRelation rel = new FigureRelation(
 						FigureRelationType.CONGRUENT,
 						child0,
 						child1
@@ -202,7 +202,7 @@ public class ProofSolver {
 	}
 	
 	private void handlePerpendicularPair(
-			List<FigureRelationPair> relations, FigureRelationPair pair) {
+			List<FigureRelation> relations, FigureRelation pair) {
 		String seg0 = ((Segment)pair.getFigure0()).getName();
 		String seg1 = ((Segment)pair.getFigure1()).getName();
 		
@@ -228,7 +228,7 @@ public class ProofSolver {
 	}
 	
 	private void handleBisectPair(
-			Collection<FigureRelationPair> relations, FigureRelationPair pair) {
+			Collection<FigureRelation> relations, FigureRelation pair) {
 		Segment seg0 = (Segment)pair.getFigure0();
 		Segment seg1 = (Segment)pair.getFigure1();
 		
@@ -244,7 +244,7 @@ public class ProofSolver {
 			vert = (Vertex)seg0.getChild(String.valueOf(sharedVertexName));
 		}
 		
-		FigureRelationPair rel = new FigureRelationPair(
+		FigureRelation rel = new FigureRelation(
 				FigureRelationType.MIDPOINT,
 				vert,
 				seg1
@@ -253,7 +253,7 @@ public class ProofSolver {
 	}
 	
 	private void handleMidpoint(
-			Collection<FigureRelationPair> relations, FigureRelationPair pair) {
+			Collection<FigureRelation> relations, FigureRelation pair) {
 		Vertex vert = (Vertex)pair.getFigure0();
 		Segment seg = (Segment)pair.getFigure1();
 		
@@ -262,7 +262,7 @@ public class ProofSolver {
 		Segment newSeg1 =
 				(Segment)diagram.getFigure(vert.getName() + seg.getName().substring(1));
 		
-		FigureRelationPair rel = new FigureRelationPair(
+		FigureRelation rel = new FigureRelation(
 				FigureRelationType.CONGRUENT,
 				newSeg0,
 				newSeg1

@@ -16,7 +16,7 @@ import geometry.shapes.Vertex;
 import ui.canvas.DiagramCanvas;
 import ui.canvas.GraphicsShape2D;
 import ui.swing.FigureRelationListPanel;
-import ui.swing.FigureRelationPairPanel;
+import ui.swing.FigureRelationPanel;
 
 import util.Utils;
 
@@ -41,7 +41,7 @@ public class Preprocessor {
 		}
 		
 		// Determine given
-		for (FigureRelationPairPanel panel : figRelPanel.getFigureRelationPairPanels()) {
+		for (FigureRelationPanel panel : figRelPanel.getFigureRelationPairPanels()) {
 			if (!panel.hashContent())
 				continue;
 			// Figure relation type
@@ -58,7 +58,7 @@ public class Preprocessor {
 			 * the following instantiation of a figure relation pair will
 			 * crash.
 			 */
-			FigureRelationPair rel = new FigureRelationPair(
+			FigureRelation rel = new FigureRelation(
 					relType,
 					// Get first figure
 					searchForFigure(diagram, figText0),
@@ -72,14 +72,14 @@ public class Preprocessor {
 		correctGivenInformation(diagram);
 		
 		// Determine proof goal (to prove)
-		FigureRelationPairPanel goalPanel = figRelPanel.getProofGoalPanel();
+		FigureRelationPanel goalPanel = figRelPanel.getProofGoalPanel();
 		// Check if the proof goal panel has content
 		if (!goalPanel.hashContent()) {
 			System.err.println("Diagram has no goal.");
 			return null;
 		}
 		
-		FigureRelationPair proofGoal = new FigureRelationPair(
+		FigureRelation proofGoal = new FigureRelation(
 				(FigureRelationType)goalPanel.getRelationBox().getSelectedItem(),
 				searchForFigure(diagram, goalPanel.getFigTextField0().getText()),
 				searchForFigure(diagram, goalPanel.getFigTextField1().getText())
@@ -238,9 +238,9 @@ public class Preprocessor {
 	
 	private void correctGivenInformation(Diagram diagram) {
 		// To avoid a ConcurrentModificationException
-		List<FigureRelationPair> buff = new ArrayList<>(diagram.getFigureRelationPairs());
+		List<FigureRelation> buff = new ArrayList<>(diagram.getFigureRelationPairs());
 		// For each figure relation pair
-		for (FigureRelationPair pair : buff) {
+		for (FigureRelation pair : buff) {
 			preprocessIntersectingLines(diagram, pair);
 		}
 	}
@@ -250,7 +250,7 @@ public class Preprocessor {
 	 * @param diagram
 	 * @param pair
 	 */
-	private void preprocessIntersectingLines(Diagram diagram, FigureRelationPair pair) {
+	private void preprocessIntersectingLines(Diagram diagram, FigureRelation pair) {
 		// If the pair type is of type perpendicular or bisecting
 		if (pair.getRelationType() == FigureRelationType.BISECTS
 				|| pair.getRelationType() == FigureRelationType.PERPENDICULAR) {
@@ -280,7 +280,7 @@ public class Preprocessor {
 	 * @param diagram the diagram
 	 * @param pair the figure relation pair to be handled
 	 */
-	private void preprocessBisectingPairs(Diagram diagram, FigureRelationPair pair) {
+	private void preprocessBisectingPairs(Diagram diagram, FigureRelation pair) {
 		// Get the segment being bisecTED
 		Segment seg1 = pair.getFigure1();
 		// Get the midpoint loc of the second segment (segment being bisecTED)
@@ -313,7 +313,7 @@ public class Preprocessor {
 	 * @param diagram the diagram
 	 * @param pair the figure relation pair to be handled
 	 */
-	private void preprocessPerpendicularPairs(Diagram diagram, FigureRelationPair pair) {
+	private void preprocessPerpendicularPairs(Diagram diagram, FigureRelation pair) {
 		// The two segments in the given figure relation pair
 		Segment seg0 = pair.getFigure0(); // The intersectING segment
 		Segment seg1 = pair.getFigure1(); // The intersectED segment

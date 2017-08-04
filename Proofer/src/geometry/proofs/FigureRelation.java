@@ -9,12 +9,12 @@ import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
-public class FigureRelationPair {
+public class FigureRelation {
 	private final FigureRelationType relType;
 	private final Figure figure0;
 	private final Figure figure1;
 	
-	public FigureRelationPair(FigureRelationType type, Figure fig0, Figure fig1) {
+	public FigureRelation(FigureRelationType type, Figure fig0, Figure fig1) {
 		relType = type;
 		figure0 = Objects.requireNonNull(fig0);
 		
@@ -65,9 +65,9 @@ public class FigureRelationPair {
 	public boolean equals(Object o) {
 		if (o == this)
 			return true;
-		if (!(o instanceof FigureRelationPair))
+		if (!(o instanceof FigureRelation))
 			return false;
-		FigureRelationPair pair = (FigureRelationPair)o;
+		FigureRelation pair = (FigureRelation)o;
 		
 		// If the type of both of these pairs is "congruent", then it doesn't
 		// matter which figure is "figure0" and "figure1"--it's symmetric

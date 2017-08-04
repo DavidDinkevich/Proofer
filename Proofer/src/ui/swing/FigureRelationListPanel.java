@@ -31,8 +31,8 @@ import util.Utils;
 public class FigureRelationListPanel extends JComponent {
 	private ProofCustomizationPanel proofCustomizationPanel;
 	
-	private List<FigureRelationPairPanel> panels;
-	private FigureRelationPairPanel proofGoalPanel;
+	private List<FigureRelationPanel> panels;
+	private FigureRelationPanel proofGoalPanel;
 	private JPanel topPanel;
 	private JPanel bottomPanel;
 	private JButton addButton;
@@ -80,7 +80,7 @@ public class FigureRelationListPanel extends JComponent {
 			// The bottom panel is composed of two inner-panels
 			JPanel northPanel = new JPanel(new BorderLayout());
 			northPanel.setBorder(BorderFactory.createTitledBorder("Prove"));
-			proofGoalPanel = new FigureRelationPairPanel();
+			proofGoalPanel = new FigureRelationPanel();
 			northPanel.add(proofGoalPanel, BorderLayout.CENTER);
 			
 			JPanel southPanel = new JPanel();
@@ -141,11 +141,11 @@ public class FigureRelationListPanel extends JComponent {
 		return solveButton;
 	}
 	
-	public FigureRelationPairPanel getProofGoalPanel() {
+	public FigureRelationPanel getProofGoalPanel() {
 		return proofGoalPanel;
 	}
 	
-	public boolean addFigureRelationPairPanel(FigureRelationPairPanel panel) {
+	public boolean addFigureRelationPairPanel(FigureRelationPanel panel) {
 		if (!panels.add(panel))
 			return false;
 		// Add to main panel
@@ -156,8 +156,8 @@ public class FigureRelationListPanel extends JComponent {
 		return true;
 	}
 	
-	public void addFigureRelationPairPanels(Collection<FigureRelationPairPanel> panels) {
-		for (FigureRelationPairPanel panel : panels) {
+	public void addFigureRelationPairPanels(Collection<FigureRelationPanel> panels) {
+		for (FigureRelationPanel panel : panels) {
 			addFigureRelationPairPanel(panel);
 		}
 	}
@@ -166,36 +166,36 @@ public class FigureRelationListPanel extends JComponent {
 		if (amount < 0)
 			throw new IllegalArgumentException("Number of panels must be >= 0");
 		for (int i = 0; i < amount; i++) {
-			addFigureRelationPairPanel(new FigureRelationPairPanel());
+			addFigureRelationPairPanel(new FigureRelationPanel());
 		}
 	}
 	
-	public boolean removeFigureRelationPairPanel(FigureRelationPairPanel panel) {
+	public boolean removeFigureRelationPairPanel(FigureRelationPanel panel) {
 		if (!panels.remove(panel))
 			return false;
 		// Remove from main panel
 		return true;
 	}
 	
-	public void removeFigureRelationPairPanels(Collection<FigureRelationPairPanel> panels) {
-		for (FigureRelationPairPanel panel : panels) {
+	public void removeFigureRelationPairPanels(Collection<FigureRelationPanel> panels) {
+		for (FigureRelationPanel panel : panels) {
 			removeFigureRelationPairPanel(panel);
 		}
 	}
 	
-	public boolean containsFigureRelationPairPanel(FigureRelationPairPanel panel) {
+	public boolean containsFigureRelationPairPanel(FigureRelationPanel panel) {
 		return panels.contains(panel);
 	}
 	
-	public boolean containsAllFigureRelationPairPanels(Collection<FigureRelationPairPanel> panels) {
-		for (FigureRelationPairPanel panel : panels) {
+	public boolean containsAllFigureRelationPairPanels(Collection<FigureRelationPanel> panels) {
+		for (FigureRelationPanel panel : panels) {
 			if (!containsFigureRelationPairPanel(panel))
 				return false;
 		}
 		return true;
 	}
 	
-	public List<FigureRelationPairPanel> getFigureRelationPairPanels() {
+	public List<FigureRelationPanel> getFigureRelationPairPanels() {
 		return Collections.unmodifiableList(panels);
 	}
 	

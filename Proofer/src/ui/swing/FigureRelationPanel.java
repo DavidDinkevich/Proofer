@@ -12,12 +12,12 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 @SuppressWarnings("serial")
-public class FigureRelationPairPanel extends JComponent {
+public class FigureRelationPanel extends JComponent {
 	private LetterOnlyTextField figTextField0;
 	private LetterOnlyTextField figTextField1;
 	private JComboBox<FigureRelationType> relationBox;
 	
-	public FigureRelationPairPanel() {		
+	public FigureRelationPanel() {		
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 5, 5);
@@ -42,9 +42,9 @@ public class FigureRelationPairPanel extends JComponent {
 	public boolean equals(Object o) {
 		if (!super.equals(o))
 			return false;
-		if (!(o instanceof FigureRelationPairPanel))
+		if (!(o instanceof FigureRelationPanel))
 			return false;
-		FigureRelationPairPanel panel = (FigureRelationPairPanel)o;
+		FigureRelationPanel panel = (FigureRelationPanel)o;
 		return getFigTextField0().getText().equals(panel.getFigTextField0().getText())
 				&& getFigTextField1().getText().equals(panel.getFigTextField1().getText())
 				&& getRelationBox().getSelectedIndex() == panel.getRelationBox().getSelectedIndex();
@@ -61,7 +61,7 @@ public class FigureRelationPairPanel extends JComponent {
 	
 	/**
 	 * Get whether this contains enough information to represent
-	 * a complete {@link FigureRelationPair} (all text fields contain
+	 * a complete {@link FigureRelation} (all text fields contain
 	 * text).
 	 * @return true if this is filled out completely, false otherwise.
 	 */

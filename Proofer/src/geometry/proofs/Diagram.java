@@ -7,15 +7,15 @@ import java.util.Collections;
 
 public class Diagram {
 	private List<Figure> figures;
-	private List<FigureRelationPair> relations;
-	private FigureRelationPair proofGoal;
+	private List<FigureRelation> relations;
+	private FigureRelation proofGoal;
 	
 	public Diagram() {
 		figures = new ArrayList<>();
 		relations = new ArrayList<>();
 	}
 	
-	public FigureRelationPair getProofGoal() {
+	public FigureRelation getProofGoal() {
 		return proofGoal;
 	}
 	
@@ -23,8 +23,8 @@ public class Diagram {
 	 * Set the goal of this proof
 	 * @return the old goal, or null if there was no previous
 	 */
-	public FigureRelationPair setProofGoal(FigureRelationType rel, String fig0, String fig1) {
-		FigureRelationPair newGoal = valueOf(rel, fig0, fig1);
+	public FigureRelation setProofGoal(FigureRelationType rel, String fig0, String fig1) {
+		FigureRelation newGoal = valueOf(rel, fig0, fig1);
 		if (newGoal == null)
 			return null;
 		return setProofGoal(newGoal);
@@ -35,8 +35,8 @@ public class Diagram {
 	 * @param newGoal the new goal
 	 * @return the old goal, or null if there was no previous
 	 */
-	public FigureRelationPair setProofGoal(FigureRelationPair newGoal) {
-		FigureRelationPair old = proofGoal;
+	public FigureRelation setProofGoal(FigureRelation newGoal) {
+		FigureRelation old = proofGoal;
 		proofGoal = newGoal;
 		return old;
 	}
@@ -123,7 +123,7 @@ public class Diagram {
 	
 	/////////////////////////////
 	
-	private FigureRelationPair valueOf(FigureRelationType type, String fig0, String fig1) {
+	private FigureRelation valueOf(FigureRelationType type, String fig0, String fig1) {
 		final boolean RIGHT_ANGLE = type == FigureRelationType.RIGHT;
 		// Special search for right angles
 		Figure figure0 = !RIGHT_ANGLE ? getFigure(fig0) : getFigure(fig0, AngleFigure.class);
@@ -132,22 +132,22 @@ public class Diagram {
 			figure1 = getFigure(fig1);
 		if (figure0 == null || (!RIGHT_ANGLE && figure1 == null))
 			return null;
-		return new FigureRelationPair(type, figure0, figure1);
+		return new FigureRelation(type, figure0, figure1);
 	}
 	
 	public boolean addFigureRelationPair(FigureRelationType type, String fig0, String fig1) {
-		FigureRelationPair pair = valueOf(type, fig0, fig1);
+		FigureRelation pair = valueOf(type, fig0, fig1);
 		return pair == null ? false : relations.add(pair);
 	}
 	
-	public boolean addFigureRelationPair(FigureRelationPair pair) {
+	public boolean addFigureRelationPair(FigureRelation pair) {
 		if (!containsFigures(pair.getFigures()))
 			return false;
 		return relations.add(pair);
 	}
 	
-	public boolean addFigureRelationPairs(Collection<FigureRelationPair> figs) {
-		for (FigureRelationPair fig : figs) {
+	public boolean addFigureRelationPairs(Collection<FigureRelation> figs) {
+		for (FigureRelation fig : figs) {
 			if (!containsFigures(fig.getFigures()))
 				return false;
 		}
@@ -157,15 +157,15 @@ public class Diagram {
 	public boolean removeFigureRelationPair(FigureRelationType type, String fig0, String fig1) {
 		return relations.remove(valueOf(type, fig0, fig1));
 	}
-	public boolean removeFigureRelationPair(FigureRelationPair pair) {
+	public boolean removeFigureRelationPair(FigureRelation pair) {
 		return relations.remove(pair);
 	}
 	
-	public boolean removeFigureRelationPairs(Collection<FigureRelationPair> figs) {
+	public boolean removeFigureRelationPairs(Collection<FigureRelation> figs) {
 		return relations.removeAll(figs);
 	}
 	
-	public boolean containsFigureRelationPair(FigureRelationPair rel) {
+	public boolean containsFigureRelationPair(FigureRelation rel) {
 		return relations.contains(rel);
 	}
 	
@@ -173,12 +173,12 @@ public class Diagram {
 		return relations.contains(valueOf(type, fig0, fig1));
 	}
 	
-	public boolean containsFigureRelationPairs(Collection<FigureRelationPair> figs) {
+	public boolean containsFigureRelationPairs(Collection<FigureRelation> figs) {
 		return relations.containsAll(figs);
 	}
 	
-	public FigureRelationPair getFirstRelationPairWithType(FigureRelationType type) {
-		for (FigureRelationPair pair : relations) {
+	public FigureRelation getFirstRelationPairWithType(FigureRelationType type) {
+		for (FigureRelation pair : relations) {
 			if (pair.getRelationType() == type) {
 				return pair;
 			}
@@ -186,9 +186,9 @@ public class Diagram {
 		return null;
 	}
 	
-	public List<FigureRelationPair> getAllRelationPairsWithType(FigureRelationType type) {
-		List<FigureRelationPair> rels = null;
-		for (FigureRelationPair pair : relations) {
+	public List<FigureRelation> getAllRelationPairsWithType(FigureRelationType type) {
+		List<FigureRelation> rels = null;
+		for (FigureRelation pair : relations) {
 			if (pair.getRelationType() == type) {
 				if (rels == null)
 					rels = new ArrayList<>();
@@ -198,7 +198,7 @@ public class Diagram {
 		return rels == null ? Collections.emptyList() : rels;
 	}
 	
-	public List<FigureRelationPair> getFigureRelationPairs() {
+	public List<FigureRelation> getFigureRelationPairs() {
 		return Collections.unmodifiableList(relations);
 	}
 }
