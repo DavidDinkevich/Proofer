@@ -238,7 +238,7 @@ public class Preprocessor {
 	
 	private void correctGivenInformation(Diagram diagram) {
 		// To avoid a ConcurrentModificationException
-		List<FigureRelation> buff = new ArrayList<>(diagram.getFigureRelationPairs());
+		List<FigureRelation> buff = new ArrayList<>(diagram.getFigureRelations());
 		// For each figure relation pair
 		for (FigureRelation pair : buff) {
 			preprocessIntersectingLines(diagram, pair);

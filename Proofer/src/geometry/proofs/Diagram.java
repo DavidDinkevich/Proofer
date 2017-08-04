@@ -198,7 +198,7 @@ public class Diagram {
 		return rels == null ? Collections.emptyList() : rels;
 	}
 	
-	public List<FigureRelation> getFigureRelationPairs() {
+	public List<FigureRelation> getFigureRelations() {
 		return Collections.unmodifiableList(relations);
 	}
 }
