@@ -63,22 +63,31 @@ public class Diagram {
 	public boolean addFigure(Figure fig) {
 		if (containsFigure(fig))
 			return false;
+		// Add the figure
 		figures.add(fig);
 		
+		// Fill a buffer array with the figure's children
 		List<Figure> buff = new ArrayList<>(fig.getChildren());
+		// For each child figure in buff
 		for (Figure f : buff) {
+			// If the figure is not contained, add it.
 			if (!containsFigure(f))
 				figures.add(f);
 		}
 		
+		// While the buffer is not empty
 		while (!buff.isEmpty()) {
+			// Create a second buffer (with the children of the original figure),
+			// which is a copy of the first
 			List<Figure> buff2 = new ArrayList<>(buff);
+			// Clear the first buffer
 			buff.clear();
-			// Fill buffer
+			// Fill first buffer with the children of the figures
+			// in the second buffer
 			for (int i = 0; i < buff2.size(); i++) {
 				buff.addAll(buff2.get(i).getChildren());
 			}
-			// Add children
+			// Add figures from first buff to official list of figures
 			for (Figure f : buff) {
 				if (!containsFigure(f))
 					figures.add(f);
