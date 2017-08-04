@@ -78,7 +78,7 @@ public final class Angle implements Figure {
 		if (!(o instanceof Angle))
 			return false;
 		Angle a = (Angle)o;
-		return isValidName(a.getName()) && vertices.equals(a.vertices);
+		return isValidName(a.getName());
 	}
 	
 	@Override
@@ -106,6 +106,12 @@ public final class Angle implements Figure {
 	@Override
 	public String toString() {
 		return getName();
+	}
+	
+	@Override
+	public boolean isValidName(String name) {
+		return Figure.super.isValidName(name) && 
+				getNameShort().charAt(0) == name.charAt(1);
 	}
 	
 	public String getNameShort() {
