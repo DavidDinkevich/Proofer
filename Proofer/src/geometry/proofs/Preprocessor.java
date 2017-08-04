@@ -69,7 +69,7 @@ public class Preprocessor {
 			diagram.addFigureRelationPair(rel);
 		}
 		
-		correctGivenInformation(diagram);
+		preprocessGivenInfo(diagram);
 		
 		// Determine proof goal (to prove)
 		FigureRelationPanel goalPanel = figRelPanel.getProofGoalPanel();
@@ -236,7 +236,7 @@ public class Preprocessor {
 		return pair;
 	}
 	
-	private void correctGivenInformation(Diagram diagram) {
+	private void preprocessGivenInfo(Diagram diagram) {
 		// To avoid a ConcurrentModificationException
 		List<FigureRelation> buff = new ArrayList<>(diagram.getFigureRelations());
 		// For each figure relation pair
