@@ -41,8 +41,11 @@ public class ProofSolver {
 			throw new NullPointerException("Proof goal is null.");
 		// Solve proof here
 		List<FigureRelation> fullGiven = new ArrayList<>(diagram.getFigureRelations());
+		// Pre-algorithm preparation
 		doPreAlgorithmOperations(fullGiven);
+		// Inflate the given, get all available figure relations
 		fullGiven.addAll(inflateGiven());
+		// Check if the proof goal is included in the inflated given
 		for (FigureRelation pair : fullGiven) {
 			if (pair.equals(diagram.getProofGoal())) {
 				return proofWasSolved = result = true;
@@ -55,7 +58,7 @@ public class ProofSolver {
 	private List<FigureRelation> inflateGiven() {
 		List<FigureRelation> given = diagram.getFigureRelations();
 		List<FigureRelation> fullGiven = new ArrayList<>();
-				
+		
 		for (FigureRelation pair : given) {
 			switch (pair.getRelationType()) {
 			case CONGRUENT:
