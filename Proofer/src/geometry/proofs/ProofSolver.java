@@ -73,7 +73,8 @@ public class ProofSolver {
 				handleBisectPair(fullGiven, pair);
 				break;
 			case SIMILAR:
-				
+				handleSimilarTriangles(fullGiven, pair);
+				break;
 			case COMPLEMENTARY:
 			case SUPPLEMENTARY:
 			case RIGHT:
@@ -98,13 +99,13 @@ public class ProofSolver {
 	 * @return the {@link FigureRelation}, or null if the given figure is
 	 * a {@link Vertex}.
 	 */
-	private FigureRelation createReflexiveRelationPair(Figure fig) {
+	private FigureRelation createReflexiveRelation(Figure fig) {
 		if (fig.getClass() != Vertex.class) {
 			FigureRelation pair = new FigureRelation(
 					FigureRelationType.CONGRUENT,
 					fig,
 					fig
-				);
+			);
 			return pair;
 		}
 		return null;
@@ -188,9 +189,11 @@ public class ProofSolver {
 	
 	private void handleCongruentPair(
 			Collection<FigureRelation> fullGiven, FigureRelation pair) {
+		// If two triangles are congruent, all of their corresponding children figures
+		// are congruent as well
 		if (pair.getFigure0().getClass() == Triangle.class) {
-			Triangle tri0 = (Triangle)pair.getFigure0();
-			Triangle tri1 = (Triangle)pair.getFigure1();
+			Triangle tri0 = pair.getFigure0();
+			Triangle tri1 = pair.getFigure1();
 			for (int i = 0; i < tri0.getChildren().size(); i++) {
 				Figure child0 = tri0.getChildren().get(i);
 				Figure child1 = tri1.getChildren().get(i);
@@ -226,14 +229,14 @@ public class ProofSolver {
 		// Angle 1
 		String angleName = 
 				String.valueOf(unshared0) + String.valueOf(shared) + String.valueOf(unshared1);
-		Angle angle = (Angle)diagram.getFigure(angleName, Angle.class);
+		Angle angle = diagram.getFigure(angleName, Angle.class);
 		makeRightAngle(angle, relations);
 	}
 	
 	private void handleBisectPair(
 			Collection<FigureRelation> relations, FigureRelation pair) {
-		Segment seg0 = (Segment)pair.getFigure0();
-		Segment seg1 = (Segment)pair.getFigure1();
+		Segment seg0 = pair.getFigure0();
+		Segment seg1 = pair.getFigure1();
 		
 		final int index = seg1.getName().indexOf(seg0.getName().charAt(0));
 		char sharedVertexName;
@@ -257,13 +260,13 @@ public class ProofSolver {
 	
 	private void handleMidpoint(
 			Collection<FigureRelation> relations, FigureRelation pair) {
-		Vertex vert = (Vertex)pair.getFigure0();
-		Segment seg = (Segment)pair.getFigure1();
+		Vertex vert = pair.getFigure0();
+		Segment seg = pair.getFigure1();
 		
 		Segment newSeg0 =
-				(Segment)diagram.getFigure(seg.getName().substring(0, 1) + vert.getName());
+				diagram.getFigure(seg.getName().substring(0, 1) + vert.getName());
 		Segment newSeg1 =
-				(Segment)diagram.getFigure(vert.getName() + seg.getName().substring(1));
+				diagram.getFigure(vert.getName() + seg.getName().substring(1));
 		
 		FigureRelation rel = new FigureRelation(
 				FigureRelationType.CONGRUENT,
@@ -271,7 +274,22 @@ public class ProofSolver {
 				newSeg1
 		);
 		relations.add(rel);
-		relations.add(createReflexiveRelationPair(newSeg0));
-		relations.add(createReflexiveRelationPair(newSeg1));
+	}
+	
+	private void handleSimilarTriangles(Collection<FigureRelation> relations, FigureRelation pair) {
+		Triangle tri0 = pair.getFigure0();
+		Triangle tri1 = pair.getFigure1();
+		
+		for (int i = 0; i < tri0.getVertexCount(); i++) {
+			Angle a0 = tri0.getAngles()[i];
+			Angle a1 = tri1.getAngles()[i];
+			FigureRelation rel = new FigureRelation(
+					FigureRelationType.CONGRUENT,
+					a0,
+					a1
+			);
+			relations.add(rel);
+		}
 	}
 }
+	
