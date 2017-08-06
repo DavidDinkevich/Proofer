@@ -1,5 +1,6 @@
 package geometry.proofs;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,6 +9,8 @@ import geometry.shapes.Angle;
 import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
+
+import util.Utils;
 
 public class ProofSolver {
 	private boolean proofWasSolved = false;
@@ -90,25 +93,6 @@ public class ProofSolver {
 	private void doPreAlgorithmOperations(List<FigureRelation> relations) {		
 		applyReflexivePostulate(relations);
 		makeAllRightAnglesCongruent(relations);
-	}
-	
-	/**
-	 * Creates a {@link FigureRelation} rendering the given figure
-	 * congruent to itself.
-	 * @param fig the figure
-	 * @return the {@link FigureRelation}, or null if the given figure is
-	 * a {@link Vertex}.
-	 */
-	private FigureRelation createReflexiveRelation(Figure fig) {
-		if (fig.getClass() != Vertex.class) {
-			FigureRelation pair = new FigureRelation(
-					FigureRelationType.CONGRUENT,
-					fig,
-					fig
-			);
-			return pair;
-		}
-		return null;
 	}
 	
 	/**
@@ -209,26 +193,7 @@ public class ProofSolver {
 	
 	private void handlePerpendicularPair(
 			List<FigureRelation> relations, FigureRelation pair) {
-		String seg0 = ((Segment)pair.getFigure0()).getName();
-		String seg1 = ((Segment)pair.getFigure1()).getName();
-		
-		// Get shared vertex between segments
-		char shared, unshared0, unshared1; // 1 shared, 2 unshared
-		final int index = seg1.indexOf(seg0.charAt(0));
-		if (index >= 0) {
-			shared = seg1.charAt(index);
-			unshared0 = seg0.charAt(1);
-			unshared1 = seg1.charAt(index == 0 ? 1 : 0);
-		} else {
-			unshared0 = seg0.charAt(0);
-			shared = seg0.charAt(1);
-			final int sharedCharIndex = seg1.indexOf(shared);
-			unshared1 = seg1.charAt(sharedCharIndex == 0 ? 1 : 0);
-		}
-		
-		// Angle 1
-		String angleName = 
-				String.valueOf(unshared0) + String.valueOf(shared) + String.valueOf(unshared1);
+		String angleName = Utils.getAngleBetween(pair.getFigure0(), pair.getFigure1());
 		Angle angle = diagram.getFigure(angleName, Angle.class);
 		makeRightAngle(angle, relations);
 	}
@@ -276,20 +241,40 @@ public class ProofSolver {
 		relations.add(rel);
 	}
 	
-	private void handleSimilarTriangles(Collection<FigureRelation> relations, FigureRelation pair) {
+	private void handleSimilarTriangles(
+			Collection<FigureRelation> relations, FigureRelation pair) {
 		Triangle tri0 = pair.getFigure0();
 		Triangle tri1 = pair.getFigure1();
 		
-		for (int i = 0; i < tri0.getVertexCount(); i++) {
-			Angle a0 = tri0.getAngles()[i];
-			Angle a1 = tri1.getAngles()[i];
+		// Get corresponding angles in triangles
+		List<SimpleEntry<Angle, Angle>> corrAngles = getCorrespondingAngles(tri0, tri1);
+		
+		for (int i = 0; i < 3; i++) {
 			FigureRelation rel = new FigureRelation(
 					FigureRelationType.CONGRUENT,
-					a0,
-					a1
+					corrAngles.get(i).getKey(),
+					corrAngles.get(i).getValue()
 			);
 			relations.add(rel);
 		}
+	}
+	
+	private List<SimpleEntry<Angle, Angle>> getCorrespondingAngles(
+			Triangle tri0, Triangle tri1) {
+		
+		List<SimpleEntry<Angle, Angle>> list = new ArrayList<>();
+		
+		outer:
+		for (Angle a0 : tri0.getAngles()) {
+			for (Angle a1 : tri1.getAngles()) {
+				if (a0.getAngle() == a1.getAngle()) {
+					list.add(new SimpleEntry<>(a0, a1));
+					continue outer;
+				}
+			}
+		}
+		
+		return list;
 	}
 }
 	
