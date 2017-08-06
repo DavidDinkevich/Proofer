@@ -67,12 +67,13 @@ public abstract class AbstractShape implements Shape {
 		if (!(o instanceof AbstractShape))
 			return false;
 		AbstractShape s = (AbstractShape)o;
-		/*
-		 * Check if the name of the other shape is a valid name for this shape
-		 * (not for name equality). Do this FIRST--before anything else
-		 */
-		return isValidName(s.getName()) && getCenter(false).equals(s.getCenter(false))
-				&& scale.equals(s.scale);
+//		/*
+//		 * Check if the name of the other shape is a valid name for this shape
+//		 * (not for name equality). Do this FIRST--before anything else
+//		 */
+//		return isValidName(s.getName()) && getCenter(false).equals(s.getCenter(false))
+//				&& scale.equals(s.scale);
+		return isValidName(s.getName());
 	}
 	
 	@Override
