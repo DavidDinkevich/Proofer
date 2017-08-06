@@ -115,21 +115,21 @@ public class Segment extends AbstractShape {
 		}
 	}
 	
-	@Override
-	public boolean equals(Object o) {
-		if (!super.equals(o))
-			return false;
-		if (o instanceof Segment) {
-			Segment seg = (Segment)o;
-			return seg.vertices.equals(vertices);
-		}
-		return false;
-	}
+//	@Override
+//	public boolean equals(Object o) {
+//		if (!super.equals(o))
+//			return false;
+//		if (o instanceof Segment) {
+//			Segment seg = (Segment)o;
+//			return seg.vertices.equals(vertices);
+//		}
+//		return false;
+//	}
 	
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + vertices.hashCode();
+//		result = 31 * result + vertices.hashCode();
 		return result;
 	}
 	

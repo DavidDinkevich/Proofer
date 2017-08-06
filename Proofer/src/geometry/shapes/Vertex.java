@@ -39,9 +39,7 @@ public class Vertex extends AbstractShape {
 	
 	@Override
 	public boolean equals(Object o) {
-		if (!super.equals(o))
-			return false;
-		return o instanceof Vertex;
+		return super.equals(o) && o instanceof Vertex;
 	}
 
 	@Override

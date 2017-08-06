@@ -76,20 +76,25 @@ public class SimplePolygon extends AbstractShape2D implements Polygon, Iterable<
 		return "A polygon must have at least " + MIN_VERT_COUNT + " vertices.";
 	}
 	
+//	@Override
+//	public boolean equals(Object o) {
+//		if (!super.equals(o))
+//			return false;
+//		if (!(o instanceof SimplePolygon))
+//			return false;
+//		SimplePolygon p = (SimplePolygon)o;
+//		return vertices.equals(p.vertices);
+//	}
+	
 	@Override
 	public boolean equals(Object o) {
-		if (!super.equals(o))
-			return false;
-		if (!(o instanceof SimplePolygon))
-			return false;
-		SimplePolygon p = (SimplePolygon)o;
-		return vertices.equals(p.vertices);
+		return super.equals(o) && o instanceof SimplePolygon;
 	}
 	
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + (vertices == null ? 0 : vertices.hashCode());
+//		result = 31 * result + (vertices == null ? 0 : vertices.hashCode());
 		return result;
 	}
 	
