@@ -3,6 +3,8 @@ package geometry.shapes;
 import java.util.Arrays;
 import java.util.List;
 
+import geometry.Measurements;
+import geometry.Vec2;
 import geometry.proofs.Figure;
 
 import util.Utils;
@@ -45,6 +47,10 @@ public final class Angle implements Figure {
 		}
 	}
 	
+	public Angle(Segment a, Segment b) {
+		this(makeAngle(a, b));
+	}
+	
 	public Angle() {
 		this("\0\0\0");
 	}
@@ -52,6 +58,26 @@ public final class Angle implements Figure {
 	public Angle(Angle other) {
 		name = other.getName();
 		vertices = Arrays.copyOf(other.vertices, other.vertices.length);
+	}
+	
+	private static List<Vertex> makeAngle(Segment a, Segment b) {
+		String name = Utils.getAngleBetween(a, b);
+		if (name == null)
+			throw new NullPointerException();
+		
+		Vertex shared = (Vertex)a.getChild(name.substring(1, 2));
+		Vertex unshared0, unshared1;
+		String unshared0Name = name.substring(0, 1);
+		String unshared1Name = name.substring(2);
+		
+		if (a.getChild(unshared0Name) == null) {
+			unshared0 = (Vertex)b.getChild(unshared0Name);
+			unshared1 = (Vertex)a.getChild(unshared1Name);
+		} else {
+			unshared1 = (Vertex)b.getChild(unshared1Name);
+			unshared0 = (Vertex)a.getChild(unshared0Name);
+		}
+		return Arrays.asList(unshared0, shared, unshared1);
 	}
 	
 	private void syncNameWithVertexNames() {
@@ -87,6 +113,28 @@ public final class Angle implements Figure {
 		result = 31 * result + name.hashCode();
 //		result = 31 * result + vertices.hashCode();
 		return result;
+	}
+	
+	/**
+	 * Get the measurement of this angle.
+	 * @param mes the unit of measurement
+	 * @return the measurement
+	 */
+	public float getAngle(Measurements mes) {
+		Vec2 side0 = Vec2.sub(
+				vertices[0].getCenter(false), vertices[1].getCenter(false));
+		Vec2 side1 = Vec2.sub(
+				vertices[2].getCenter(false), vertices[1].getCenter(false));
+		final float angle = Vec2.angleBetween(side0, side1);
+		return mes == Measurements.RADIANS ? angle : Utils.radiansToDegrees(angle);
+	}
+	
+	/**
+	 * Get the measurement of this angle in RADIANS.
+	 * @return the measurement of this angle in RADIANS
+	 */
+	public float getAngle() {
+		return getAngle(Measurements.RADIANS);
 	}
 	
 	@Override
