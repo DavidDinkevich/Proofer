@@ -1,5 +1,9 @@
 package util;
 
+import geometry.shapes.Angle;
+import geometry.shapes.Segment;
+import geometry.shapes.Vertex;
+
 /**
  * Utility class.
  * @author David Dinkevich
@@ -109,4 +113,63 @@ public final class Utils {
 			return sb.toString();
 		}
 	}
+	
+	/**
+	 * Get the name of the angle formed between two segments that share
+	 * a vertex.
+	 * @param a the first segment
+	 * @param b the second segment
+	 * @return the angle formed, or null if the segments do not share a vertex
+	 */
+	public static String getAngleBetween(Segment a, Segment b) {
+		String seg0 = a.getName();
+		String seg1 = b.getName();
+		
+		// Get shared vertex between segments
+		char shared, unshared0, unshared1; // 1 shared, 2 unshared
+		final int index = seg1.indexOf(seg0.charAt(0));
+		if (index >= 0) {
+			shared = seg1.charAt(index);
+			unshared0 = seg0.charAt(1);
+			unshared1 = seg1.charAt(index == 0 ? 1 : 0);
+		} else {
+			unshared0 = seg0.charAt(0);
+			shared = seg0.charAt(1);
+			final int sharedCharIndex = seg1.indexOf(shared);
+			// If there is no shared vertex
+			if (sharedCharIndex < 0) {
+				// Return null
+				return null;
+			}
+			unshared1 = seg1.charAt(sharedCharIndex == 0 ? 1 : 0);
+		}
+		
+		String angleName = 
+				String.valueOf(unshared0) + String.valueOf(shared) + String.valueOf(unshared1);
+		return angleName;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
