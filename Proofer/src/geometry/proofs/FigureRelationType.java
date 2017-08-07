@@ -8,7 +8,7 @@ public enum FigureRelationType {
 	// Triangles
 	SIMILAR,
 	// Angles
-	SUPPLEMENTARY, COMPLEMENTARY, VERTICAL, RIGHT,
+	SUPPLEMENTARY, COMPLEMENTARY, RIGHT,
 	// Vertices
 	MIDPOINT;
 	
