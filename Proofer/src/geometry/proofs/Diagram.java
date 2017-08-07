@@ -1,18 +1,20 @@
 package geometry.proofs;
 
 import java.util.List;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 
 public class Diagram {
 	private List<Figure> figures;
-	private List<FigureRelation> relations;
+	private Set<FigureRelation> relations;
 	private FigureRelation proofGoal;
 	
 	public Diagram() {
 		figures = new ArrayList<>();
-		relations = new ArrayList<>();
+		relations = new HashSet<>();
 	}
 	
 	public FigureRelation getProofGoal() {
@@ -207,7 +209,7 @@ public class Diagram {
 		return rels == null ? Collections.emptyList() : rels;
 	}
 	
-	public List<FigureRelation> getFigureRelations() {
-		return Collections.unmodifiableList(relations);
+	public Set<FigureRelation> getFigureRelations() {
+		return Collections.unmodifiableSet(relations);
 	}
 }
