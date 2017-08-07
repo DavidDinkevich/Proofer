@@ -4,7 +4,6 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import geometry.shapes.Angle;
 import geometry.shapes.Segment;
@@ -60,7 +59,7 @@ public class ProofSolver {
 	}
 	
 	private List<FigureRelation> inflateGiven() {
-		Set<FigureRelation> given = diagram.getFigureRelations();
+		List<FigureRelation> given = diagram.getFigureRelations();
 		List<FigureRelation> fullGiven = new ArrayList<>();
 		
 		for (FigureRelation pair : given) {
@@ -286,7 +285,7 @@ public class ProofSolver {
 			Angle a0 = (Angle)diagram.getFigures().get(i);
 			// For each other figure
 			for (int j = 0; j < diagram.getFigures().size(); j++) {
-				// If we're looking at the same figure OR the figure we're looling
+				// If we're looking at the same figure OR the figure we're looking
 				// at is NOT an angle
 				if (i == j || !(diagram.getFigures().get(j) instanceof Angle))
 					continue;
@@ -322,35 +321,5 @@ public class ProofSolver {
 		}
 		return false;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
 	
