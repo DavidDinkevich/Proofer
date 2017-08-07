@@ -50,9 +50,9 @@ public class FigureRelation {
 			return figure0.getClass() == Angle.class && figure1 == null;
 		case COMPLEMENTARY:
 		case SUPPLEMENTARY:
-		case VERTICAL:
-			return figure0.getClass() == Angle.class && 
-			figure1.getClass() == Angle.class;
+//		case VERTICAL:
+//			return figure0.getClass() == Angle.class && 
+//			figure1.getClass() == Angle.class;
 		case MIDPOINT:
 			return figure0.getClass() == Vertex.class &&
 			figure1.getClass() == Segment.class;
@@ -70,7 +70,7 @@ public class FigureRelation {
 		FigureRelation pair = (FigureRelation)o;
 		
 		// If the type of both of these pairs is "congruent", then it doesn't
-		// matter which figure is "figure0" and "figure1"--it's symmetric
+		// matter which figure is "figure0" and "figure1"--symmetry doesn't matter
 		if (pair.relType == relType && relType == FigureRelationType.CONGRUENT) {
 			return (figure0.equals(pair.figure0) && figure1.equals(pair.figure1))
 					|| (figure0.equals(pair.figure1) && figure1.equals(pair.figure0));
