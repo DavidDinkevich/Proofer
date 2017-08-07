@@ -4,6 +4,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import geometry.shapes.Angle;
 import geometry.shapes.Segment;
@@ -59,7 +60,7 @@ public class ProofSolver {
 	}
 	
 	private List<FigureRelation> inflateGiven() {
-		List<FigureRelation> given = diagram.getFigureRelations();
+		Set<FigureRelation> given = diagram.getFigureRelations();
 		List<FigureRelation> fullGiven = new ArrayList<>();
 		
 		for (FigureRelation pair : given) {
@@ -80,9 +81,7 @@ public class ProofSolver {
 				break;
 			case COMPLEMENTARY:
 			case SUPPLEMENTARY:
-			case RIGHT:
-			case VERTICAL:
-				
+			case RIGHT:				
 			case MIDPOINT:
 				handleMidpoint(fullGiven, pair);
 			}
@@ -93,6 +92,7 @@ public class ProofSolver {
 	private void doPreAlgorithmOperations(List<FigureRelation> relations) {		
 		applyReflexivePostulate(relations);
 		makeAllRightAnglesCongruent(relations);
+		handleVerticalAngles(relations);
 	}
 	
 	/**
@@ -276,5 +276,81 @@ public class ProofSolver {
 		
 		return list;
 	}
+	
+	private void handleVerticalAngles(Collection<FigureRelation> relations) {
+		// For each figure
+		for (int i = 0; i < diagram.getFigures().size(); i++) {
+			// If the figure is NOT an angle, we don't care about it
+			if (!(diagram.getFigures().get(i) instanceof Angle))
+				continue;
+			Angle a0 = (Angle)diagram.getFigures().get(i);
+			// For each other figure
+			for (int j = 0; j < diagram.getFigures().size(); j++) {
+				// If we're looking at the same figure OR the figure we're looling
+				// at is NOT an angle
+				if (i == j || !(diagram.getFigures().get(j) instanceof Angle))
+					continue;
+				Angle a1 = (Angle)diagram.getFigures().get(j);
+				
+				if (areVerticalAngles(a0, a1)) {
+					FigureRelation rel = new FigureRelation(
+							FigureRelationType.CONGRUENT,
+							a0,
+							a1
+					);
+					System.out.println(rel);
+//					if (!relations.contains(rel))
+						relations.add(rel);
+					System.out.println(relations.size());
+				}
+			}
+		}
+	}
+	
+	private boolean areVerticalAngles(Angle a, Angle b) {
+		String name0 = a.getName();
+		String name1 = b.getName();
+		int sharedVertCount = 0;
+		if (a.getNameShort().equals(b.getNameShort())) {
+			for (int i = 0; i < name0.length(); i++) {
+				if (name0.indexOf(name1.charAt(i)) > -1)
+					continue;
+				++sharedVertCount;
+				break;
+			}
+			return sharedVertCount == 1;
+		}
+		return false;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 	
