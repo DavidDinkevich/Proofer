@@ -9,6 +9,7 @@ import geometry.shapes.Angle;
 import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
+import geometry.proofs.FigureRelationType;
 
 import util.Utils;
 
@@ -175,11 +176,20 @@ public class ProofSolver {
 		// If two triangles are congruent, all of their corresponding children figures
 		// are congruent as well
 		if (pair.getFigure0().getClass() == Triangle.class) {
+			// First triangle
 			Triangle tri0 = pair.getFigure0();
+			// Second triangle
 			Triangle tri1 = pair.getFigure1();
+			// For each child figure in the first triangle
 			for (int i = 0; i < tri0.getChildren().size(); i++) {
+				// Child figure of the first triangle
 				Figure child0 = tri0.getChildren().get(i);
+				// Child figure of the second triangle
 				Figure child1 = tri1.getChildren().get(i);
+				// Ignore vertices--cannot make vertices congruent
+				if (child0.getClass() == Vertex.class || child1.getClass() == Vertex.class)
+					continue;
+				// Make congruent pair
 				FigureRelation rel = new FigureRelation(
 						FigureRelationType.CONGRUENT,
 						child0,
@@ -301,10 +311,7 @@ public class ProofSolver {
 							a0,
 							a1
 					);
-					System.out.println(rel);
-//					if (!relations.contains(rel))
-						relations.add(rel);
-					System.out.println(relations.size());
+					relations.add(rel);
 				}
 			}
 		}
