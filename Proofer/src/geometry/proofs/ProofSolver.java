@@ -45,7 +45,7 @@ public class ProofSolver {
 		// Solve proof here
 		List<FigureRelation> fullGiven = new ArrayList<>(diagram.getFigureRelations());
 		// Pre-algorithm preparation
-		doPreAlgorithmOperations(fullGiven);
+		doPreAlgorithmOps(fullGiven);
 		// Inflate the given, get all available figure relations
 		fullGiven.addAll(inflateGiven());
 		// Check if the proof goal is included in the inflated given
@@ -88,7 +88,7 @@ public class ProofSolver {
 		return fullGiven;
 	}
 	
-	private void doPreAlgorithmOperations(List<FigureRelation> relations) {		
+	private void doPreAlgorithmOps(List<FigureRelation> relations) {		
 		applyReflexivePostulate(relations);
 		makeAllRightAnglesCongruent(relations);
 		handleVerticalAngles(relations);
