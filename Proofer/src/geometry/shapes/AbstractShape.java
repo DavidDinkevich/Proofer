@@ -142,10 +142,7 @@ public abstract class AbstractShape implements Shape {
 	public void setCenter(Vec2 loc, boolean includeScale) {
 		if (loc == null)
 			throw new NullPointerException("A Shape's location cannot be null.");
-		if (includeScale)
-			this.center.set(loc);
-		else
-			this.center.set(Vec2.div(loc, scale));
+		center.set(includeScale ? (Vec2.div(loc, scale)) : loc);
 	}
 	
 	@Override
