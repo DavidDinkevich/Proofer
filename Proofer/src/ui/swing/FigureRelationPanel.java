@@ -65,7 +65,7 @@ public class FigureRelationPanel extends JComponent {
 	 * text).
 	 * @return true if this is filled out completely, false otherwise.
 	 */
-	public boolean hashContent() {
+	public boolean hasContent() {
 		return getFigTextField0().getText().length() > 0
 				&& getFigTextField1().getText().length() > 0;
 				// Relation type combo box will always have a value

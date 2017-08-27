@@ -42,7 +42,7 @@ public class Preprocessor {
 		
 		// Determine given
 		for (FigureRelationPanel panel : figRelPanel.getFigureRelationPairPanels()) {
-			if (!panel.hashContent())
+			if (!panel.hasContent())
 				continue;
 			// Figure relation type
 			FigureRelationType relType =
@@ -74,7 +74,7 @@ public class Preprocessor {
 		// Determine proof goal (to prove)
 		FigureRelationPanel goalPanel = figRelPanel.getProofGoalPanel();
 		// Check if the proof goal panel has content
-		if (!goalPanel.hashContent()) {
+		if (!goalPanel.hasContent()) {
 			System.err.println("Diagram has no goal.");
 			return null;
 		}
