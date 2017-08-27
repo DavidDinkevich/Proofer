@@ -247,8 +247,9 @@ public class ProofSolver {
 		
 		// Get corresponding angles in triangles
 		List<SimpleEntry<Angle, Angle>> corrAngles = getCorrespondingAngles(tri0, tri1);
-		
-		for (int i = 0; i < 3; i++) {
+		System.out.println(corrAngles.size());
+		// Length of corrAngles should always be 3
+		for (int i = 0; i < corrAngles.size(); i++) {
 			FigureRelation rel = new FigureRelation(
 					FigureRelationType.CONGRUENT,
 					corrAngles.get(i).getKey(),
@@ -260,12 +261,15 @@ public class ProofSolver {
 	
 	private List<SimpleEntry<Angle, Angle>> getCorrespondingAngles(
 			Triangle tri0, Triangle tri1) {
-		
+		// List of Map entries
 		List<SimpleEntry<Angle, Angle>> list = new ArrayList<>();
 		
+		// For each angle in the first triangle
 		outer:
 		for (Angle a0 : tri0.getAngles()) {
+			// For each angle in the second triangle
 			for (Angle a1 : tri1.getAngles()) {
+				// If the measures of the angles are equal
 				if (a0.getAngle() == a1.getAngle()) {
 					list.add(new SimpleEntry<>(a0, a1));
 					continue outer;
