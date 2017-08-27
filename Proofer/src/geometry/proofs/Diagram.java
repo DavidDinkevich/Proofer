@@ -1,6 +1,9 @@
 package geometry.proofs;
 
 import java.util.List;
+
+import geometry.shapes.Angle;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -135,7 +138,7 @@ public class Diagram {
 	private FigureRelation valueOf(FigureRelationType type, String fig0, String fig1) {
 		final boolean RIGHT_ANGLE = type == FigureRelationType.RIGHT;
 		// Special search for right angles
-		Figure figure0 = !RIGHT_ANGLE ? getFigure(fig0) : getFigure(fig0, AngleFigure.class);
+		Figure figure0 = !RIGHT_ANGLE ? getFigure(fig0) : getFigure(fig0, Angle.class);
 		Figure figure1 = null;
 		if (!RIGHT_ANGLE)
 			figure1 = getFigure(fig1);
