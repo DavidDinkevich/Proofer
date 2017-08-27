@@ -86,8 +86,8 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 	
 	@Override
 	public void mouseWheel(Canvas c, MouseEvent e) {
-		float scrollDir = e.getCount();
-		float newScale = scrollDir/10f;	
+		final float scrollDir = e.getCount();
+		final float newScale = scrollDir/10f;	
 		
 		// Maximum zoom out/zoom in
 		if (scale + newScale < minScale || scale + newScale > maxScale) {
@@ -170,8 +170,8 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 		final float cellH = getCellSize().getHeight();
 		
 		// Only work with positive vals
-		final float locOffsetX = Math.abs(loc.getX() % cellW);
-		final float locOffsetY = Math.abs(loc.getY() % cellH);
+		final float locOffsetX = Math.abs(loc.getX()) % cellW;
+		final float locOffsetY = Math.abs(loc.getY()) % cellH;
 		
 		Vec2.Mutable nearestSnap = new Vec2.Mutable(Vec2.ZERO);
 		
