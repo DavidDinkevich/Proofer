@@ -53,7 +53,7 @@ public class ProofCustomizationPanel extends JComponent {
 	 * focus to the proof solution window.
 	 */
 	public void requestSolveProof() {
-		if (solutionWindow == null) {
+//		if (solutionWindow == null) {
 			Preprocessor preprocessor = new Preprocessor(canvas, figRelationListPanel);
 			Diagram diagram = preprocessor.generateDiagram();
 			ProofSolveRequestManager.requestSolveProof(new Request(diagram) {
@@ -63,9 +63,9 @@ public class ProofCustomizationPanel extends JComponent {
 							new ProofSolutionWindow(ProofCustomizationPanel.this, solver);
 				}
 			});
-		} else {
+//		} else {
 			solutionWindow.setVisible(true); // Make sure window is visible
 //			solutionWindow.requestFocus();
-		}
+//		}
 	}
 }
