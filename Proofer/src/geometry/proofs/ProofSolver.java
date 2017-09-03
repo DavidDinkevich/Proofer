@@ -4,6 +4,8 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 import geometry.shapes.Angle;
 import geometry.shapes.Segment;
@@ -52,11 +54,24 @@ public class ProofSolver {
 		// Check if the proof goal is included in the inflated given
 		for (FigureRelation pair : fullGiven) {
 			if (pair.equals(diagram.getProofGoal())) {
+				traceback(pair);
 				return proofWasSolved = result = true;
 			}
 		}
 		proofWasSolved = true;
 		return result = false;
+	}
+	
+	private void traceback(FigureRelation target) {
+		FigureRelation level = target;
+		Deque<FigureRelation> stack = new ArrayDeque<>();
+		
+		while (level != null) {
+			stack.push(level);
+			level = level.getParent();
+		}
+		
+		stack.forEach(System.out::println);
 	}
 	
 	private List<FigureRelation> inflateGiven() {
@@ -66,7 +81,7 @@ public class ProofSolver {
 		for (FigureRelation pair : given) {
 			switch (pair.getRelationType()) {
 			case CONGRUENT:
-				handleCongruentPair(fullGiven, pair);
+				handleCongruentPair(fullGiven, pair, null);
 				break;
 			case PARALLEL:
 				break;
@@ -100,13 +115,16 @@ public class ProofSolver {
 	 * other right angles in the given list of {@link FigureRelation}s.
 	 * @param a the angle
 	 * @param relations the list of {@link FigureRelation}s.
+	 * @param parent the parent relation
 	 */
-	private void makeRightAngle(Angle a, List<FigureRelation> relations) {
+	private void makeRightAngle(Angle a, List<FigureRelation> relations,
+			FigureRelation parent) {
 		// Make angle a right angle
 		FigureRelation rel = new FigureRelation(
 				FigureRelationType.RIGHT,
 				a,
-				null
+				null,
+				parent // Parent
 			);
 		relations.add(rel);
 		final int INDEX = relations.size()-1;
@@ -119,7 +137,8 @@ public class ProofSolver {
 				FigureRelation newPair = new FigureRelation(
 						FigureRelationType.CONGRUENT,
 						a,
-						pair.getFigure0()
+						pair.getFigure0(),
+						rel // Parent
 					);
 				relations.add(newPair);
 			}
@@ -139,7 +158,8 @@ public class ProofSolver {
 				FigureRelation pair = new FigureRelation(
 						FigureRelationType.CONGRUENT,
 						fig,
-						fig
+						fig,
+						null // Null parent?
 					);
 				relations.add(pair);
 			}
@@ -162,7 +182,8 @@ public class ProofSolver {
 						FigureRelation rel = new FigureRelation(
 								FigureRelationType.CONGRUENT,
 								pair0.getFigure0(),
-								pair1.getFigure0()
+								pair1.getFigure0(),
+								pair0 // Parent
 							);
 						relations.add(rel);
 					}
@@ -172,10 +193,14 @@ public class ProofSolver {
 	}
 	
 	private void handleCongruentPair(
-			Collection<FigureRelation> fullGiven, FigureRelation pair) {
+			Collection<FigureRelation> fullGiven, FigureRelation pair,
+			FigureRelation parent) {
 		// If two triangles are congruent, all of their corresponding children figures
 		// are congruent as well
 		if (pair.getFigure0().getClass() == Triangle.class) {
+			// Ensure given parent is not null
+//			if (parent == null)
+//				throw new NullPointerException("Null parent");
 			// First triangle
 			Triangle tri0 = pair.getFigure0();
 			// Second triangle
@@ -193,7 +218,8 @@ public class ProofSolver {
 				FigureRelation rel = new FigureRelation(
 						FigureRelationType.CONGRUENT,
 						child0,
-						child1
+						child1,
+						pair // Parent
 				);
 				fullGiven.add(rel);
 			}
@@ -204,7 +230,7 @@ public class ProofSolver {
 			List<FigureRelation> relations, FigureRelation pair) {
 		String angleName = Utils.getAngleBetween(pair.getFigure0(), pair.getFigure1());
 		Angle angle = diagram.getFigure(angleName, Angle.class);
-		makeRightAngle(angle, relations);
+		makeRightAngle(angle, relations, pair);
 	}
 	
 	private void handleBisectPair(
@@ -227,7 +253,8 @@ public class ProofSolver {
 		FigureRelation rel = new FigureRelation(
 				FigureRelationType.MIDPOINT,
 				vert,
-				seg1
+				seg1,
+				pair // Parent
 		);
 		handleMidpoint(relations, rel);
 	}
@@ -245,7 +272,8 @@ public class ProofSolver {
 		FigureRelation rel = new FigureRelation(
 				FigureRelationType.CONGRUENT,
 				newSeg0,
-				newSeg1
+				newSeg1,
+				pair // Parent
 		);
 		relations.add(rel);
 	}
@@ -263,7 +291,8 @@ public class ProofSolver {
 			FigureRelation rel = new FigureRelation(
 					FigureRelationType.CONGRUENT,
 					corrAngles.get(i).getKey(),
-					corrAngles.get(i).getValue()
+					corrAngles.get(i).getValue(),
+					pair // Parent
 			);
 			relations.add(rel);
 		}
@@ -309,7 +338,8 @@ public class ProofSolver {
 					FigureRelation rel = new FigureRelation(
 							FigureRelationType.CONGRUENT,
 							a0,
-							a1
+							a1,
+							null // Null parent?
 					);
 					relations.add(rel);
 				}
