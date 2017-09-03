@@ -63,7 +63,8 @@ public class Preprocessor {
 					// Get first figure
 					searchForFigure(diagram, figText0),
 					// Get second figure
-					searchForFigure(diagram, figText1)
+					searchForFigure(diagram, figText1),
+					null // Null parent?
 			);
 			// Add the given
 			diagram.addFigureRelationPair(rel);
@@ -82,7 +83,8 @@ public class Preprocessor {
 		FigureRelation proofGoal = new FigureRelation(
 				(FigureRelationType)goalPanel.getRelationBox().getSelectedItem(),
 				searchForFigure(diagram, goalPanel.getFigTextField0().getText()),
-				searchForFigure(diagram, goalPanel.getFigTextField1().getText())
+				searchForFigure(diagram, goalPanel.getFigTextField1().getText()),
+				null // Null parent?
 		);
 		diagram.setProofGoal(proofGoal);
 		
@@ -291,6 +293,7 @@ public class Preprocessor {
 		if (midpt == null)
 			throw new NullPointerException("No vertex at midpoint");
 
+		// TODO: verify technique
 		/*
 		 * Remove the bisecting pair from the diagram's given information
 		 * (all bisecting pairs are replaced with more specific midpoint
@@ -304,7 +307,8 @@ public class Preprocessor {
 		diagram.addFigureRelationPair(
 				FigureRelationType.MIDPOINT,
 				midpt.getName(),
-				bisectedSeg.getName()
+				bisectedSeg.getName(),
+				pair
 		);
 	}
 	
@@ -336,6 +340,10 @@ public class Preprocessor {
 			}
 		}
 		
+		// Remove the original figure relation pair, replace it with more specific ones
+		// that the proof solver can process
+		diagram.removeFigureRelationPair(pair);
+		
 		// Replace given, original figure relation pair with more specific
 		// ones
 		for (String nonIntersectingVert : nonIntersectingVerts) {
@@ -352,16 +360,13 @@ public class Preprocessor {
 			Segment baseSeg1 =
 					diagram.getFigure(poi.getName() + seg1.getName().substring(1));
 			
-			// Remove the original figure relation pair, replace it with more specific ones
-			// that the proof solver can process
-			diagram.removeFigureRelationPair(pair);
-			
 			// Add more specific figure relation pairs to replace the given one
 			for (int i = 0; i < 2; i++) {
 				diagram.addFigureRelationPair(
 						FigureRelationType.PERPENDICULAR,
 						smallIntersectingSeg.getName(),
-						(i == 0 ? baseSeg0 : baseSeg1).getName()
+						(i == 0 ? baseSeg0 : baseSeg1).getName(),
+						pair // Parent
 				);
 			}
 		}		
