@@ -13,10 +13,13 @@ public class FigureRelation {
 	private final FigureRelationType relType;
 	private final Figure figure0;
 	private final Figure figure1;
+	private final FigureRelation parent;
 	
-	public FigureRelation(FigureRelationType type, Figure fig0, Figure fig1) {
+	public FigureRelation(FigureRelationType type, Figure fig0, Figure fig1,
+			FigureRelation parent) {
 		relType = type;
 		figure0 = Objects.requireNonNull(fig0);
+		this.parent = parent;
 		
 		// Only in RIGHT relation pairs can the second figure be null
 		if (type != FigureRelationType.RIGHT) {
@@ -94,7 +97,7 @@ public class FigureRelation {
 	
 	@Override
 	public String toString() {
-		return relType + " ( " + figure0 + ", " + figure1 + " )";
+		return relType + " ( " + figure0.getClass() + ", " + figure1 + " )";
 	}
 
 	public FigureRelationType getRelationType() {
@@ -111,6 +114,10 @@ public class FigureRelation {
 	@SuppressWarnings("unchecked")
 	public <T> T getFigure1() {
 		return (T)figure1;
+	}
+
+	public FigureRelation getParent() {
+		return parent;
 	}
 	
 	public List<Figure> getFigures() {

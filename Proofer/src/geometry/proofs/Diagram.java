@@ -26,8 +26,9 @@ public class Diagram {
 	 * Set the goal of this proof
 	 * @return the old goal, or null if there was no previous
 	 */
-	public FigureRelation setProofGoal(FigureRelationType rel, String fig0, String fig1) {
-		FigureRelation newGoal = valueOf(rel, fig0, fig1);
+	public FigureRelation setProofGoal(FigureRelationType rel, String fig0, String fig1,
+			FigureRelation parent) {
+		FigureRelation newGoal = valueOf(rel, fig0, fig1, parent);
 		if (newGoal == null)
 			return null;
 		return setProofGoal(newGoal);
@@ -135,7 +136,8 @@ public class Diagram {
 	
 	/////////////////////////////
 	
-	private FigureRelation valueOf(FigureRelationType type, String fig0, String fig1) {
+	private FigureRelation valueOf(FigureRelationType type, String fig0, String fig1,
+			FigureRelation parent) {
 		final boolean RIGHT_ANGLE = type == FigureRelationType.RIGHT;
 		// Special search for right angles
 		Figure figure0 = !RIGHT_ANGLE ? getFigure(fig0) : getFigure(fig0, Angle.class);
@@ -144,11 +146,12 @@ public class Diagram {
 			figure1 = getFigure(fig1);
 		if (figure0 == null || (!RIGHT_ANGLE && figure1 == null))
 			return null;
-		return new FigureRelation(type, figure0, figure1);
+		return new FigureRelation(type, figure0, figure1, parent);
 	}
 	
-	public boolean addFigureRelationPair(FigureRelationType type, String fig0, String fig1) {
-		FigureRelation pair = valueOf(type, fig0, fig1);
+	public boolean addFigureRelationPair(FigureRelationType type, String fig0, String fig1,
+			FigureRelation parent) {
+		FigureRelation pair = valueOf(type, fig0, fig1, parent);
 		return pair == null ? false : relations.add(pair);
 	}
 	
@@ -166,8 +169,9 @@ public class Diagram {
 		return relations.addAll(figs);
 	}
 	
-	public boolean removeFigureRelationPair(FigureRelationType type, String fig0, String fig1) {
-		return relations.remove(valueOf(type, fig0, fig1));
+	public boolean removeFigureRelationPair(FigureRelationType type, String fig0,
+			String fig1, FigureRelation parent) {
+		return relations.remove(valueOf(type, fig0, fig1, parent));
 	}
 	public boolean removeFigureRelationPair(FigureRelation pair) {
 		return relations.remove(pair);
@@ -181,8 +185,9 @@ public class Diagram {
 		return relations.contains(rel);
 	}
 	
-	public boolean containsFigureRelationPair(FigureRelationType type, String fig0, String fig1) {
-		return relations.contains(valueOf(type, fig0, fig1));
+	public boolean containsFigureRelationPair(FigureRelationType type, String fig0,
+			String fig1, FigureRelation parent) {
+		return relations.contains(valueOf(type, fig0, fig1, parent));
 	}
 	
 	public boolean containsFigureRelationPairs(Collection<FigureRelation> figs) {
