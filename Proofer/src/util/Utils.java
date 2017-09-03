@@ -1,8 +1,6 @@
 package util;
 
-import geometry.shapes.Angle;
 import geometry.shapes.Segment;
-import geometry.shapes.Vertex;
 
 /**
  * Utility class.
@@ -149,27 +147,3 @@ public final class Utils {
 		return angleName;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
