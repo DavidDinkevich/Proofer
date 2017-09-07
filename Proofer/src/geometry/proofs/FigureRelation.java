@@ -97,7 +97,7 @@ public class FigureRelation {
 	
 	@Override
 	public String toString() {
-		return relType + " ( " + figure0.getClass() + ", " + figure1 + " )";
+		return relType + " ( " + figure0 + ", " + figure1 + " )";
 	}
 
 	public FigureRelationType getRelationType() {
