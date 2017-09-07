@@ -96,7 +96,8 @@ public class ProofSolver {
 				break;
 			case COMPLEMENTARY:
 			case SUPPLEMENTARY:
-			case RIGHT:				
+			case RIGHT:
+				break;
 			case MIDPOINT:
 				handleMidpoint(fullGiven, pair);
 			}
@@ -105,9 +106,10 @@ public class ProofSolver {
 	}
 	
 	private void doPreAlgorithmOps(List<FigureRelation> relations) {		
-		applyReflexivePostulate(relations);
-		makeAllRightAnglesCongruent(relations);
+//		applyReflexivePostulate(relations);
+//		makeAllRightAnglesCongruent(relations);
 		handleVerticalAngles(relations);
+		relations.forEach(System.out::println);
 	}
 	
 	/**
@@ -285,7 +287,7 @@ public class ProofSolver {
 		
 		// Get corresponding angles in triangles
 		List<SimpleEntry<Angle, Angle>> corrAngles = getCorrespondingAngles(tri0, tri1);
-		System.out.println(corrAngles.size());
+
 		// Length of corrAngles should always be 3
 		for (int i = 0; i < corrAngles.size(); i++) {
 			FigureRelation rel = new FigureRelation(
