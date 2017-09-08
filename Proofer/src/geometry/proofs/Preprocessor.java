@@ -40,6 +40,9 @@ public class Preprocessor {
 			diagram.addFigure(shape.getShape());
 		}
 		
+		// Make vertical angles congruent
+		handleVerticalAngles(diagram);
+		
 		// Determine given
 		for (FigureRelationPanel panel : figRelPanel.getFigureRelationPairPanels()) {
 			if (!panel.hasContent())
@@ -386,6 +389,34 @@ public class Preprocessor {
 			}
 		}
 		return null;
+	}
+	
+	private void handleVerticalAngles(Diagram diagram) {
+		// For each figure
+		for (int i = 0; i < diagram.getFigures().size(); i++) {
+			// If the figure is NOT an angle, we don't care about it
+			if (!(diagram.getFigures().get(i) instanceof Angle))
+				continue;
+			Angle a0 = (Angle)diagram.getFigures().get(i);
+			// For each other figure
+			for (int j = 0; j < diagram.getFigures().size(); j++) {
+				// If we're looking at the same figure OR the figure we're looking
+				// at is NOT an angle
+				if (i == j || !(diagram.getFigures().get(j) instanceof Angle))
+					continue;
+				Angle a1 = (Angle)diagram.getFigures().get(j);
+				
+				if (Utils.areVerticalAngles(a0, a1)) {
+					FigureRelation rel = new FigureRelation(
+							FigureRelationType.CONGRUENT,
+							a0,
+							a1,
+							null // Null parent?
+					);
+					diagram.addFigureRelationPair(rel);
+				}
+			}
+		}
 	}
 	
 	public DiagramCanvas getDiagramCanvas() {
