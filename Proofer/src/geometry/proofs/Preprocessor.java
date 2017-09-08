@@ -32,13 +32,13 @@ public class Preprocessor {
 	public Diagram generateDiagram() {
 		Diagram diagram = new Diagram();
 		
-		// Add and include all hidden figures
-		addHiddenFigures(diagram);
-		
 		// Gather figures
 		for (GraphicsShape2D<?> shape : canvas.getDiagramElements()) {
 			diagram.addFigure(shape.getShape());
 		}
+		
+		// Add and include all hidden figures
+		addHiddenFigures(diagram);
 		
 		// Make vertical angles congruent
 		handleVerticalAngles(diagram);
@@ -124,13 +124,13 @@ public class Preprocessor {
 	 * @param diagram the diagram that contains the hidden figures.
 	 */
 	private void addHiddenFigures(Diagram diagram) {
-		final int COUNT = canvas.getDiagramElements().count();
+		final int COUNT = diagram.getFigures().size();
 		
 		for (int i = 0, lastCheckedTri = i-1; i < COUNT; i++, lastCheckedTri++) {
 			// If the element's shape is a Triangle
-			if (canvas.getDiagramElements().get(i).getShape() instanceof Triangle) {
+			if (diagram.getFigures().get(i) instanceof Triangle) {
 				// Get the Triangle
-				Triangle tri0 = (Triangle)canvas.getDiagramElements().get(i).getShape();
+				Triangle tri0 = (Triangle)diagram.getFigures().get(i);
 				// Loop through all of the other elements in the list
 				for (int j = 0; j < COUNT; j++) {
 					// Prevent comparing the same element AND comparing this Triangle
@@ -138,10 +138,9 @@ public class Preprocessor {
 					if (i == j || j == lastCheckedTri)
 						continue;
 					// If the second element's shape is a Triangle
-					if (canvas.getDiagramElements().get(j).getShape() instanceof Triangle) {
+					if (diagram.getFigures().get(j) instanceof Triangle) {
 						// Get the second element's shape
-						Triangle tri1 = (Triangle)canvas.getDiagramElements().get(j).getShape();
-						
+						Triangle tri1 = (Triangle)diagram.getFigures().get(j);
 						// Add straight lines to diagram's list of elements
 						for (Vertex sharedVertex : getSharedVertices(tri0, tri1)) {
 							diagram.addFigures(getStraightLines(tri0, tri1, sharedVertex));
