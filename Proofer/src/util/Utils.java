@@ -1,5 +1,6 @@
 package util;
 
+import geometry.shapes.Angle;
 import geometry.shapes.Segment;
 
 /**
@@ -145,5 +146,27 @@ public final class Utils {
 		String angleName = 
 				String.valueOf(unshared0) + String.valueOf(shared) + String.valueOf(unshared1);
 		return angleName;
+	}
+	
+	/**
+	 * Get whether the given two angles are vertical angles.
+	 * @param a the first angle
+	 * @param b the second angle
+	 * @return whether they are vertical angles
+	 */
+	public static boolean areVerticalAngles(Angle a, Angle b) {
+		String name0 = a.getName();
+		String name1 = b.getName();
+		int sharedVertCount = 0;
+		if (a.getNameShort().equals(b.getNameShort())) {
+			for (int i = 0; i < name0.length(); i++) {
+				if (name0.indexOf(name1.charAt(i)) > -1)
+					continue;
+				++sharedVertCount;
+				break;
+			}
+			return sharedVertCount == 1;
+		}
+		return false;
 	}
 }
