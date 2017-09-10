@@ -160,12 +160,13 @@ public final class Utils {
 		int sharedVertCount = 0;
 		if (a.getNameShort().equals(b.getNameShort())) {
 			for (int i = 0; i < name0.length(); i++) {
-				if (name0.indexOf(name1.charAt(i)) > -1)
+				// If the name of the first angle does not contain the char at the given
+				// index in the second angle name.
+				if (!(name0.indexOf(name1.charAt(i)) > -1))
 					continue;
 				++sharedVertCount;
-				break;
 			}
-			return sharedVertCount == 1;
+			return sharedVertCount == 1 && a.getAngle() == b.getAngle();
 		}
 		return false;
 	}
