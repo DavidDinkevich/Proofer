@@ -3,6 +3,7 @@ package geometry.proofs;
 import java.util.List;
 
 import geometry.shapes.Angle;
+import geometry.shapes.Vertex;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,18 +66,16 @@ public class Diagram {
 	}
 	
 	public boolean addFigure(Figure fig) {
-		if (containsFigure(fig))
-			return false;
 		// Add the figure
-		figures.add(fig);
+		if (!addFigureAndRelations(fig))
+			return false;
 		
 		// Fill a buffer array with the figure's children
 		List<Figure> buff = new ArrayList<>(fig.getChildren());
 		// For each child figure in buff
 		for (Figure f : buff) {
 			// If the figure is not contained, add it.
-			if (!containsFigure(f))
-				figures.add(f);
+			addFigureAndRelations(f);
 		}
 		
 		// While the buffer is not empty
@@ -93,8 +92,7 @@ public class Diagram {
 			}
 			// Add figures from first buff to official list of figures
 			for (Figure f : buff) {
-				if (!containsFigure(f))
-					figures.add(f);
+				addFigureAndRelations(f);
 			}
 		}
 		return true;
@@ -104,6 +102,70 @@ public class Diagram {
 		for (Figure fig : figs) {
 			addFigure(fig);
 		}
+	}
+	
+	private boolean addFigureAndRelations(Figure fig) {
+		if (containsFigure(fig))
+			return false;
+		figures.add(fig);
+		applyReflexivePostulate(fig);
+		return true;
+	}
+	
+	/**
+	 * Apply the reflexive postulate
+	 * @param the figure
+	 */
+	private boolean applyReflexivePostulate(Figure fig) {
+		if (fig.getClass() == Vertex.class)
+			return false;
+		FigureRelation rel = new FigureRelation(
+				FigureRelationType.CONGRUENT,
+				fig,
+				fig,
+				null // Null parent
+		);
+		return addFigureRelationPair(rel);
+	}
+	
+	/**
+	 * Make the given angle a right angle, and make it congruent to all
+	 * other right angles in the given list of {@link FigureRelation}s.
+	 * @param a the angle
+	 * @param rightAngleIndex the index of the relation that says that the
+	 * given angle is a right angle
+	 * @param parent the parent relation
+	 * @return returns success
+	 */
+	public boolean makeRightAngle(String angle, int rightAngleIndex,
+			FigureRelation parent) {
+		Angle a = getFigure(angle);
+		if (a == null)
+			return false;
+		// Make angle a right angle
+//		FigureRelation rel = new FigureRelation(
+//				FigureRelationType.RIGHT,
+//				a,
+//				null,
+//				parent // Parent
+//			);
+//		relations.add(rel);
+		// Make new right angle congruent to all other right angles in collection
+		for (int i = 0; i < relations.size(); i++) {
+			if (i == rightAngleIndex)
+				continue;
+			FigureRelation pair = relations.get(i);
+			if (pair.getRelationType() == FigureRelationType.RIGHT) {
+				FigureRelation newPair = new FigureRelation(
+						FigureRelationType.CONGRUENT,
+						a,
+						pair.getFigure0(),
+						parent // Parent
+					);
+				relations.add(newPair);
+			}
+		}
+		return true;
 	}
 	
 	public boolean removeFigure(Figure fig) {
@@ -152,21 +214,30 @@ public class Diagram {
 	public boolean addFigureRelationPair(FigureRelationType type, String fig0, String fig1,
 			FigureRelation parent) {
 		FigureRelation pair = valueOf(type, fig0, fig1, parent);
-		return pair == null ? false : relations.add(pair);
+		return addFigureRelationPair(pair);
 	}
 	
 	public boolean addFigureRelationPair(FigureRelation pair) {
-		if (!containsFigures(pair.getFigures()))
+		if (containsFigureRelationPair(pair))
 			return false;
-		return relations.add(pair);
+		if (relations.add(pair)) {
+			// If the relation declares that an angle is a right angle,
+			// make this right angle congruent to all other right angles.
+			if (pair.getRelationType() == FigureRelationType.RIGHT) {
+				// The index of the relation that declares that this angle
+				// is a right angle
+				final int rightAngleIndex = relations.size()-1;
+				makeRightAngle(pair.getFigure0(), rightAngleIndex, pair);
+			}
+			return true;
+		}
+		return false;
 	}
 	
-	public boolean addFigureRelationPairs(Collection<FigureRelation> figs) {
+	public void addFigureRelationPairs(Collection<FigureRelation> figs) {
 		for (FigureRelation fig : figs) {
-			if (!containsFigures(fig.getFigures()))
-				return false;
+			addFigureRelationPair(fig);
 		}
-		return relations.addAll(figs);
 	}
 	
 	public boolean removeFigureRelationPair(FigureRelationType type, String fig0,
