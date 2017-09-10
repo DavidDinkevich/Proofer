@@ -81,6 +81,7 @@ public class ProofSolver {
 		for (FigureRelation pair : given) {
 			switch (pair.getRelationType()) {
 			case CONGRUENT:
+				// Null parent
 				handleCongruentPair(fullGiven, pair, null);
 				break;
 			case PARALLEL:
@@ -108,7 +109,6 @@ public class ProofSolver {
 	private void doPreAlgorithmOps(List<FigureRelation> relations) {		
 //		applyReflexivePostulate(relations);
 //		makeAllRightAnglesCongruent(relations);
-		handleVerticalAngles(relations);
 		relations.forEach(System.out::println);
 	}
 	
@@ -319,50 +319,6 @@ public class ProofSolver {
 		}
 		
 		return list;
-	}
-	
-	private void handleVerticalAngles(Collection<FigureRelation> relations) {
-		// For each figure
-		for (int i = 0; i < diagram.getFigures().size(); i++) {
-			// If the figure is NOT an angle, we don't care about it
-			if (!(diagram.getFigures().get(i) instanceof Angle))
-				continue;
-			Angle a0 = (Angle)diagram.getFigures().get(i);
-			// For each other figure
-			for (int j = 0; j < diagram.getFigures().size(); j++) {
-				// If we're looking at the same figure OR the figure we're looking
-				// at is NOT an angle
-				if (i == j || !(diagram.getFigures().get(j) instanceof Angle))
-					continue;
-				Angle a1 = (Angle)diagram.getFigures().get(j);
-				
-				if (areVerticalAngles(a0, a1)) {
-					FigureRelation rel = new FigureRelation(
-							FigureRelationType.CONGRUENT,
-							a0,
-							a1,
-							null // Null parent?
-					);
-					relations.add(rel);
-				}
-			}
-		}
-	}
-	
-	private boolean areVerticalAngles(Angle a, Angle b) {
-		String name0 = a.getName();
-		String name1 = b.getName();
-		int sharedVertCount = 0;
-		if (a.getNameShort().equals(b.getNameShort())) {
-			for (int i = 0; i < name0.length(); i++) {
-				if (name0.indexOf(name1.charAt(i)) > -1)
-					continue;
-				++sharedVertCount;
-				break;
-			}
-			return sharedVertCount == 1;
-		}
-		return false;
 	}
 }
 	
