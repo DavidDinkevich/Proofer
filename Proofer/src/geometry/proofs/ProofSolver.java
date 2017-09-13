@@ -103,6 +103,7 @@ public class ProofSolver {
 				handleMidpoint(fullGiven, pair);
 			}
 		}
+		
 		return fullGiven;
 	}
 	
@@ -143,53 +144,6 @@ public class ProofSolver {
 						rel // Parent
 					);
 				relations.add(newPair);
-			}
-		}
-	}
-	
-	/**
-	 * Applies the reflexive postulate to all {@link Figure}s in the given
-	 * {@link Collection} of {@link Figure}s.
-	 * @param relations the collection of figures.
-	 */
-	private void applyReflexivePostulate(Collection<FigureRelation> relations) {
-		// Enforce reflexive postulate--every figure is congruent to itself
-		// Vertices cannot be "congruent"
-		for (Figure fig : diagram.getFigures()) {
-			if (fig.getClass() != Vertex.class) {
-				FigureRelation pair = new FigureRelation(
-						FigureRelationType.CONGRUENT,
-						fig,
-						fig,
-						null // Null parent?
-					);
-				relations.add(pair);
-			}
-		}
-		
-	}
-	
-	// List needed for random access
-	private void makeAllRightAnglesCongruent(List<FigureRelation> relations) {
-		// Make all right angles congruent
-		for (int i = 0; i < relations.size(); i++) {
-			FigureRelation pair0 = relations.get(i);
-			// If this pair marks an angle a right angle
-			if (pair0.getRelationType() == FigureRelationType.RIGHT) {
-				for (int j = 0; j < relations.size(); j++) {
-					if (j == i)
-						continue;
-					FigureRelation pair1 = relations.get(j);
-					if (pair1.getRelationType() == FigureRelationType.RIGHT) {
-						FigureRelation rel = new FigureRelation(
-								FigureRelationType.CONGRUENT,
-								pair0.getFigure0(),
-								pair1.getFigure0(),
-								pair0 // Parent
-							);
-						relations.add(rel);
-					}
-				}
 			}
 		}
 	}
