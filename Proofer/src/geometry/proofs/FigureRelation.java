@@ -106,13 +106,13 @@ public class FigureRelation {
 
 	// Will crash if misused
 	@SuppressWarnings("unchecked")
-	public <T> T getFigure0() {
+	public <T extends Figure> T getFigure0() {
 		return (T)figure0;
 	}
 
 	// Will crash if misused
 	@SuppressWarnings("unchecked")
-	public <T> T getFigure1() {
+	public <T extends Figure> T getFigure1() {
 		return (T)figure1;
 	}
 
