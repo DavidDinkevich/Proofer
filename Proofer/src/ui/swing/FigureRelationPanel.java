@@ -66,8 +66,12 @@ public class FigureRelationPanel extends JComponent {
 	 * @return true if this is filled out completely, false otherwise.
 	 */
 	public boolean hasContent() {
+		// Get whether the relation declares an angle/triangle to be "right". In this case,
+		// the second text box would be left blank
+		final boolean isRightRelation = ((FigureRelationType)relationBox.getSelectedItem())
+				== FigureRelationType.RIGHT;
 		return getFigTextField0().getText().length() > 0
-				&& getFigTextField1().getText().length() > 0;
+				&& isRightRelation ? true : getFigTextField1().getText().length() > 0;
 				// Relation type combo box will always have a value
 	}
 
