@@ -139,7 +139,7 @@ public class Diagram {
 	 */
 	public boolean makeRightAngle(String angle, int rightAngleIndex,
 			FigureRelation parent) {
-		Angle a = getFigure(angle);
+		Angle a = getFigure(angle, Angle.class);
 		if (a == null)
 			return false;
 		// Make angle a right angle
@@ -227,7 +227,7 @@ public class Diagram {
 				// The index of the relation that declares that this angle
 				// is a right angle
 				final int rightAngleIndex = relations.size()-1;
-				makeRightAngle(pair.getFigure0(), rightAngleIndex, pair);
+				makeRightAngle(pair.getFigure0().getName(), rightAngleIndex, pair);
 			}
 			return true;
 		}
