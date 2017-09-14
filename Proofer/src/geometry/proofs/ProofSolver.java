@@ -2,7 +2,6 @@ package geometry.proofs;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Deque;
 import java.util.ArrayDeque;
@@ -101,47 +100,6 @@ public class ProofSolver {
 		}		
 	}
 	
-	private void doPreAlgorithmOps(List<FigureRelation> relations) {		
-//		applyReflexivePostulate(relations);
-//		makeAllRightAnglesCongruent(relations);
-		relations.forEach(System.out::println);
-	}
-	
-	/**
-	 * Make the given angle a right angle, and make it congruent to all
-	 * other right angles in the given list of {@link FigureRelation}s.
-	 * @param a the angle
-	 * @param relations the list of {@link FigureRelation}s.
-	 * @param parent the parent relation
-	 */
-	private void makeRightAngle(Angle a, List<FigureRelation> relations,
-			FigureRelation parent) {
-		// Make angle a right angle
-		FigureRelation rel = new FigureRelation(
-				FigureRelationType.RIGHT,
-				a,
-				null,
-				parent // Parent
-			);
-		relations.add(rel);
-		final int INDEX = relations.size()-1;
-		// Make new right angle congruent to all other right angles in collection
-		for (int i = 0; i < relations.size(); i++) {
-			if (i == INDEX)
-				continue;
-			FigureRelation pair = relations.get(i);
-			if (pair.getRelationType() == FigureRelationType.RIGHT) {
-				FigureRelation newPair = new FigureRelation(
-						FigureRelationType.CONGRUENT,
-						a,
-						pair.getFigure0(),
-						rel // Parent
-					);
-				relations.add(newPair);
-			}
-		}
-	}
-	
 	private void handleCongruentPair(FigureRelation pair, FigureRelation parent) {
 		// If two triangles are congruent, all of their corresponding children figures
 		// are congruent as well
@@ -176,10 +134,7 @@ public class ProofSolver {
 	
 	private void handlePerpendicularPair(FigureRelation pair) {
 		String angleName = Utils.getAngleBetween(pair.getFigure0(), pair.getFigure1());
-		Angle angle = diagram.getFigure(angleName, Angle.class);
-		final int index = diagram.getFigureRelations().size()-1;
-		diagram.makeRightAngle(angleName, -1, pair);
-//		makeRightAngle(angle, relations, pair);
+		diagram.makeRightAngle(angleName, pair);
 	}
 	
 	private void handleBisectPair(FigureRelation pair) {
