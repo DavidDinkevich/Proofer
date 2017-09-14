@@ -143,13 +143,13 @@ public class Diagram {
 		if (a == null)
 			return false;
 		// Make angle a right angle
-//		FigureRelation rel = new FigureRelation(
-//				FigureRelationType.RIGHT,
-//				a,
-//				null,
-//				parent // Parent
-//			);
-//		relations.add(rel);
+		FigureRelation rel = new FigureRelation(
+				FigureRelationType.RIGHT,
+				a,
+				null,
+				parent // Parent
+			);
+		relations.add(rel);
 		// Make new right angle congruent to all other right angles in collection
 		for (int i = 0; i < relations.size(); i++) {
 			if (i == rightAngleIndex)
