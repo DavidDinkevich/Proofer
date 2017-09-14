@@ -132,15 +132,13 @@ public class Diagram {
 	 * Make the given angle a right angle, and make it congruent to all
 	 * other right angles in the given list of {@link FigureRelation}s.
 	 * @param a the angle
-	 * @param rightAngleIndex the index of the relation that says that the
-	 * given angle is a right angle
 	 * @param parent the parent relation
 	 * @return returns success
 	 */
-	public boolean makeRightAngle(String angle, int rightAngleIndex,
-			FigureRelation parent) {
+	public boolean makeRightAngle(String angle, FigureRelation parent) {
 		Angle a = getFigure(angle, Angle.class);
-		if (a == null)
+		final int angleIndex = figures.indexOf(a);
+		if (angleIndex < 0)
 			return false;
 		// Make angle a right angle
 		FigureRelation rel = new FigureRelation(
@@ -152,7 +150,7 @@ public class Diagram {
 		relations.add(rel);
 		// Make new right angle congruent to all other right angles in collection
 		for (int i = 0; i < relations.size(); i++) {
-			if (i == rightAngleIndex)
+			if (i == angleIndex)
 				continue;
 			FigureRelation pair = relations.get(i);
 			if (pair.getRelationType() == FigureRelationType.RIGHT) {
@@ -224,10 +222,7 @@ public class Diagram {
 			// If the relation declares that an angle is a right angle,
 			// make this right angle congruent to all other right angles.
 			if (pair.getRelationType() == FigureRelationType.RIGHT) {
-				// The index of the relation that declares that this angle
-				// is a right angle
-				final int rightAngleIndex = relations.size()-1;
-				makeRightAngle(pair.getFigure0().getName(), rightAngleIndex, pair);
+				makeRightAngle(pair.getFigure0().getName(), pair);
 			}
 			return true;
 		}
