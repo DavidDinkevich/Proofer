@@ -46,13 +46,10 @@ public class ProofSolver {
 		if (diagram.getProofGoal() == null)
 			throw new NullPointerException("Proof goal is null.");
 		// Solve proof here
-		List<FigureRelation> fullGiven = new ArrayList<>(diagram.getFigureRelations());
-		// Pre-algorithm preparation
-		doPreAlgorithmOps(fullGiven);
 		// Inflate the given, get all available figure relations
-		fullGiven.addAll(inflateGiven());
+		inflateGiven();
 		// Check if the proof goal is included in the inflated given
-		for (FigureRelation pair : fullGiven) {
+		for (FigureRelation pair : diagram.getFigureRelations()) {
 			if (pair.equals(diagram.getProofGoal())) {
 				traceback(pair);
 				return proofWasSolved = result = true;
@@ -74,37 +71,34 @@ public class ProofSolver {
 		stack.forEach(System.out::println);
 	}
 	
-	private List<FigureRelation> inflateGiven() {
-		List<FigureRelation> given = diagram.getFigureRelations();
-		List<FigureRelation> fullGiven = new ArrayList<>();
+	private void inflateGiven() {
+		List<FigureRelation> given = new ArrayList<>(diagram.getFigureRelations());
 		
 		for (FigureRelation pair : given) {
 			switch (pair.getRelationType()) {
 			case CONGRUENT:
 				// Null parent
-				handleCongruentPair(fullGiven, pair, null);
+				handleCongruentPair(pair, null);
 				break;
 			case PARALLEL:
 				break;
 			case PERPENDICULAR:
-				handlePerpendicularPair(fullGiven, pair);
+				handlePerpendicularPair(pair);
 				break;
 			case BISECTS:
-				handleBisectPair(fullGiven, pair);
+				handleBisectPair(pair);
 				break;
 			case SIMILAR:
-				handleSimilarTriangles(fullGiven, pair);
+				handleSimilarTriangles(pair);
 				break;
 			case COMPLEMENTARY:
 			case SUPPLEMENTARY:
 			case RIGHT:
 				break;
 			case MIDPOINT:
-				handleMidpoint(fullGiven, pair);
+				handleMidpoint(pair);
 			}
-		}
-		
-		return fullGiven;
+		}		
 	}
 	
 	private void doPreAlgorithmOps(List<FigureRelation> relations) {		
@@ -148,9 +142,7 @@ public class ProofSolver {
 		}
 	}
 	
-	private void handleCongruentPair(
-			Collection<FigureRelation> fullGiven, FigureRelation pair,
-			FigureRelation parent) {
+	private void handleCongruentPair(FigureRelation pair, FigureRelation parent) {
 		// If two triangles are congruent, all of their corresponding children figures
 		// are congruent as well
 		if (pair.getFigure0().getClass() == Triangle.class) {
@@ -177,20 +169,20 @@ public class ProofSolver {
 						child1,
 						pair // Parent
 				);
-				fullGiven.add(rel);
+				diagram.addFigureRelationPair(rel);
 			}
 		}
 	}
 	
-	private void handlePerpendicularPair(
-			List<FigureRelation> relations, FigureRelation pair) {
+	private void handlePerpendicularPair(FigureRelation pair) {
 		String angleName = Utils.getAngleBetween(pair.getFigure0(), pair.getFigure1());
 		Angle angle = diagram.getFigure(angleName, Angle.class);
-		makeRightAngle(angle, relations, pair);
+		final int index = diagram.getFigureRelations().size()-1;
+		diagram.makeRightAngle(angleName, -1, pair);
+//		makeRightAngle(angle, relations, pair);
 	}
 	
-	private void handleBisectPair(
-			Collection<FigureRelation> relations, FigureRelation pair) {
+	private void handleBisectPair(FigureRelation pair) {
 		Segment seg0 = pair.getFigure0();
 		Segment seg1 = pair.getFigure1();
 		
@@ -212,11 +204,10 @@ public class ProofSolver {
 				seg1,
 				pair // Parent
 		);
-		handleMidpoint(relations, rel);
+		handleMidpoint(rel);
 	}
 	
-	private void handleMidpoint(
-			Collection<FigureRelation> relations, FigureRelation pair) {
+	private void handleMidpoint(FigureRelation pair) {
 		Vertex vert = pair.getFigure0();
 		Segment seg = pair.getFigure1();
 		
@@ -231,11 +222,10 @@ public class ProofSolver {
 				newSeg1,
 				pair // Parent
 		);
-		relations.add(rel);
+		diagram.addFigureRelationPair(rel);
 	}
 	
-	private void handleSimilarTriangles(
-			Collection<FigureRelation> relations, FigureRelation pair) {
+	private void handleSimilarTriangles(FigureRelation pair) {
 		Triangle tri0 = pair.getFigure0();
 		Triangle tri1 = pair.getFigure1();
 		
@@ -250,7 +240,7 @@ public class ProofSolver {
 					corrAngles.get(i).getValue(),
 					pair // Parent
 			);
-			relations.add(rel);
+			diagram.addFigureRelationPair(rel);
 		}
 	}
 	
