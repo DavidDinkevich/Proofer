@@ -98,7 +98,7 @@ public class Diagram {
 		return true;
 	}
 	
-	public void addFigures(Collection<Figure> figs) {
+	public void addFigures(Collection<? extends Figure> figs) {
 		for (Figure fig : figs) {
 			addFigure(fig);
 		}
@@ -170,7 +170,7 @@ public class Diagram {
 		return figures.remove(fig);
 	}
 	
-	public boolean removeFigures(Collection<Figure> figs) {
+	public boolean removeFigures(Collection<? extends Figure> figs) {
 		return figures.removeAll(figs);
 	}
 	
@@ -186,8 +186,20 @@ public class Diagram {
 		return getFigure(name, c) != null;
 	}
 	
-	public boolean containsFigures(Collection<Figure> figs) {
-		return figures.containsAll(figs);
+	public boolean containsFigures(Collection<String> figs) {
+		for (String fig : figs) {
+			if (!containsFigure(fig))
+				return false;
+		}
+		return true;
+	}
+	
+	public boolean containsFigures(Collection<String> figs, Class<? extends Figure> c) {
+		for (String fig : figs) {
+			if (!containsFigure(fig, c))
+				return false;
+		}
+		return true;
 	}
 	
 	public List<Figure> getFigures() {
