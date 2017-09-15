@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
 
 import geometry.Vec2;
 import geometry.shapes.Angle;
@@ -112,6 +113,28 @@ public class Preprocessor {
 	}
 	
 	/**
+	 * Get all of the shared vertices between two triangles
+	 * @param tri0 the first triangle
+	 * @param tri1 the second triangle
+	 * @return the shared vertices
+	 */
+	private List<Vertex> getSharedVertices(Triangle tri0, Triangle tri1) {
+		List<Vertex> commonVertices = null;
+		outer:
+			for (Vertex vert0 : tri0) {
+				for (Vertex vert1 : tri1) {
+					if (vert0.equals(vert1)) {
+						if (commonVertices == null)
+							commonVertices = new ArrayList<>();
+						commonVertices.add(vert0);
+						continue outer;
+					}
+				}
+			}
+		return commonVertices == null ? Collections.emptyList() : commonVertices;
+	}
+	
+	/**
 	 * If I have two right triangles, ABC and DBC,
 	 *    C
 	 * A  B  D
@@ -143,7 +166,10 @@ public class Preprocessor {
 						Triangle tri1 = (Triangle)diagram.getFigures().get(j);
 						// Add straight lines to diagram's list of elements
 						for (Vertex sharedVertex : getSharedVertices(tri0, tri1)) {
-							diagram.addFigures(getStraightLines(tri0, tri1, sharedVertex));
+							SimpleEntry<Collection<Figure>, Collection<Figure>> figures =
+									identifyHiddenFigures(tri0, tri1, sharedVertex);
+							diagram.addFigures(figures.getKey());
+							diagram.addFigures(figures.getValue());
 						}
 					}
 				}
@@ -151,30 +177,10 @@ public class Preprocessor {
 		}
 	}
 	
-	/**
-	 * Get all of the shared vertices between two triangles
-	 * @param tri0 the first triangle
-	 * @param tri1 the second triangle
-	 * @return the shared vertices
-	 */
-	private List<Vertex> getSharedVertices(Triangle tri0, Triangle tri1) {
-		List<Vertex> commonVertices = null;
-		outer:
-		for (Vertex vert0 : tri0) {
-			for (Vertex vert1 : tri1) {
-				if (vert0.equals(vert1)) {
-					if (commonVertices == null)
-						commonVertices = new ArrayList<>();
-					commonVertices.add(vert0);
-					continue outer;
-				}
-			}
-		}
-		return commonVertices == null ? Collections.emptyList() : commonVertices;
-	}
-	
-	private Collection<Figure> getStraightLines(Triangle tri0, Triangle tri1, Vertex sharedVertex) {
+	private SimpleEntry<Collection<Figure>, Collection<Figure>>
+		identifyHiddenFigures(Triangle tri0, Triangle tri1, Vertex sharedVertex) {
 		Collection<Figure> segs = new ArrayList<>();
+		Collection<Figure> angles = new ArrayList<>();
 		
 		// Loop through segments in first triangle
 		for (Segment seg0 : tri0.getSides()) {
@@ -194,7 +200,10 @@ public class Preprocessor {
 				Slope seg0Slope = seg0.getSlope();
 				// Get slope of segment 1
 				Slope seg1Slope = seg1.getSlope();
-				// Compare slopes
+				/*
+				 * Compare slopes: if the slopes are the same, add a new hidden segment.
+				 * Otherwise, add the hidden angle.z
+				 */
 				if (seg0Slope.equals(seg1Slope)) {
 					// Combine segments
 					
@@ -209,9 +218,25 @@ public class Preprocessor {
 					Segment newStraightLine = new Segment(newSegVerts);
 					segs.add(newStraightLine);
 				}
+				// Add hidden angles
+				else {
+					String angleName = Utils.getAngleBetween(seg0.getName(), seg1.getName());
+					String unsharedVert0 = angleName.substring(0, 1);
+					String unsharedVert1 = angleName.substring(2);
+					String sharedVert = angleName.substring(1, 2);
+					Vertex first, second, third;
+					first = (Vertex) (seg0.containsChild(unsharedVert0) ?
+							seg0.getChild(unsharedVert0) : seg0.getChild(unsharedVert1));
+					third = (Vertex) (first.getNameChar() == unsharedVert0.charAt(0) ?
+							seg1.getChild(unsharedVert1) : seg1.getChild(unsharedVert0));
+					second = (Vertex) seg0.getChild(sharedVert);
+					Angle newAngle = new Angle(first, second, third);
+					angles.add(newAngle);
+					System.err.println(newAngle.getName());
+				}
 			}
 		}
-		return segs;
+		return new SimpleEntry<>(segs, angles);
 	}
 	
 	private Vertex[] getFarthestVertices(List<Vertex> vertices) {
