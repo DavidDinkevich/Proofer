@@ -61,7 +61,7 @@ public final class Angle implements Figure {
 	}
 	
 	private static List<Vertex> makeAngle(Segment a, Segment b) {
-		String name = Utils.getAngleBetween(a, b);
+		String name = Utils.getAngleBetween(a.getName(), b.getName());
 		if (name == null)
 			throw new NullPointerException();
 		
