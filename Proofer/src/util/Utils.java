@@ -1,7 +1,6 @@
 package util;
 
 import geometry.shapes.Angle;
-import geometry.shapes.Segment;
 
 /**
  * Utility class.
@@ -116,14 +115,11 @@ public final class Utils {
 	/**
 	 * Get the name of the angle formed between two segments that share
 	 * a vertex.
-	 * @param a the first segment
-	 * @param b the second segment
+	 * @param a the first segment's name
+	 * @param b the second segment's name
 	 * @return the angle formed, or null if the segments do not share a vertex
 	 */
-	public static String getAngleBetween(Segment a, Segment b) {
-		String seg0 = a.getName();
-		String seg1 = b.getName();
-		
+	public static String getAngleBetween(String seg0, String seg1) {
 		// Get shared vertex between segments
 		char shared, unshared0, unshared1; // 1 shared, 2 unshared
 		final int index = seg1.indexOf(seg0.charAt(0));
