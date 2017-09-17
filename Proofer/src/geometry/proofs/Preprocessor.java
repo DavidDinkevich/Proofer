@@ -168,7 +168,8 @@ public class Preprocessor {
 					if (diagram.getFigures().get(j) instanceof Triangle) {
 						// Don't want to compare triangles that have already been compared
 						for (int[] triPair : checkedTriPairs) {
-							if ((triPair[0] == i && triPair[1] == j) || (triPair[0] == j && triPair[1] == i))
+							if ((triPair[0] == i && triPair[1] == j) ||
+									(triPair[0] == j && triPair[1] == i))
 								continue j_loop;
 						}
 						
@@ -210,7 +211,6 @@ public class Preprocessor {
 		
 		// For all shared vertices between the two triangles
 		for (Vertex sharedVertex : getSharedVertices(tri0, tri1)) {
-			System.out.println("Time");
 			// Loop through segments in first triangle
 			for (Segment seg0 : tri0.getSides()) {
 				// If the segment DOES NOT contain the shared vertex (given)
@@ -250,6 +250,10 @@ public class Preprocessor {
 					// Add hidden angles
 					else {
 						String angleName = Utils.getAngleBetween(seg0.getName(), seg1.getName());
+						// This hidden angle might actually be in the diagram already, so don't add
+						// it twice
+						if (diag.containsFigure(angleName, Angle.class))
+							continue;
 						String unsharedVert0 = angleName.substring(0, 1);
 						String unsharedVert1 = angleName.substring(2);
 						String sharedVert = angleName.substring(1, 2);
