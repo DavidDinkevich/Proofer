@@ -145,6 +145,24 @@ public final class Utils {
 	}
 	
 	/**
+	 * Get the vertex shared between the given two segments.
+	 * Example of valid parameters: "AB", "BC"
+	 * @param seg0 the first segment
+	 * @param seg1 the second segment
+	 * @return the shared vertex
+	 */
+	public static String getSharedVertex(String seg0, String seg1) {
+		if (containsAllChars(seg0, seg1))
+			return null;
+		for (int i = 0; i < seg0.length(); i++) {
+			final int sharedCharIndex = seg1.indexOf(seg0.charAt(i));
+			if (sharedCharIndex >= 0)
+				return String.valueOf(seg1.charAt(sharedCharIndex));
+		}
+		return null;
+	}
+	
+	/**
 	 * Get whether the given two angles are vertical angles.
 	 * @param a the first angle
 	 * @param b the second angle
