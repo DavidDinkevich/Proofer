@@ -98,10 +98,18 @@ public class Diagram {
 		return true;
 	}
 	
-	public void addFigures(Collection<? extends Figure> figs) {
+	/**
+	 * Add the given List of figures
+	 * @param figs the List
+	 * @return true if the diagram was modified (if a single figure was added)
+	 */
+	public boolean addFigures(Collection<? extends Figure> figs) {
+		boolean result = false;
 		for (Figure fig : figs) {
-			addFigure(fig);
+			if (addFigure(fig))
+				result = true;
 		}
+		return result;
 	}
 	
 	private boolean addFigureAndRelations(Figure fig) {
