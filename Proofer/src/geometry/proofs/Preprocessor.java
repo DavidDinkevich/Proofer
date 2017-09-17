@@ -164,14 +164,14 @@ public class Preprocessor {
 					// Don't want to compare the same triangle
 					if (i == j)
 						continue;
-					// Don't want to compare triangles that have already been compared
-					for (int[] triPair : checkedTriPairs) {
-						if ((triPair[0] == i && triPair[1] == j) || (triPair[0] == j && triPair[1] == i))
-							continue j_loop;
-					}
-					
 					// If the second element's shape is a Triangle
 					if (diagram.getFigures().get(j) instanceof Triangle) {
+						// Don't want to compare triangles that have already been compared
+						for (int[] triPair : checkedTriPairs) {
+							if ((triPair[0] == i && triPair[1] == j) || (triPair[0] == j && triPair[1] == i))
+								continue j_loop;
+						}
+						
 						// Remember this pair of triangles--don't want to use again
 						checkedTriPairs.add(new int[] {i, j});
 						
