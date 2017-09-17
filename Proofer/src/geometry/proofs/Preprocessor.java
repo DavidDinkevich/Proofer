@@ -149,21 +149,32 @@ public class Preprocessor {
 		List<Angle> hiddenAngles = Collections.emptyList();
 		final int COUNT = diagram.getFigures().size();
 		
-		for (int i = 0, lastCheckedTri = i-1; i < COUNT; i++) {
+		// We don't want to check the same PAIR of triangles more than once, so we'll create
+		// a list to store the pairs we've checked already
+		List<int[]> checkedTriPairs = new ArrayList<>();
+
+		for (int i = 0; i < COUNT; i++) {
 			// If the element's shape is a Triangle
 			if (diagram.getFigures().get(i) instanceof Triangle) {
 				// Get the Triangle
 				Triangle tri0 = (Triangle)diagram.getFigures().get(i);
 				// Loop through all of the other elements in the list
+				j_loop:
 				for (int j = 0; j < COUNT; j++) {
-					// Prevent comparing the same element AND comparing this Triangle
-					// with the most recently checked Triangle
-					if (i == j || j == lastCheckedTri)
+					// Don't want to compare the same triangle
+					if (i == j)
 						continue;
+					// Don't want to compare triangles that have already been compared
+					for (int[] triPair : checkedTriPairs) {
+						if ((triPair[0] == i && triPair[1] == j) || (triPair[0] == j && triPair[1] == i))
+							continue j_loop;
+					}
+					
 					// If the second element's shape is a Triangle
 					if (diagram.getFigures().get(j) instanceof Triangle) {
-						// Update last checked triangle
-						lastCheckedTri = j;
+						// Remember this pair of triangles--don't want to use again
+						checkedTriPairs.add(new int[] {i, j});
+						
 						// Get the second element's shape
 						Triangle tri1 = (Triangle)diagram.getFigures().get(j);
 						// Add hidden figures
@@ -180,26 +191,7 @@ public class Preprocessor {
 		}
 		
 		// Add hidden triangles
-		for (Figure a : hiddenAngles) {
-			String originalAngleName = a.getName();
-			// Vertices
-			String sharedVert = originalAngleName.substring(1, 2);
-			String v0 = originalAngleName.substring(0, 1);
-			String v1 = originalAngleName.substring(2); 
-			String secondAngle = sharedVert + v0 + v1;
-			String thirdAngle = sharedVert + v1 + v0;
-			
-			// Check if the two derived angles (secondAngle, thirdAngle) exist in the diagram
-			if (!diagram.containsFigures(Arrays.asList(secondAngle, thirdAngle), Angle.class))
-				continue;
-			// New triangle
-			Angle originalAngle = (Angle)a;
-			Vertex vertex0 = (Vertex) originalAngle.getChild(v0);
-			Vertex vertex1 = (Vertex) originalAngle.getChild(v1);
-			Vertex shared = (Vertex) originalAngle.getChild(sharedVert);
-			Triangle triangle = new Triangle(vertex0, shared, vertex1);
-			System.err.println(triangle.getName());
-		}
+		identifyHiddenTriangles(diagram, hiddenAngles);
 	}
 	
 	/**
@@ -274,6 +266,44 @@ public class Preprocessor {
 			}
 		}
 		return Arrays.asList(segs, angles);
+	}
+	
+	/**
+	 * Identify hidden triangles in a diagram
+	 * @param diag the diagram
+	 * @param hiddenAngles the List of hidden angles to use
+	 * to find the hidden triangles
+	 * @return a List of hidden triangles
+	 */
+	private List<Triangle> identifyHiddenTriangles(Diagram diag, List<Angle> hiddenAngles) {
+		List<Triangle> hiddenTriangles = null;
+		
+		// Add hidden triangles
+		for (Figure a : hiddenAngles) {
+			String originalAngleName = a.getName();
+			// Vertices
+			String sharedVert = originalAngleName.substring(1, 2);
+			String v0 = originalAngleName.substring(0, 1);
+			String v1 = originalAngleName.substring(2); 
+			String secondAngle = sharedVert + v0 + v1;
+			String thirdAngle = sharedVert + v1 + v0;
+			
+			// Check if the two derived angles (secondAngle, thirdAngle) exist in the diagram
+			if (!diag.containsFigures(Arrays.asList(secondAngle, thirdAngle), Angle.class))
+				continue;
+			// New triangle
+			Angle originalAngle = (Angle)a;
+			Vertex vertex0 = (Vertex) originalAngle.getChild(v0);
+			Vertex vertex1 = (Vertex) originalAngle.getChild(v1);
+			Vertex shared = (Vertex) originalAngle.getChild(sharedVert);
+			Triangle triangle = new Triangle(vertex0, shared, vertex1);
+			if (hiddenTriangles == null)
+				hiddenTriangles = new ArrayList<>();
+			hiddenTriangles.add(triangle);
+			System.err.println(triangle.getName());
+		}
+		
+		return hiddenTriangles == null ? Collections.emptyList() : hiddenTriangles;
 	}
 	
 	private Vertex[] getFarthestVertices(List<Vertex> vertices) {
