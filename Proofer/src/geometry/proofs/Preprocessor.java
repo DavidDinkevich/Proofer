@@ -116,21 +116,21 @@ public class Preprocessor {
 	 * @param tri1 the second triangle
 	 * @return the shared vertices
 	 */
-	private List<Vertex> getSharedVertices(Triangle tri0, Triangle tri1) {
-		List<Vertex> commonVertices = null;
-		outer:
-			for (Vertex vert0 : tri0) {
-				for (Vertex vert1 : tri1) {
-					if (vert0.equals(vert1)) {
-						if (commonVertices == null)
-							commonVertices = new ArrayList<>();
-						commonVertices.add(vert0);
-						continue outer;
-					}
-				}
-			}
-		return commonVertices == null ? Collections.emptyList() : commonVertices;
-	}
+//	private List<Vertex> getSharedVertices(Triangle tri0, Triangle tri1) {
+//		List<Vertex> commonVertices = null;
+//		outer:
+//		for (Vertex vert0 : tri0) {
+//			for (Vertex vert1 : tri1) {
+//				if (vert0.equals(vert1)) {
+//					if (commonVertices == null)
+//						commonVertices = new ArrayList<>();
+//					commonVertices.add(vert0);
+//					continue outer;
+//				}
+//			}
+//		}
+//		return commonVertices == null ? Collections.emptyList() : commonVertices;
+//	}
 	
 	/**
 	 * If I have two right triangles, ABC and DBC,
@@ -144,132 +144,122 @@ public class Preprocessor {
 	 * included in the diagram and can be safely referenced.
 	 * @param diagram the diagram that contains the hidden figures.
 	 */
-	@SuppressWarnings("unchecked")
 	private void addHiddenFigures(Diagram diagram) {
-		List<Angle> hiddenAngles = Collections.emptyList();
-		final int COUNT = diagram.getFigures().size();
+		List<Angle> hiddenAngles = new ArrayList<>();
+		boolean figuresWereAdded = false;
 		
-		// We don't want to check the same PAIR of triangles more than once, so we'll create
-		// a list to store the pairs we've checked already
-		List<int[]> checkedTriPairs = new ArrayList<>();
-
-		for (int i = 0; i < COUNT; i++) {
-			// If the element's shape is a Triangle
-			if (diagram.getFigures().get(i) instanceof Triangle) {
-				// Get the Triangle
-				Triangle tri0 = (Triangle)diagram.getFigures().get(i);
-				// Loop through all of the other elements in the list
-				j_loop:
-				for (int j = 0; j < COUNT; j++) {
-					// Don't want to compare the same triangle
-					if (i == j)
-						continue;
-					// If the second element's shape is a Triangle
-					if (diagram.getFigures().get(j) instanceof Triangle) {
-						// Don't want to compare triangles that have already been compared
-						for (int[] triPair : checkedTriPairs) {
-							if ((triPair[0] == i && triPair[1] == j) ||
-									(triPair[0] == j && triPair[1] == i))
-								continue j_loop;
+		do {
+			final int COUNT = diagram.getFigures().size();
+			figuresWereAdded = false;
+		
+			// We don't want to check the same PAIR of segments more than once,
+			// so we'll create a list to store the pairs we've checked already
+			List<int[]> checkedSegPairs = new ArrayList<>();
+			
+			// Loop through segments
+			for (int i = 0; i < COUNT; i++) {
+				// If the inspected figure is a segment
+				if (diagram.getFigures().get(i) instanceof Segment) {
+					// Capture the segment
+					Segment seg0 = (Segment)diagram.getFigures().get(i);
+					
+					j_loop: // Loop through figures again
+					for (int j = 0; j < COUNT; j++) {
+						// Don't want to compare the same segment
+						if (i == j)
+							continue;
+						if (diagram.getFigures().get(j) instanceof Segment) {
+							// Don't want to compare pairs of segments that have
+							// already been compared
+							for (int[] segPair : checkedSegPairs) {
+								if ((segPair[0] == i && segPair[1] == j) ||
+										(segPair[0] == j && segPair[1] == i))
+									continue j_loop;
+							}
+														
+							// Remember this pair of segments--don't want to use again
+							checkedSegPairs.add(new int[] {i, j});
+							
+							Segment seg1 = (Segment)diagram.getFigures().get(j);
+							
+							// Add hidden figures
+							Figure hiddenFig = identifyHiddenSegOrAngle(seg0, seg1);
+							// If we've found a hidden figure
+							if (hiddenFig != null)
+								// If the figure was added to the diagram (it was not contained before)
+								if (diagram.addFigure(hiddenFig)) {
+									figuresWereAdded = true; // Update variable
+									// If the hidden figure we found is an angle, store it
+									if (hiddenFig instanceof Angle)
+										hiddenAngles.add((Angle)hiddenFig);
+								}
 						}
-						
-						// Remember this pair of triangles--don't want to use again
-						checkedTriPairs.add(new int[] {i, j});
-						
-						// Get the second element's shape
-						Triangle tri1 = (Triangle)diagram.getFigures().get(j);
-						// Add hidden figures
-						List<List<? extends Figure>> hiddenFigures =
-								identifyHiddenSegsAndAngles(diagram, tri0, tri1);
-						// Hidden segments
-						diagram.addFigures(hiddenFigures.get(0));
-						// Hidden angles
-						hiddenAngles = (List<Angle>)hiddenFigures.get(1);
-						diagram.addFigures(hiddenAngles);
 					}
 				}
 			}
-		}
-		
-		// Add hidden triangles
-		identifyHiddenTriangles(diagram, hiddenAngles);
+			// Add hidden triangles
+			List<Triangle> hiddenTris = identifyHiddenTriangles(diagram, hiddenAngles);
+			// If hidden triangles were added to the diagram
+			if (diagram.addFigures(hiddenTris))
+				figuresWereAdded = true; // Update variable
+		} while (figuresWereAdded);
 	}
 	
 	/**
-	 * Identify hidden {@link Segment}s and {@link Angle}s between two {@link Triangle}s
-	 * in the given {@link Diagram}
-	 * @param diag the Diagram
-	 * @param tri0 the first Triangle
-	 * @param tri1 the second Triangle
-	 * @param sharedVertex the 
-	 * @return two Lists, the first holding Segments and the second Angles
+	 * Identify the hidden {@link Segment} or {@link Angle} between the
+	 * given segments
+	 * @param seg0 the first segment
+	 * @param seg1 the second segment
+	 * @return the hidden segment OR figure, or null if the two given segments
+	 * do not connect at one vertex
 	 */
-	private List<List<? extends Figure>> identifyHiddenSegsAndAngles(
-			Diagram diag, Triangle tri0, Triangle tri1) {
-		List<Segment> segs = new ArrayList<>();
-		List<Angle> angles = new ArrayList<>();
+	private Figure identifyHiddenSegOrAngle(Segment seg0, Segment seg1) {
+//		// If we're analyzing the same segment, we can't combine it
+//		if (seg0.equals(seg1))
+//			return new Figure[0];
+		// Get the shared vertex between the two segments
+		String sharedVertex = Utils.getSharedVertex(seg0.getName(), seg1.getName());
+		if (sharedVertex == null)
+			return null;
 		
-		// For all shared vertices between the two triangles
-		for (Vertex sharedVertex : getSharedVertices(tri0, tri1)) {
-			// Loop through segments in first triangle
-			for (Segment seg0 : tri0.getSides()) {
-				// If the segment DOES NOT contain the shared vertex (given)
-				if (!seg0.getName().contains(sharedVertex.getName()))
-					continue;
-				// Go through segments of second triangle
-				for (Segment seg1 : tri1.getSides()) {
-					// If segment in second triangle does NOT contains the shared vertex
-					if (!seg1.getName().contains(sharedVertex.getName()))
-						continue;
-					// If we're analyzing the same segment, we can't combine it
-					if (seg1.equals(seg0))
-						continue;
-					// Check if the two segments are parallel
-					// Get slope of segment 0
-					Slope seg0Slope = seg0.getSlope();
-					// Get slope of segment 1
-					Slope seg1Slope = seg1.getSlope();
-					/*
-					 * Compare slopes: if the slopes are the same, add a new hidden segment.
-					 * Otherwise, add the hidden angle.z
-					 */
-					if (seg0Slope.equals(seg1Slope)) {
-						// Combine segments
-						
-						// Vertices of both segments in one list
-						List<Vertex> segVerts = new ArrayList<>(Arrays.asList(seg0.getVertices()));
-						segVerts.addAll(Arrays.asList(seg1.getVertices()));
-						// ---------------------
-						// Vertices of new segment--farthest apart
-						Vertex[] newSegVerts = getFarthestVertices(segVerts);
-						
-						// The new, combined straight line
-						Segment newStraightLine = new Segment(newSegVerts);
-						segs.add(newStraightLine);
-					}
-					// Add hidden angles
-					else {
-						String angleName = Utils.getAngleBetween(seg0.getName(), seg1.getName());
-						// This hidden angle might actually be in the diagram already, so don't add
-						// it twice
-						if (diag.containsFigure(angleName, Angle.class))
-							continue;
-						String unsharedVert0 = angleName.substring(0, 1);
-						String unsharedVert1 = angleName.substring(2);
-						String sharedVert = angleName.substring(1, 2);
-						Vertex first, second, third;
-						first = (Vertex) (seg0.containsChild(unsharedVert0) ?
-								seg0.getChild(unsharedVert0) : seg0.getChild(unsharedVert1));
-						third = (Vertex) (first.getNameChar() == unsharedVert0.charAt(0) ?
-								seg1.getChild(unsharedVert1) : seg1.getChild(unsharedVert0));
-						second = (Vertex) seg0.getChild(sharedVert);
-						Angle newAngle = new Angle(first, second, third);
-						angles.add(newAngle);
-					}
-				}
-			}
+		// Check if the two segments are parallel
+		// Get slope of segment 0
+		Slope seg0Slope = seg0.getSlope();
+		// Get slope of segment 1
+		Slope seg1Slope = seg1.getSlope();
+		/*
+		 * Compare slopes: if the slopes are the same, add a new hidden segment.
+		 * Otherwise, add the hidden angle.z
+		 */
+		if (seg0Slope.equals(seg1Slope)) {
+			// Combine segments
+			
+			// Vertices of both segments in one list
+			List<Vertex> segVerts = new ArrayList<>(Arrays.asList(seg0.getVertices()));
+			segVerts.addAll(Arrays.asList(seg1.getVertices()));
+			// ---------------------
+			// Vertices of new segment--farthest apart
+			Vertex[] newSegVerts = getFarthestVertices(segVerts);
+			
+			// The new, combined straight line
+			Segment newStraightLine = new Segment(newSegVerts);
+			return newStraightLine;
 		}
-		return Arrays.asList(segs, angles);
+		// Add hidden angles
+		else {
+			String angleName = Utils.getAngleBetween(seg0.getName(), seg1.getName());
+			String unsharedVert0 = angleName.substring(0, 1);
+			String unsharedVert1 = angleName.substring(2);
+			String sharedVert = angleName.substring(1, 2);
+			Vertex first, second, third;
+			first = (Vertex) (seg0.containsChild(unsharedVert0) ?
+					seg0.getChild(unsharedVert0) : seg0.getChild(unsharedVert1));
+			third = (Vertex) (first.getNameChar() == unsharedVert0.charAt(0) ?
+					seg1.getChild(unsharedVert1) : seg1.getChild(unsharedVert0));
+			second = (Vertex) seg0.getChild(sharedVert);
+			Angle newAngle = new Angle(first, second, third);
+			return newAngle;
+		}
 	}
 	
 	/**
@@ -304,7 +294,6 @@ public class Preprocessor {
 			if (hiddenTriangles == null)
 				hiddenTriangles = new ArrayList<>();
 			hiddenTriangles.add(triangle);
-			System.err.println(triangle.getName());
 		}
 		
 		return hiddenTriangles == null ? Collections.emptyList() : hiddenTriangles;
