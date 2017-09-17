@@ -55,7 +55,7 @@ public class LetterOnlyTextField extends JTextField {
 					Toolkit.getDefaultToolkit().beep();
 				newString = newString.replaceAll("[^a-zA-Z" + Utils.GEOMETRY_CHARS + "]", "");
 			}
-			super.insertString(offs, newString, a);
+			super.insertString(offs, newString.toUpperCase(), a);
 		}
 		
 	}
