@@ -133,7 +133,8 @@ public class ProofSolver {
 	}
 	
 	private void handlePerpendicularPair(FigureRelation pair) {
-		String angleName = Utils.getAngleBetween(pair.getFigure0(), pair.getFigure1());
+		String angleName = Utils.getAngleBetween(
+				pair.getFigure0().getName(), pair.getFigure1().getName());
 		diagram.makeRightAngle(angleName, pair);
 	}
 	
