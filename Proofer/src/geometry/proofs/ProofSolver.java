@@ -97,7 +97,14 @@ public class ProofSolver {
 			case MIDPOINT:
 				handleMidpoint(pair);
 			}
-		}		
+		}
+		
+		// TODO: delete this!
+		final int COUNT = diagram.getFigureRelations().size();
+		for (int i = 0; i < COUNT; i++) {
+			diagram.applyTransitivePostulate(diagram.getFigureRelations().get(i));
+		}
+		diagram.getFigureRelations().forEach(System.out::println);
 	}
 	
 	private void handleCongruentPair(FigureRelation pair, FigureRelation parent) {

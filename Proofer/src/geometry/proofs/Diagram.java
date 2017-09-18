@@ -3,6 +3,7 @@ package geometry.proofs;
 import java.util.List;
 
 import geometry.shapes.Angle;
+import geometry.shapes.Segment;
 import geometry.shapes.Vertex;
 
 import java.util.ArrayList;
@@ -134,6 +135,36 @@ public class Diagram {
 				null // Null parent
 		);
 		return addFigureRelationPair(rel);
+	}
+	
+	public void applyTransitivePostulate(FigureRelation rel) {
+		if (rel.getRelationType() != FigureRelationType.CONGRUENT)
+			return;
+		
+		Figure fig = rel.getFigure1();
+		final int COUNT = relations.size();
+		
+		for (int i = 1; i < COUNT; i++) {
+			FigureRelation iter = relations.get(i);
+			
+			if (iter.getRelationType() != FigureRelationType.CONGRUENT
+					// Iteration must contain figure
+					|| !iter.containsFigure(fig)
+					// Figures in iter must be same type as figure
+					|| iter.getFigure0().getClass() != fig.getClass()
+					// Figures in iter must NOT be the same figure congruent to itself
+					|| iter.getFigure0().equals(iter.getFigure1()))
+				continue;
+			Figure other = iter.getFigure0().equals(fig) ? iter.getFigure0() :
+				iter.getFigure1();
+			FigureRelation newRel = new FigureRelation(
+					FigureRelationType.CONGRUENT,
+					rel.getFigure0(),
+					other,
+					null // Null parent
+			);
+			relations.add(newRel);
+		}
 	}
 	
 	/**
