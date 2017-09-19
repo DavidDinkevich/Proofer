@@ -1,11 +1,9 @@
 package geometry.proofs;
 
-import java.util.List;
-
 import geometry.shapes.Angle;
-import geometry.shapes.Segment;
 import geometry.shapes.Vertex;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,9 +29,7 @@ public class Diagram {
 	public FigureRelation setProofGoal(FigureRelationType rel, String fig0, String fig1,
 			FigureRelation parent) {
 		FigureRelation newGoal = valueOf(rel, fig0, fig1, parent);
-		if (newGoal == null)
-			return null;
-		return setProofGoal(newGoal);
+		return newGoal == null ? null : setProofGoal(newGoal);
 	}
 	
 	/**
@@ -137,33 +133,54 @@ public class Diagram {
 		return addFigureRelationPair(rel);
 	}
 	
-	public void applyTransitivePostulate(FigureRelation rel) {
-		if (rel.getRelationType() != FigureRelationType.CONGRUENT)
+	/**
+	 * Apply the transitive postulate.
+	 * @param rel the {@link FigureRelation} of type CONGRUENT to
+	 * which the transitive postulate will be applied.
+	 */
+	private void applyTransitivePostulate(FigureRelation rel) {
+		// Conditions
+		if (
+				// Figure relation type is not "congruent"
+				rel.getRelationType() != FigureRelationType.CONGRUENT
+				// Figures in iter must NOT be the same figure congruent to itself
+				|| rel.isCongruentAndReflexive()
+			)
 			return;
 		
-		Figure fig = rel.getFigure1();
-		final int COUNT = relations.size();
+		Figure sharedFriend = rel.getFigure1();
 		
+		final int COUNT = relations.size();
 		for (int i = 1; i < COUNT; i++) {
 			FigureRelation iter = relations.get(i);
 			
-			if (iter.getRelationType() != FigureRelationType.CONGRUENT
-					// Iteration must contain figure
-					|| !iter.containsFigure(fig)
-					// Figures in iter must be same type as figure
-					|| iter.getFigure0().getClass() != fig.getClass()
+			// Conditions
+			if (
+					// Figure relation type is not "congruent"
+					iter.getRelationType() != FigureRelationType.CONGRUENT
+					// Figures in iter must be same type as sharedFriend
+					|| iter.getFigure0().getClass() != sharedFriend.getClass()
 					// Figures in iter must NOT be the same figure congruent to itself
-					|| iter.getFigure0().equals(iter.getFigure1()))
+					|| iter.isCongruentAndReflexive()
+					// Iter must not be equal to rel
+					|| iter.equals(rel)
+					// Iteration must contain figure
+					|| !iter.containsFigure(sharedFriend)
+				)
 				continue;
-			Figure other = iter.getFigure0().equals(fig) ? iter.getFigure0() :
-				iter.getFigure1();
+			
+			Figure newFriend0 = rel.getFigure0();
+			Figure newFriend1 = iter.getFigure0();
+			
 			FigureRelation newRel = new FigureRelation(
 					FigureRelationType.CONGRUENT,
-					rel.getFigure0(),
-					other,
+					newFriend0,
+					newFriend1,
 					null // Null parent
 			);
-			relations.add(newRel);
+			// Add the new relation
+			if (!containsFigureRelationPair(newRel))
+				relations.add(newRel);
 		}
 	}
 	
@@ -274,6 +291,11 @@ public class Diagram {
 			// make this right angle congruent to all other right angles.
 			if (pair.getRelationType() == FigureRelationType.RIGHT) {
 				makeRightAngle(pair.getFigure0().getName(), pair);
+			}
+			// If the pair declares two figures congruent, apply the transitive
+			// postulate
+			else if (pair.getRelationType() == FigureRelationType.CONGRUENT) {
+				applyTransitivePostulate(pair);
 			}
 			return true;
 		}
