@@ -14,6 +14,7 @@ public class FigureRelation {
 	private final Figure figure0;
 	private final Figure figure1;
 	private final FigureRelation parent;
+	private final boolean isCongruentAndReflexive;
 	
 	public FigureRelation(FigureRelationType type, Figure fig0, Figure fig1,
 			FigureRelation parent) {
@@ -31,6 +32,13 @@ public class FigureRelation {
 		if (!isLegalRelation()) {
 			throw new IllegalRelationException();
 		}
+		
+		isCongruentAndReflexive = relType == FigureRelationType.CONGRUENT
+				&& figure0.equals(figure1);
+	}
+	
+	public boolean isCongruentAndReflexive() {
+		return isCongruentAndReflexive;
 	}
 	
 	private boolean isLegalRelation() {
