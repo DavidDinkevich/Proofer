@@ -67,6 +67,7 @@ public class ProofSolver {
 			level = level.getParent();
 		}
 		
+		System.out.println("----------------Traceback---------------");
 		stack.forEach(System.out::println);
 	}
 	
@@ -99,11 +100,7 @@ public class ProofSolver {
 			}
 		}
 		
-		// TODO: delete this!
-		final int COUNT = diagram.getFigureRelations().size();
-		for (int i = 0; i < COUNT; i++) {
-			diagram.applyTransitivePostulate(diagram.getFigureRelations().get(i));
-		}
+		System.out.println("--------Figure Relations---------");
 		diagram.getFigureRelations().forEach(System.out::println);
 	}
 	
