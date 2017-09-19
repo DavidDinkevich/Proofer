@@ -107,6 +107,8 @@ public class Preprocessor {
 		// Not triangle or angle
 		else
 			fig = diagram.getFigure(name);
+		if (fig == null)
+			System.err.println("Could not find figure with name: " + name);
 		return fig;
 	}
 	
