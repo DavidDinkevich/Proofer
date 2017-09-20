@@ -148,39 +148,40 @@ public class Diagram {
 			)
 			return;
 		
-		Figure sharedFriend = rel.getFigure1();
-		
 		final int COUNT = relations.size();
-		for (int i = 1; i < COUNT; i++) {
-			FigureRelation iter = relations.get(i);
-			
-			// Conditions
-			if (
-					// Figure relation type is not "congruent"
-					iter.getRelationType() != FigureRelationType.CONGRUENT
-					// Figures in iter must be same type as sharedFriend
-					|| iter.getFigure0().getClass() != sharedFriend.getClass()
-					// Figures in iter must NOT be the same figure congruent to itself
-					|| iter.isCongruentAndReflexive()
-					// Iter must not be equal to rel
-					|| iter.equals(rel)
-					// Iteration must contain figure
-					|| !iter.containsFigure(sharedFriend)
-				)
-				continue;
-			
-			Figure newFriend0 = rel.getFigure0();
-			Figure newFriend1 = iter.getFigure0();
-			
-			FigureRelation newRel = new FigureRelation(
-					FigureRelationType.CONGRUENT,
-					newFriend0,
-					newFriend1,
-					null // Null parent
-			);
-			// Add the new relation
-			if (!containsFigureRelationPair(newRel))
-				relations.add(newRel);
+		for (Figure sharedFriend : rel.getFigures()) {
+						
+			for (int i = 0; i < COUNT; i++) {
+				FigureRelation iter = relations.get(i);
+				
+				// Conditions
+				if (
+						// Figure relation type is not "congruent"
+						iter.getRelationType() != FigureRelationType.CONGRUENT
+						// Figures in iter must be same type as sharedFriend
+						|| iter.getFigure0().getClass() != sharedFriend.getClass()
+						// Figures in iter must NOT be the same figure congruent to itself
+						|| iter.isCongruentAndReflexive()
+						// Iter must not be equal to rel
+						|| iter.equals(rel)
+						// Iteration must contain figure
+						|| !iter.containsFigure(sharedFriend)
+					)
+					continue;
+				
+				Figure newFriend0 = rel.getFigure0();
+				Figure newFriend1 = iter.getFigure0();
+				
+				FigureRelation newRel = new FigureRelation(
+						FigureRelationType.CONGRUENT,
+						newFriend0,
+						newFriend1,
+						null // Null parent
+				);
+				// Add the new relation
+				if (!containsFigureRelationPair(newRel))
+					relations.add(newRel);
+			}
 		}
 	}
 	
