@@ -149,8 +149,8 @@ public class Diagram {
 			return;
 		
 		final int COUNT = relations.size();
+		
 		for (Figure sharedFriend : rel.getFigures()) {
-						
 			for (int i = 0; i < COUNT; i++) {
 				FigureRelation iter = relations.get(i);
 				
@@ -169,8 +169,9 @@ public class Diagram {
 					)
 					continue;
 				
-				Figure newFriend0 = rel.getFigure0();
-				Figure newFriend1 = iter.getFigure0();
+				Figure newFriend0 = rel.getFigure0().equals(sharedFriend) ?
+						rel.getFigure1() : rel.getFigure0();
+				Figure newFriend1 = iter.getFigure0();				
 				
 				FigureRelation newRel = new FigureRelation(
 						FigureRelationType.CONGRUENT,
