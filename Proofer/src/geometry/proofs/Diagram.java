@@ -171,7 +171,8 @@ public class Diagram {
 				
 				Figure newFriend0 = rel.getFigure0().equals(sharedFriend) ?
 						rel.getFigure1() : rel.getFigure0();
-				Figure newFriend1 = iter.getFigure0();				
+				Figure newFriend1 = iter.getFigure0().equals(sharedFriend) ?
+						iter.getFigure1() : iter.getFigure0();
 				
 				FigureRelation newRel = new FigureRelation(
 						FigureRelationType.CONGRUENT,
