@@ -133,6 +133,6 @@ public class FigureRelation {
 	}
 	
 	public boolean containsFigure(Figure fig) {
-		return figure0.equals(fig) || figure1 != null ? figure1.equals(fig) : fig == null;
+		return figure0.equals(fig) || (figure1 != null ? figure1.equals(fig) : fig == null);
 	}
 }
