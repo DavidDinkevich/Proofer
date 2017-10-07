@@ -81,10 +81,6 @@ public class ProofSolver {
 				FigureRelation pair = diagram.getFigureRelations().get(i);
 				
 				switch (pair.getRelationType()) {
-				case CONGRUENT:
-					// Null parent
-					handleCongruentPair(pair, null);
-					break;
 				case PARALLEL:
 					break;
 				case PERPENDICULAR:
@@ -98,10 +94,11 @@ public class ProofSolver {
 					break;
 				case COMPLEMENTARY:
 				case SUPPLEMENTARY:
-				case RIGHT:
 					break;
 				case MIDPOINT:
 					handleMidpoint(pair);
+				default:
+					break;
 				}
 			}
 			
@@ -116,38 +113,6 @@ public class ProofSolver {
 		
 		System.out.println("--------Figure Relations---------");
 		diagram.getFigureRelations().forEach(System.out::println);
-	}
-	
-	private void handleCongruentPair(FigureRelation pair, FigureRelation parent) {
-		// If two triangles are congruent, all of their corresponding children figures
-		// are congruent as well
-		if (pair.getFigure0().getClass() == Triangle.class) {
-			// Ensure given parent is not null
-//			if (parent == null)
-//				throw new NullPointerException("Null parent");
-			// First triangle
-			Triangle tri0 = pair.getFigure0();
-			// Second triangle
-			Triangle tri1 = pair.getFigure1();
-			// For each child figure in the first triangle
-			for (int i = 0; i < tri0.getChildren().size(); i++) {
-				// Child figure of the first triangle
-				Figure child0 = tri0.getChildren().get(i);
-				// Child figure of the second triangle
-				Figure child1 = tri1.getChildren().get(i);
-				// Ignore vertices--cannot make vertices congruent
-				if (child0.getClass() == Vertex.class || child1.getClass() == Vertex.class)
-					continue;
-				// Make congruent pair
-				FigureRelation rel = new FigureRelation(
-						FigureRelationType.CONGRUENT,
-						child0,
-						child1,
-						pair // Parent
-				);
-				diagram.addFigureRelationPair(rel);
-			}
-		}
 	}
 	
 	private void handlePerpendicularPair(FigureRelation pair) {
@@ -204,7 +169,7 @@ public class ProofSolver {
 		Triangle tri1 = pair.getFigure1();
 		
 		// Get corresponding angles in triangles
-		List<Angle[]> corrAngles = getCorrespondingAngles(tri0, tri1);
+		List<Angle[]> corrAngles = Utils.getCorrespondingAngles(tri0, tri1);
 
 		// Length of corrAngles should always be 3
 		for (int i = 0; i < corrAngles.size(); i++) {
@@ -216,70 +181,6 @@ public class ProofSolver {
 			);
 			diagram.addFigureRelationPair(rel);
 		}
-	}
-	
-	private List<Angle[]> getCorrespondingAngles(
-			Triangle tri0, Triangle tri1) {
-		// List of pairs
-		List<Angle[]> list = new ArrayList<>();
-		// As we loop through the pairs of angles between the triangles,
-		// We need to keep track of which pairs of angles correspond to each
-		// other. For ex., if angle "ABC" in triangle #1 corresponds with angle
-		// "DEF" in triangle #2, angle "DEF" cannot correspond to any other
-		// angle in the FIRST triangle. We will keep track of all of the angles
-		// in triangle #2 to ensure that we don't use them twice.
-		List<Integer> usedAngles = new ArrayList<>(); // Indices
-		
-		// For each angle in the first triangle
-		outer:
-		for (Angle a0 : tri0.getAngles()) {
-			// For each angle in the second triangle
-			for (int i = 0; i < tri1.getAngles().length; i++) {
-				if (usedAngles.contains(i))
-					continue;
-				Angle a1 = tri1.getAngles()[i];
-				// If the measures of the angles are equal
-				if (a0.getAngle() == a1.getAngle()) {
-					list.add(new Angle[] { a0, a1 });
-					usedAngles.add(i); // Record used angle
-					continue outer;
-				}
-			}
-		}
-		
-		return list;
-	}
-	
-	private List<Segment[]> getCorrespondingSegments(
-			Triangle tri0, Triangle tri1) {
-		// List of pairs
-		List<Segment[]> list = new ArrayList<>();
-		// As we loop through the pairs of segments between the triangles,
-		// We need to keep track of which pairs of segments correspond to each
-		// other. For ex., if segment "AB" in triangle #1 corresponds with segment
-		// "DE" in triangle #2, segment "DE" cannot correspond to any other
-		// segment in the FIRST triangle. We will keep track of all of the segments
-		// in triangle #2 to ensure that we don't use them twice.
-		List<Integer> usedSegments = new ArrayList<>(); // Indices
-		
-		// For each segment in the first triangle
-		outer:
-		for (Segment a0 : tri0.getSides()) {
-			// For each segment in the second triangle
-			for (int i = 0; i < tri1.getSides().length; i++) {
-				if (usedSegments.contains(i))
-					continue;
-				Segment a1 = tri1.getSides()[i];
-				// If the measures of the segments are equal
-				if (a0.getLength(false) == a1.getLength(false)) {
-					list.add(new Segment[] { a0, a1 });
-					usedSegments.add(i); // Record used segment
-					continue outer;
-				}
-			}
-		}
-		
-		return list;
 	}
 	
 	private void findAndAddCongruentTriangles() {
@@ -316,7 +217,7 @@ public class ProofSolver {
 				checkedTriPairs.add(new int[] { i, j });
 				
 				// SSS
-				if (getCorrespondingSegments(tri0, tri1).size() == 3) {
+				if (Utils.getCorrespondingSegments(tri0, tri1).size() == 3) {
 					// Make triangles congruent
 					diagram.addFigureRelationPair(
 						FigureRelationType.CONGRUENT,
@@ -328,27 +229,4 @@ public class ProofSolver {
 			}
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
-	
