@@ -45,6 +45,18 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private SelectionBox selectionContainer;
 	private boolean displaySelectionContainer = false;
 	private Knob selectedKnob;
+	
+	// Highlighting figures
+	
+	/**
+	 * The brush that belonged to the highlighted figure
+	 * before it was highlighted
+	 */
+	private Brush origHighlightedFigBrush;
+	/**
+	 * The highlighted figure
+	 */
+	private GraphicsShape2D<?> highlightedFig;
 
 	public InputManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
@@ -162,6 +174,11 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 	
 	@Override
+	public void mouseMoved(Canvas c, MouseEvent e) {
+		highlightFigures();
+	}
+	
+	@Override
 	public void mouseReleased(Canvas c, MouseEvent e) {
 		// Erase the selection container (if it exists)
 		setDisplaySelectionContainer(false, true);
@@ -169,7 +186,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	@Override
 	public void keyPressed(Canvas c, KeyEvent e) {		
-		if (c.keyCode != PConstants.CODED) {
+		if (canvas.keyCode != PConstants.CODED) {
 			if (canvas.keyCode == PConstants.BACKSPACE) { // Don't have to check if key == CODED
 				destroyAllSelectedObjects();
 				canvas.redraw();
@@ -440,6 +457,57 @@ public class InputManager extends CanvasAdapter implements Drawable {
 						destroySelector(selectable.getSelector());
 					}
 				}
+			}
+		}
+	}
+	
+	/**
+	 * Handle the highlighting of figures when the mouse hovers
+	 * over them.
+	 */
+	private void highlightFigures() {
+		Vec2 mouseLoc = canvas.getMouseLocOnGrid();
+		GraphicsShape2D<?> newHighlightedFig = null;
+		
+		/*
+		 * Find the figure that the cursor hovers over.
+		 */
+		for (GraphicsShape2D<?> figure : selectables) {
+			// If the cursor is hovering over this figure
+			if (figure.getAllowSelections() && figure.containsPoint(mouseLoc, true)) {
+				// Don't want to operate on the already highlighted figure if it is still
+				// highlighted. NOTE: bc there is only ever one highlighted figure at a time,
+				// we can just compare a figure's brush to see if it is the designated brush
+				// for highlighted figures.
+				// IF THE SAME FIGURE AS BEFORE HAS BEEN HIGHLIGHTED
+				if (highlightedFig != null && figure.getBrush().equals(StyleManager
+						.getHighlightedFigureBrush()))
+					return;
+				// A new figure has been highlighted
+				newHighlightedFig = figure;
+				break;
+			}
+		}
+		
+		// IF A NEW FIGURE IS HIGHLIGHTED
+		if (newHighlightedFig != null) {
+			// Update highlighted figure
+			highlightedFig = newHighlightedFig;
+			// Remember the figure's brush before we change it
+			origHighlightedFigBrush = newHighlightedFig.getBrush().buildBrush();
+			// Set the figure's brush to the designated brush for highlighted
+			// figures
+			highlightedFig.setBrush(StyleManager.getHighlightedFigureBrush());
+			canvas.redraw();
+		}
+		// IF NO NEW FIGURE HAS BEEN HIGHLIGHTED, AND THE MOST RECENTLY HIGHLIGHTED
+		// FIGURE IS NO LONGER HOVERED OVER BY THE MOUSE
+		else {
+			if (highlightedFig != null) {
+				highlightedFig.setBrush(origHighlightedFigBrush);
+				highlightedFig = null;
+				origHighlightedFigBrush = null;
+				canvas.redraw();
 			}
 		}
 	}
