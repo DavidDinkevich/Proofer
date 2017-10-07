@@ -1,6 +1,11 @@
 package util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import geometry.shapes.Angle;
+import geometry.shapes.Segment;
+import geometry.shapes.Triangle;
 
 /**
  * Utility class.
@@ -184,4 +189,83 @@ public final class Utils {
 		}
 		return false;
 	}
+	
+	/**
+	 * Get the pairs of corresponding angles between the two given
+	 * {@link Triangle}s.
+	 * @param tri0 the first triangle
+	 * @param tri1 the second triangle
+	 * @return the pairs of corresponding angles
+	 */
+	public static List<Angle[]> getCorrespondingAngles(
+			Triangle tri0, Triangle tri1) {
+		// List of pairs
+		List<Angle[]> list = new ArrayList<>();
+		// As we loop through the pairs of angles between the triangles,
+		// We need to keep track of which pairs of angles correspond to each
+		// other. For ex., if angle "ABC" in triangle #1 corresponds with angle
+		// "DEF" in triangle #2, angle "DEF" cannot correspond to any other
+		// angle in the FIRST triangle. We will keep track of all of the angles
+		// in triangle #2 to ensure that we don't use them twice.
+		List<Integer> usedAngles = new ArrayList<>(); // Indices
+		
+		// For each angle in the first triangle
+		outer:
+		for (Angle a0 : tri0.getAngles()) {
+			// For each angle in the second triangle
+			for (int i = 0; i < tri1.getAngles().length; i++) {
+				if (usedAngles.contains(i))
+					continue;
+				Angle a1 = tri1.getAngles()[i];
+				// If the measures of the angles are equal
+				if (a0.getAngle() == a1.getAngle()) {
+					list.add(new Angle[] { a0, a1 });
+					usedAngles.add(i); // Record used angle
+					continue outer;
+				}
+			}
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * Get the pairs of corresponding segments between the two given
+	 * {@link Triangle}s.
+	 * @param tri0 the first triangle
+	 * @param tri1 the second triangle
+	 * @return the pairs of corresponding segments
+	 */
+	public static List<Segment[]> getCorrespondingSegments(
+			Triangle tri0, Triangle tri1) {
+		// List of pairs
+		List<Segment[]> list = new ArrayList<>();
+		// As we loop through the pairs of segments between the triangles,
+		// We need to keep track of which pairs of segments correspond to each
+		// other. For ex., if segment "AB" in triangle #1 corresponds with segment
+		// "DE" in triangle #2, segment "DE" cannot correspond to any other
+		// segment in the FIRST triangle. We will keep track of all of the segments
+		// in triangle #2 to ensure that we don't use them twice.
+		List<Integer> usedSegments = new ArrayList<>(); // Indices
+		
+		// For each segment in the first triangle
+		outer:
+		for (Segment a0 : tri0.getSides()) {
+			// For each segment in the second triangle
+			for (int i = 0; i < tri1.getSides().length; i++) {
+				if (usedSegments.contains(i))
+					continue;
+				Segment a1 = tri1.getSides()[i];
+				// If the measures of the segments are equal
+				if (a0.getLength(false) == a1.getLength(false)) {
+					list.add(new Segment[] { a0, a1 });
+					usedSegments.add(i); // Record used segment
+					continue outer;
+				}
+			}
+		}
+		
+		return list;
+	}
+	
 }
