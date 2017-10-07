@@ -8,17 +8,19 @@ public final class StyleManager {
 	public static final int RED, BLUE, LIGHT_BLUE, GREEN, YELLOW, ORANGE,
 							PURPLE, PINK;
 	
-	private static Brush selectionContainerBrush;
-	
-	private static Brush canvasGridBrush;
-	
-	private static Brush selectorBrush;
+	private static Brush defaultFigureBrush;
 	
 	/**
 	 * The brush with which a figure is painted when it is
 	 * highlighted
 	 */
 	private static Brush highlightedFigureBrush;
+	
+	private static Brush selectionContainerBrush;
+	
+	private static Brush canvasGridBrush;
+	
+	private static Brush selectorBrush;
 	
 	private static final GraphicsEllipse knobBody;
 	
@@ -34,7 +36,13 @@ public final class StyleManager {
 		PURPLE = makeColor(150, 50, 255);
 		PINK = makeColor(255, 0, 255);
 		
-		Brush.Builder brushBuilder = new Brush.Builder();
+		Brush.Builder brushBuilder = new Brush.Builder().setFill(StyleManager.PINK)
+				.setStrokeWeight(2.5f).setStroke(StyleManager.PINK).setAlpha(75);
+		defaultFigureBrush = brushBuilder.buildBrush();
+		
+		brushBuilder.setAlpha(130f); // Slightly less transparent
+		highlightedFigureBrush = brushBuilder.buildBrush();
+		
 		brushBuilder.setFill(makeColor(255, 255, 0)).setAlpha(80)
 			.setStroke(makeColor(255, 220, 0)).setStrokeWeight(2);
 		selectionContainerBrush = brushBuilder.buildBrush();
@@ -44,10 +52,7 @@ public final class StyleManager {
 		
 		brushBuilder.setFill(0).setStroke(LIGHT_BLUE).setStrokeWeight(4f).setRenderFill(false);
 		selectorBrush = brushBuilder.buildBrush();
-
-		brushBuilder.setFill(LIGHT_BLUE).setStroke(BLUE).setStrokeWeight(2f).setRenderFill(true);
-		highlightedFigureBrush = brushBuilder.buildBrush();
-		
+				
 		brushBuilder.setFill(BLUE).setStroke(255).setStrokeWeight(2f).setRenderFill(true);
 		knobBody = new GraphicsEllipse(
 				brushBuilder.buildBrush(), new Ellipse(new Dimension(12f))
@@ -73,6 +78,12 @@ public final class StyleManager {
 		return new PApplet().color(r, g, b, a);
 	}
 	
+	public static Brush getDefaultFigureBrush() {
+		return defaultFigureBrush;
+	}
+	public static void setDefaultFigureBrush(Brush brush) {
+		defaultFigureBrush = brush;
+	}
 	
 	public static Brush getSelectorBrush() {
 		return selectorBrush;
