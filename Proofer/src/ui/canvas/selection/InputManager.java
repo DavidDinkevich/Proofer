@@ -243,6 +243,19 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		selectors.removeObject(sel);
 	}
 	
+	/**
+	 * Destroy all selected objects and their selectors.
+	 */
+	private void destroyAllSelectedObjects() {
+		for (int i = selectables.count()-1; i >= 0; i--) {
+			if (selectables.get(i).isSelected()) {
+				canvas.getPolygonBuffer().removePoly((Polygon)selectables.get(i).getShape());
+				canvas.removeGraphicsObject(selectables.get(i));
+			}
+		}
+		destroyAllSelectors();
+	}
+	
 	@SuppressWarnings("unchecked")
 	private Selector<?, GraphicsShape2D<?>> createSelector(GraphicsShape2D<?> o, boolean redraw) {
 		@SuppressWarnings("rawtypes")
@@ -274,19 +287,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 	
 	/**
-	 * Destroy all selected objects and their selectors.
-	 */
-	private void destroyAllSelectedObjects() {
-		for (int i = selectables.count()-1; i >= 0; i--) {
-			if (selectables.get(i).isSelected()) {
-				canvas.getPolygonBuffer().removePoly((Polygon)selectables.get(i).getShape());
-				canvas.removeGraphicsObject(selectables.get(i));
-			}
-		}
-		destroyAllSelectors();
-	}
-	
-	/**
 	 * Calculates the center location of the given object after being dragged
 	 * from one point to another.
 	 * @param objectCenter the center location of the object being dragged
@@ -314,6 +314,23 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		}
 		
 		return dest;
+	}
+	
+	private void dragKnob(Knob knob) {		
+		// Drag knob
+		knob.moveKnob(dragSceneObject(knob.getLoc(), true));
+		
+		// If the knob is not a PolygonSelectorKnob, we have no more business in this method.
+		if (!(knob.getSelector().getTargetObject().getShape() instanceof Polygon))
+			return;
+		
+		// Get the knob as a polygon knob
+		PolygonSelectorKnob polyKnob = ((PolygonSelectorKnob) selectedKnob);
+		
+		// Get the name of the vertex that the knob moves		
+		final char vertexName = polyKnob.getControlledVertex().getNameChar();					
+		
+		fixVertexName((Polygon)polyKnob.getSelector().getTargetObject().getShape(), vertexName);
 	}
 	
 	private boolean fixVertexName(Polygon poly, char vertexName) {
@@ -386,23 +403,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		// Redraw if instructed to
 		if (redraw)
 			canvas.redraw();
-	}
-	
-	private void dragKnob(Knob knob) {		
-		// Drag knob
-		knob.moveKnob(dragSceneObject(knob.getLoc(), true));
-		
-		// If the knob is not a PolygonSelectorKnob, we have no more business in this method.
-		if (!(knob.getSelector().getTargetObject().getShape() instanceof Polygon))
-			return;
-		
-		// Get the knob as a polygon knob
-		PolygonSelectorKnob polyKnob = ((PolygonSelectorKnob) selectedKnob);
-		
-		// Get the name of the vertex that the knob moves		
-		final char vertexName = polyKnob.getControlledVertex().getNameChar();					
-
-		fixVertexName((Polygon)polyKnob.getSelector().getTargetObject().getShape(), vertexName);
 	}
 	
 	/**
