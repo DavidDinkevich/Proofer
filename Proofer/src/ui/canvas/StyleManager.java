@@ -14,10 +14,16 @@ public final class StyleManager {
 	
 	private static Brush selectorBrush;
 	
+	/**
+	 * The brush with which a figure is painted when it is
+	 * highlighted
+	 */
+	private static Brush highlightedFigureBrush;
+	
 	private static final GraphicsEllipse knobBody;
 	
 	private static TextFont textFont;
-		
+	
 	static {
 		RED = makeColor(255, 0, 0);
 		BLUE = makeColor(0, 0, 255);
@@ -29,8 +35,8 @@ public final class StyleManager {
 		PINK = makeColor(255, 0, 255);
 		
 		Brush.Builder brushBuilder = new Brush.Builder();
-		brushBuilder.setFill(makeColor(255, 255, 0)).setAlpha(80).setStroke(makeColor(255, 220, 0))
-			.setStrokeWeight(2);
+		brushBuilder.setFill(makeColor(255, 255, 0)).setAlpha(80)
+			.setStroke(makeColor(255, 220, 0)).setStrokeWeight(2);
 		selectionContainerBrush = brushBuilder.buildBrush();
 		
 		brushBuilder.setFill(0).setAlpha(255).setStroke(0).setStrokeWeight(0.05f);
@@ -39,6 +45,9 @@ public final class StyleManager {
 		brushBuilder.setFill(0).setStroke(LIGHT_BLUE).setStrokeWeight(4f).setRenderFill(false);
 		selectorBrush = brushBuilder.buildBrush();
 
+		brushBuilder.setFill(LIGHT_BLUE).setStroke(BLUE).setStrokeWeight(2f).setRenderFill(true);
+		highlightedFigureBrush = brushBuilder.buildBrush();
+		
 		brushBuilder.setFill(BLUE).setStroke(255).setStrokeWeight(2f).setRenderFill(true);
 		knobBody = new GraphicsEllipse(
 				brushBuilder.buildBrush(), new Ellipse(new Dimension(12f))
@@ -90,6 +99,15 @@ public final class StyleManager {
 		if (newBrush == null)
 			throw new NullPointerException();
 		canvasGridBrush = newBrush;
+	}
+	
+	public static Brush getHighlightedFigureBrush() {
+		return highlightedFigureBrush;
+	}
+	public static void setHighlightedFigureBrush(Brush brush) {
+		if (brush == null)
+			throw new NullPointerException();
+		highlightedFigureBrush = brush;
 	}
 	
 	public static GraphicsEllipse getKnobBody() {
