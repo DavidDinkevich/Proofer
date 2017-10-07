@@ -71,7 +71,8 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			 * Check for selection among knobs
 			 */
 			for (Knob knob : knobs) {
-				if (knob.getAllowSelections() && knob.containsPoint(canvas.getMouseLocOnGrid(), true)) {
+				if (knob.getAllowSelections() && knob
+						.containsPoint(canvas.getMouseLocOnGrid(), true)) {
 					selectedKnob = knob;
 					return;
 				}
@@ -86,7 +87,8 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			 */
 			for (GraphicsShape2D<?> o : selectables) {
 				// If the object is selectable, and it was clicked on
-				if (o.getAllowSelections() && o.containsPoint(canvas.getMouseLocOnGrid(), true)) {
+				if (o.getAllowSelections() && o
+						.containsPoint(canvas.getMouseLocOnGrid(), true)) {
 					objectClickedOn = o;
 					break; // We already found the selected figure, no need to search further
 				}
@@ -153,8 +155,8 @@ public class InputManager extends CanvasAdapter implements Drawable {
 					// fix its vertex names (we moved it)
 					if (sel.getTargetObject().getShape() instanceof Polygon)
 						fixVertexNames((Polygon)sel.getTargetObject().getShape());
-					canvas.redraw();
 				}
+				canvas.redraw();
 			}
 		}
 	}
@@ -177,7 +179,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				for (Selector<?, ?> sel : selectors) {
 					snapSelector(sel, true);
 				}
-				canvas.redraw();
 			}
 			// TODO: delete this
 			else if (canvas.key == 'n') {
