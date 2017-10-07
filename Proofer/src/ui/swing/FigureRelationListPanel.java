@@ -56,7 +56,7 @@ public class FigureRelationListPanel extends JComponent {
 		
 		add(getBottomPanel(), BorderLayout.SOUTH);
 		
-		// Add default figure relation pair panel
+		// Add default figure relation panel
 		addButton.doClick(0);
 	}
 	
@@ -107,7 +107,7 @@ public class FigureRelationListPanel extends JComponent {
 		if (addButton == null) {
 			addButton = new JButton("Add");
 			addButton.addActionListener(e -> {
-				addEmptyFigureRelationPairPanels(1);
+				addEmptyFigureRelationPanels(1);
 			});
 		}
 		return addButton;
@@ -162,7 +162,7 @@ public class FigureRelationListPanel extends JComponent {
 		}
 	}
 	
-	public void addEmptyFigureRelationPairPanels(int amount) {
+	public void addEmptyFigureRelationPanels(int amount) {
 		if (amount < 0)
 			throw new IllegalArgumentException("Number of panels must be >= 0");
 		for (int i = 0; i < amount; i++) {
