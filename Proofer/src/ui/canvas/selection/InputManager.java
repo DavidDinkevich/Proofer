@@ -199,15 +199,14 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			}
 			// TODO: delete this
 			else if (canvas.key == 'n') {
-				Brush.Builder builder = new Brush.Builder().setFill(StyleManager.PINK)
-						.setStrokeWeight(2.5f).setStroke(StyleManager.PINK).setAlpha(75);
+				Brush brush = StyleManager.getDefaultFigureBrush();
 
 				Vertex[] tpoints = new Vertex[] {
 						new Vertex(new Vec2(0f, -200.0f)),
 						new Vertex(new Vec2(300f, 100f)),
 						new Vertex(new Vec2(0f, 100f))
 				};
-				GraphicsTriangle tri = new GraphicsTriangle(builder.buildBrush(),
+				GraphicsTriangle tri = new GraphicsTriangle(brush,
 						new Triangle(Arrays.asList(tpoints)));
 				tri.setAllowSelection(true);
 				tri.setResizeable(true);
