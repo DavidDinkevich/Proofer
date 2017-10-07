@@ -1,7 +1,10 @@
 package geometry.proofs;
 
 import geometry.shapes.Angle;
+import geometry.shapes.Segment;
+import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
+import util.Utils;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -299,10 +302,42 @@ public class Diagram {
 			// postulate
 			else if (pair.getRelationType() == FigureRelationType.CONGRUENT) {
 				applyTransitivePostulate(pair);
+				// If two triangles are congruent, all of their corresponding children figures
+				// are congruent as well
+				if (!pair.isCongruentAndReflexive() && 
+						pair.getFigure0().getClass() == Triangle.class) {
+					// First triangle
+					Triangle tri0 = pair.getFigure0();
+					// Second triangle
+					Triangle tri1 = pair.getFigure1();
+					
+					// For all corresponding angles
+					for (Angle[] anglePair : Utils.getCorrespondingAngles(tri0, tri1)) {
+						// Make congruent pair
+						FigureRelation newPair = new FigureRelation(
+								FigureRelationType.CONGRUENT,
+								anglePair[0],
+								anglePair[1],
+								pair // TODO: change this to "corresponding angles"
+						);
+						addFigureRelationPair(newPair);
+					}
+					// For all corresponding segments
+					for (Segment[] segPair : Utils.getCorrespondingSegments(tri0, tri1)) {
+						// Make congruent pair
+						FigureRelation newPair = new FigureRelation(
+								FigureRelationType.CONGRUENT,
+								segPair[0],
+								segPair[1],
+								pair // TODO: change this to "corresponding segments"
+						);
+						addFigureRelationPair(newPair);
+					}
+				}
 			}
-			return true;
+			return true; // Successfully added relation pair
 		}
-		return false;
+		return false; // Unsuccessful
 	}
 	
 	public void addFigureRelationPairs(Collection<FigureRelation> figs) {
