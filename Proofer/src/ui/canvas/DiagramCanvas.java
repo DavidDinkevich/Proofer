@@ -53,9 +53,7 @@ public class DiagramCanvas extends Canvas {
 		 * WILL BE DELETED
 		 */
 		
-		Brush.Builder builder = new Brush.Builder().setFill(StyleManager.PINK).setStrokeWeight(2.5f)
-				.setStroke(StyleManager.PINK).setAlpha(75);
-		Brush brush = builder.buildBrush();
+		Brush brush = StyleManager.getDefaultFigureBrush();
 
 		Vertex[] tpoints = new Vertex[] {
 				new Vertex(new Vec2(0f, -200.0f)),
