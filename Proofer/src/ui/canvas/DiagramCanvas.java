@@ -10,14 +10,14 @@ import geometry.shapes.PolygonBuffer;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
-import ui.canvas.selection.SelectionManager;
+import ui.canvas.selection.InputManager;
 
 import util.IDList;
 
 public class DiagramCanvas extends Canvas {
 	private static final long serialVersionUID = -6415389681784791979L;
 	
-	private SelectionManager selectionManager;
+	private InputManager selectionManager;
 	private DiagramCanvasGrid canvasGrid;
 	private PolygonBuffer polyBuff;
 	private IDList<GraphicsShape2D<?>> diagramElements;
@@ -38,7 +38,7 @@ public class DiagramCanvas extends Canvas {
 	}
 	
 	private void _init() { // Underscore bc init() already exists in PApplet
-		setSelectionManager(selectionManager = new SelectionManager(this));
+		setSelectionManager(selectionManager = new InputManager(this));
 		setCanvasGrid(canvasGrid = new DiagramCanvasGrid(this, new Dimension(50)));
 		diagramElements = new IDList<>();
 		polyBuff = new PolygonBuffer();
@@ -92,23 +92,23 @@ public class DiagramCanvas extends Canvas {
 	}
 	
 	/**
-	 * Return this {@link Canvas}'s {@link SelectionManager}. If
+	 * Return this {@link Canvas}'s {@link InputManager}. If
 	 * no selection manager has been assigned to this {@link Canvas},
 	 * this will return null.
 	 */
-	public SelectionManager getSelectionManager() {
+	public InputManager getSelectionManager() {
 		return selectionManager;
 	}
 	
 	/**
-	 * Set this {@link Canvas}'s {@link SelectionManager}. If this
+	 * Set this {@link Canvas}'s {@link InputManager}. If this
 	 * {@link Canvas} already has a selection manager, the given
 	 * manager will override the old one.
-	 * @return the old {@link SelectionManager}, or null if this
+	 * @return the old {@link InputManager}, or null if this
 	 * {@link Canvas} did not previously have one.
 	 */
-	public SelectionManager setSelectionManager(SelectionManager sel) {
-		SelectionManager old = selectionManager;
+	public InputManager setSelectionManager(InputManager sel) {
+		InputManager old = selectionManager;
 		selectionManager = sel;
 		if (selectionManager != null)
 			addCanvasListener(selectionManager);

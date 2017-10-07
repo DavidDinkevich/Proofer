@@ -6,7 +6,7 @@ import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
 import ui.canvas.event.CanvasListener;
-import ui.canvas.selection.SelectionManager;
+import ui.canvas.selection.InputManager;
 
 import java.awt.EventQueue;
 
@@ -130,7 +130,7 @@ public class Canvas extends PApplet {
 		// Prevent program exiting if escape is pressed
 		// "keyCode == 27" is for mac.
 		if (key == CODED && keyCode == ESC || keyCode == 27) {
-			key = SelectionManager.NULL_KEY;
+			key = InputManager.NULL_KEY;
 		}
 		
 		// Notify listeners

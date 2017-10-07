@@ -30,7 +30,7 @@ import util.IDList;
  * Controls and manages selections made on a {@link DiagramCanvas}.
  * @author David Dinkevich
  */
-public class SelectionManager extends CanvasAdapter implements Drawable {
+public class InputManager extends CanvasAdapter implements Drawable {
 	public static final char NULL_KEY = '\0';
 	public static char multipleSelectionKey = PConstants.SHIFT;
 	
@@ -46,7 +46,7 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 	private boolean displaySelectionContainer = false;
 	private Knob selectedKnob;
 
-	public SelectionManager(DiagramCanvas canvas) {
+	public InputManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
 		renderList = canvas.getRenderList();
 		selectionContainer = new SelectionBox();
