@@ -217,7 +217,7 @@ public class ProofSolver {
 				checkedTriPairs.add(new int[] { i, j });
 				
 				// SSS
-				if (Utils.getCorrespondingSegments(tri0, tri1).size() == 3) {
+				if (getRecordedCorrespondingSegs(tri0, tri1).size() == 3) {
 					// Make triangles congruent
 					diagram.addFigureRelationPair(
 						FigureRelationType.CONGRUENT,
@@ -225,8 +225,42 @@ public class ProofSolver {
 						tri1.getName(),
 						null // TODO: make this SSS
 					);
+					continue;
+				}
+				
+				// SAS
+				
+			}
+		}
+	}
+	
+	/**
+	 * Get the corresponding segments in the two given triangles as defined
+	 * by the figure relations in the diagram's figure relations list.
+	 * @param tri0 the first triangle
+	 * @param tri1 the second triangle
+	 * @return the list of corresponding segments as defined by figure
+	 * relations
+	 */
+	private List<Segment[]> getRecordedCorrespondingSegs(
+			Triangle tri0, Triangle tri1) {
+		// List of pairs
+		List<Segment[]> list = new ArrayList<>();
+		
+		// Get all the corresponding segments between the two triangles
+		for (Segment[] pair : Utils.getCorrespondingSegments(tri0, tri1)) {
+			// Make sure there is a figure relation that says that the figures
+			// in each pair of corresponding segments are congruent
+			for (FigureRelation rel : diagram.getFigureRelations()) {
+				// Check if figures are congruent
+				if (rel.containsFigure(pair[0]) && rel.containsFigure(pair[1])
+						&& rel.getRelationType() == FigureRelationType.CONGRUENT) {
+					list.add(pair); // Add the pair
+					break;
 				}
 			}
 		}
+		
+		return list;
 	}
 }
