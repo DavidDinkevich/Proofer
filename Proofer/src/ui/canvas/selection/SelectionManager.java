@@ -45,7 +45,6 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 	private SelectionBox selectionContainer;
 	private boolean displaySelectionContainer = false;
 	private Knob selectedKnob;
-	private boolean selectMultipleObjects = false;
 
 	public SelectionManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
@@ -78,40 +77,48 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 				}
 			}
 			
-			selectedKnob = null;
-			boolean objectClickedOn = false;
+			selectedKnob = null; // The knob that may or may not have been clicked on
+			// The figure that may or may not have been clicked on
+			GraphicsShape2D<?> objectClickedOn = null;
+			
 			/*
 			 * Check for selection among selectables
 			 */
 			for (GraphicsShape2D<?> o : selectables) {
 				// If the object is selectable, and it was clicked on
 				if (o.getAllowSelections() && o.containsPoint(canvas.getMouseLocOnGrid(), true)) {
-					objectClickedOn = true;
-					
+					objectClickedOn = o;
+					break; // We already found the selected figure, no need to search further
+				}
+			}
+			
+			// If an object was clicked on
+			if (objectClickedOn != null) {
+				// Whether or not to add the newly selected figure to the list of
+				// selected figures, or to deselect all other figures and select
+				// only the newly selected one
+				final boolean selectMultipleObjects = canvas.keyPressed &&
+						canvas.keyCode == multipleSelectionKey;
+				
+				// If the figure clicked on is NOT already selected
+				if (!objectClickedOn.isSelected()) {
 					// If the user does not hold the multiple selection key, destroy all selectors
 					if (!selectMultipleObjects) {
 						// Deselect all previously selected objects
 						destroyAllSelectors();
 					}
-					// If <= 1 objects selected
-					else if (!selectMultipleObjects && selectors.count() <= 1) {
-						selectMultipleObjects = false;
-					}
-					else if (selectMultipleObjects && !o.isSelected()) {
-						selectMultipleObjects = false;
-					}
 					
-					// Create selector for object and select it - ONLY IF they are not already selected.
-					// Don't want duplicate selectors
-					if (!o.isSelected()) {
-						createSelector(o, true);
-					}
-					
-					break;
+					// Create selector for object and select it - ONLY IF they are not
+					// already selected. Don't want duplicate selectors.
+					createSelector(objectClickedOn, true);
 				}
+				
+				// Disallow selection container box to be rendered to the canvas.
+				setDisplaySelectionContainer(false, true);
 			}
 			// If no objects were clicked on
-			if (!objectClickedOn) {
+			else {
+				// No object clicked on, destroy all selectors
 				destroyAllSelectors();
 	
 				// Set the first corner of the selection container to the mouse loc
@@ -119,12 +126,8 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 				selectionContainer.setCorners(mouseLoc, mouseLoc);
 				// Allow selection container box to be rendered to the canvas.
 				setDisplaySelectionContainer(true, false);
-				
-			} else {
-				// Disallow selection container box to be rendered to the canvas.
-				setDisplaySelectionContainer(false, true);
 			}
-		}		
+		}
 	}
 	
 	@Override
@@ -135,6 +138,7 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 				expandSelectionContainer(canvas.getMouseLocOnGrid());
 				canvas.redraw();
 			}
+			// Drag knob -- expand or shrink a figure
 			else if (selectedKnob != null) {
 				dragKnob(selectedKnob);
 				canvas.redraw(); // Redraw the canvas
@@ -144,7 +148,6 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 			// target objects as well
 			else if (selectors.count() > 0) {
 				for (Selector<?, ?> sel : selectors) {
-//					dragSelector(sel, true); // Move the selector, and snap its vertices to the grid
 					sel.setLoc(dragSceneObject(sel.getLoc(), false)); // Don't snap to grid
 					// If the shape of the selector's target object is a polygon,
 					// fix its vertex names (we moved it)
@@ -156,17 +159,6 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 		}
 	}
 	
-//	private void dragSelector(Selector<?, ?> sel, boolean snapVerticesToGrid) {
-//		// We don't want to snap the selector to the grid, we want to snap its VERTICES
-//		sel.setLoc(dragSceneObject(sel.getLoc(), false)); // Don't snap to grid
-//		
-//		if (snapVerticesToGrid) {
-//			if (Vec2.dist(canvas.getOldMouseLocOnGrid(), canvas.getMouseLocOnGrid()) < 1.2f) {
-//				snapSelector(sel, true);
-//			}
-//		}
-//	}
-	
 	@Override
 	public void mouseReleased(Canvas c, MouseEvent e) {
 		// Erase the selection container (if it exists)
@@ -174,13 +166,8 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 	}
 	
 	@Override
-	public void keyPressed(Canvas c, KeyEvent e) {
-		if (canvas.key == PConstants.CODED) {
-			// If the multiple selection key is being held
-			if (canvas.keyCode == multipleSelectionKey) {
-				selectMultipleObjects = true;
-			}			
-		} else {
+	public void keyPressed(Canvas c, KeyEvent e) {		
+		if (c.keyCode != PConstants.CODED) {
 			if (canvas.keyCode == PConstants.BACKSPACE) { // Don't have to check if key == CODED
 				destroyAllSelectedObjects();
 				canvas.redraw();
@@ -190,18 +177,20 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 				for (Selector<?, ?> sel : selectors) {
 					snapSelector(sel, true);
 				}
+				canvas.redraw();
 			}
 			// TODO: delete this
 			else if (canvas.key == 'n') {
-				Brush.Builder builder = new Brush.Builder().setFill(StyleManager.PINK).setStrokeWeight(2.5f)
-						.setStroke(StyleManager.PINK).setAlpha(75);
+				Brush.Builder builder = new Brush.Builder().setFill(StyleManager.PINK)
+						.setStrokeWeight(2.5f).setStroke(StyleManager.PINK).setAlpha(75);
 
 				Vertex[] tpoints = new Vertex[] {
 						new Vertex(new Vec2(0f, -200.0f)),
 						new Vertex(new Vec2(300f, 100f)),
 						new Vertex(new Vec2(0f, 100f))
 				};
-				GraphicsTriangle tri = new GraphicsTriangle(builder.buildBrush(), new Triangle(Arrays.asList(tpoints)));
+				GraphicsTriangle tri = new GraphicsTriangle(builder.buildBrush(),
+						new Triangle(Arrays.asList(tpoints)));
 				tri.setAllowSelection(true);
 				tri.setResizeable(true);
 				
@@ -314,7 +303,8 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 			
 			// If the object is being moved towards the snap point,
 			// snap the object
-			if (Vec2.dist(snapPoint, to) - 1f < Vec2.dist(snapPoint, from)) { // For some reason, the -1 smoothens process on macs.
+			// For some reason, the -1 smoothens process on macs.
+			if (Vec2.dist(snapPoint, to) - 1f < Vec2.dist(snapPoint, from)) {
 				return snapPoint;
 			}
 			// If the object is moving away from the snap point,
@@ -351,17 +341,6 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 						break outer;
 					}
 				}
-//				for (int i = 0; i < p.getVertexCount(); i++) {
-//					Vec2 vLoc = p.getVertexLoc(i, true);
-//					final char vName = p.getVertexName(i);
-//					// If the vertices overlap and have different names
-//					if (!(vertexName == vName) && vertexLoc.equals(vLoc)) {
-//						otherVertexName = vName;
-//						otherVertLoc = vLoc;
-////						otherVert = pv;
-//						break outer;
-//					}
-//				}
 			}
 			
 			// If no other vertex shares given vertex's location
@@ -461,7 +440,6 @@ public class SelectionManager extends CanvasAdapter implements Drawable {
 					}
 				}
 			}
-			selectMultipleObjects = true;
 		}
 	}
 	
