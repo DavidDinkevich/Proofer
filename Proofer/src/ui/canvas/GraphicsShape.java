@@ -37,6 +37,11 @@ implements Drawable {
 	}
 	
 	@Override
+	public String toString() {
+		return shape.toString();
+	}
+	
+	@Override
 	public void draw(Canvas c) {
 		c.setBrush(getBrush());
 	}
