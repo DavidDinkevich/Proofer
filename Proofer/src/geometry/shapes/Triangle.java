@@ -5,6 +5,8 @@ import java.util.List;
 
 import geometry.Vec2;
 
+import util.Utils;
+
 public class Triangle extends SimplePolygon {
 	private static String formatName(String name) {
 		StringBuilder sb = new StringBuilder(name);
@@ -70,6 +72,11 @@ public class Triangle extends SimplePolygon {
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o) && o instanceof Triangle;
+	}
+	
+	@Override
+	public String toString() {
+		return Utils.DELTA + getName();
 	}
 
 	@Override
