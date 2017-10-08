@@ -1,5 +1,7 @@
 package geometry.shapes;
 
+import java.util.Collection;
+
 import geometry.Vec2;
 import geometry.proofs.Figure;
 
@@ -37,5 +39,17 @@ public interface Shape extends Figure, Scalable, Resizeable {
 	 */
 	public boolean containsPoint(Vec2 point, boolean includeScale);
 	
-	
+	/**
+	 * Get whether the list of points lie within this {@link Shape}.
+	 * @param pts the points to be checked.
+	 * @param toScale whether or not to ignore the scale of this {@link Shape}.
+	 * @return whether or not the points lie within this shape.
+	 */
+	default public boolean containsPoints(Collection<Vec2> pts, boolean toScale) {
+		for (Vec2 point : pts) {
+			if (!containsPoint(point, toScale))
+				return false;
+		}
+		return true;
+	}
 }
