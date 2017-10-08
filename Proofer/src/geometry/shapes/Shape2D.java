@@ -1,6 +1,6 @@
 package geometry.shapes;
 
-public interface Shape2D extends Shape, Resizeable {
+public interface Shape2D extends Shape {
 	/**
 	 * Get the perimeter of this {@link AbstractShape2D}.
 	 * @return the perimeter
