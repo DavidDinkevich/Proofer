@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import geometry.shapes.Polygon;
 
-public class GraphicsPolygon<T extends Polygon> extends GraphicsShape2D<T> {
+public class GraphicsPolygon<T extends Polygon> extends GraphicsShape<T> {
 	private TextFont vertexTextFont;
 	private GraphicsVertex[] vertices;
 	private boolean drawVertices = true;
