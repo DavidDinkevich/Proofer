@@ -26,6 +26,8 @@ public final class StyleManager {
 	
 	private static TextFont textFont;
 	
+	private static Brush uiRelationMakerBrush;
+	
 	static {
 		RED = makeColor(255, 0, 0);
 		BLUE = makeColor(0, 0, 255);
@@ -57,6 +59,9 @@ public final class StyleManager {
 		knobBody = new GraphicsEllipse(
 				brushBuilder.buildBrush(), new Ellipse(new Dimension(12f))
 		);
+		
+		brushBuilder.setStrokeWeight(4f);
+		uiRelationMakerBrush = brushBuilder.buildBrush();
 		
 		textFont = new TextFont(16);
 	}
@@ -125,6 +130,14 @@ public final class StyleManager {
 		return knobBody;
 	}
 
+	public static Brush getUIRelationMakerBrush() {
+		return uiRelationMakerBrush;
+	}
+
+	public static void setUIRelationMakerBrush(Brush brush) {
+		uiRelationMakerBrush = brush;
+	}
+	
 	public static TextFont getTextFont() {
 		return textFont;
 	}
