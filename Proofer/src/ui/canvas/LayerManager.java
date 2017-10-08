@@ -19,7 +19,7 @@ public final class LayerManager {
 		 */
 		
 		addLayer(new Layer(DEFAULT_LAYER, Layer.LOWEST_PRIORITY));
-		addLayer(new Layer(GraphicsShape2D.LAYER_NAME, Layer.LOWEST_PRIORITY+1));
+		addLayer(new Layer(GraphicsShape.LAYER_NAME, Layer.LOWEST_PRIORITY+1));
 		addLayer(new Layer(Selector.LAYER_NAME, Layer.LOWEST_PRIORITY+2));
 		addLayer(new Layer(Knob.LAYER_NAME, Layer.LOWEST_PRIORITY+3));
 	}
