@@ -2,6 +2,7 @@ package ui.canvas.selection;
 
 import geometry.Vec2;
 import geometry.shapes.Rect;
+import geometry.shapes.Shape;
 import geometry.shapes.Shape2D;
 import geometry.shapes.Triangle;
 
@@ -40,12 +41,14 @@ public class SelectionBox extends GraphicsRect {
 	 * Check if the given object is covered by this {@link SelectionBox}.
 	 * @param incorporateScale whether or not to incorporate the given object's scale
 	 */
-	public boolean coversObject(Shape2D object, boolean incorporateScale) {
+	public boolean coversObject(Shape object, boolean incorporateScale) {
+		if (!(object instanceof Shape2D))
+			return false; // TODO: accommodate objects of type Shape
 		if (object instanceof Triangle) {
 			return Triangle.overlap(getShape(), (Triangle)object, incorporateScale);
 		}
 		// If boundary rects overlap
-		return Rect.rectsOverlap(getShape(), object.getBoundaryRect(), incorporateScale);
+		return Rect.rectsOverlap(getShape(), ((Shape2D)object).getBoundaryRect(), incorporateScale);
 	}
 	
 	public void setCorner1(Vec2 corner1) {
