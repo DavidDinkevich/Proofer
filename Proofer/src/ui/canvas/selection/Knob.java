@@ -54,8 +54,11 @@ public abstract class Knob extends GraphicsEllipse {
 			return loc;
 		}
 		
+		// The center of this knob
+		Vec2 center = getShape().getCenter(true);
+		
 		// Difference in location from the current point to loc
-		Vec2 diff = Vec2.sub(loc, getLoc());
+		Vec2 diff = Vec2.sub(loc, center);
 		
 		final boolean upDown = getDirection() == Directions.UpDown;
 		final boolean leftRight = !upDown; // This is safe, because the option of
@@ -68,9 +71,9 @@ public abstract class Knob extends GraphicsEllipse {
 		 * the x pos of loc is the same as the current x pos, do nothing.
 		 */
 		if ((upDown && diff.getY() == 0f) || (leftRight && diff.getX() == 0f)) {
-			return getLoc();
+			return center;
 		}
-		return upDown ? new Vec2(getLoc().getX(), loc.getY()) : new Vec2(loc.getX(), getLoc().getY());
+		return upDown ? new Vec2(center.getX(), loc.getY()) : new Vec2(loc.getX(), center.getY());
 	}
 
 	/**
@@ -89,12 +92,12 @@ public abstract class Knob extends GraphicsEllipse {
 		}
 		
 		// If the new loc is the same as the current loc, there is nothing to do
-		if (newLoc.equals(getLoc())) {
+		if (newLoc.equals(getShape().getCenter(true))) {
 			return;
 		}
 		// Move to corrected location
 		Vec2 correctedLoc = correctLocation(newLoc);
-		setLoc(correctedLoc);
+		getShape().setCenter(correctedLoc, true);
 
 		// If this knob is attached to a selector
 		if (getSelector() != null) {
