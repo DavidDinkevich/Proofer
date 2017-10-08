@@ -14,14 +14,21 @@ import ui.canvas.GraphicsTriangle;
 import ui.canvas.RenderList;
 import ui.canvas.StyleManager;
 import ui.canvas.event.CanvasAdapter;
+import ui.swing.FigureRelationListPanel;
+import ui.swing.FigureRelationPanel;
+import ui.swing.ProofCustomizationPanel;
 
 import geometry.Vec2;
+import geometry.proofs.FigureRelation;
+import geometry.proofs.FigureRelationType;
 import geometry.shapes.Polygon;
 import geometry.shapes.PolygonBuffer;
+import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
 import java.util.Arrays;
+import java.util.List;
 
 import util.IDList;
 
@@ -551,10 +558,58 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	 * @param redraw whether or not to redraw the canvas
 	 */
 	private void setDisplayUIRelationMaker(boolean render, boolean redraw) {
-		if (displayRelMaker != render) {
-			displayRelMaker = render;
-			if (redraw)
-				canvas.redraw();
+		// If the new val is the same as the current val, there is nothing to do
+		if (displayRelMaker == render) {
+			return;
+		}
+		// Update
+		displayRelMaker = render;
+		if (redraw)
+			canvas.redraw();
+		/*
+		 * If render = false (we want to make the UIRelationMaker disappear,
+		 * we have to actually create a figure relation between the two figures
+		 * on which the end-points of the UIRelationMaker lie.
+		 */
+		if (render == false) {
+			// Get the end-points of the UIRelationMaker 
+			List<Vec2> endpts = Arrays.asList(relMaker.getShape().getVertexLocations());
+			// Num of diagram elements
+			final int COUNT = canvas.getDiagramElements().count();
+			
+			// For each figure
+			for (int i = 0; i < COUNT; i++) {
+				// Get the shape of the figure
+				Shape shape0 = canvas.getDiagramElements().get(i).getShape();
+				// If the figure does NOT contain at least ONE of the UIRelationMaker's
+				// end-points
+				if (!shape0.containsAPointIn(endpts, true))
+					continue;
+				// For every figure
+				for (int j = 0; j < COUNT; j++) {
+					// Get the shape of the second figure
+					Shape shape1 = canvas.getDiagramElements().get(j).getShape();
+					// If the second figure is the same as the first, OR if the second
+					// figure does NOT contain at least ONE of the UIRelationMaker's
+					// end-points
+					if (i == j || !shape1.containsAPointIn(endpts, true))
+						continue;
+					// MAKE RELATION BETWEEN THE TWO FIGURES
+					ProofCustomizationPanel proofPanel = canvas.getProofCustomizationPanel();
+					// Get the FigureRelationListPanel
+					FigureRelationListPanel listPanel = proofPanel.getFigureRelationListPanel();
+					// Create the FigureRelation
+					FigureRelation rel = new FigureRelation(
+							FigureRelationType.CONGRUENT,
+							shape0,
+							shape1,
+							null // Null parent?
+					);
+					// Add the FigureRelation
+					listPanel.addFigureRelationPairPanel(new FigureRelationPanel(rel));
+					return; // No more work to do
+				}
+			}
 		}
 	}
 	
