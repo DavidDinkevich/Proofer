@@ -4,19 +4,15 @@ import exceptions.IllegalSelectionException;
 
 import geometry.shapes.Shape2D;
 
-import ui.canvas.selection.Selectable;
 import ui.canvas.selection.Selector;
 
 /**
  * Descendants of this class are 2 dimensional {@link GraphicsShape}s.
  * @author David Dinkevich
  */
-public class GraphicsShape2D<T extends Shape2D> extends GraphicsShape<T> implements Selectable {
+public class GraphicsShape2D<T extends Shape2D> extends GraphicsShape<T> {
 	
 	public static final String LAYER_NAME = "shapes";
-	
-	// The longest boolean I have ever written in my life.
-	private boolean includeStrokeWeightInCalculations = true;
 	
 	// By default, GraphicsShape2Ds are NOT selectable
 	private boolean allowSelections;
@@ -47,7 +43,6 @@ public class GraphicsShape2D<T extends Shape2D> extends GraphicsShape<T> impleme
 	 */
 	public GraphicsShape2D(GraphicsShape2D<T> copy) {
 		super(copy);
-		includeStrokeWeightInCalculations = copy.includeStrokeWeightInCalculations;
 		allowSelections = copy.allowSelections;
 	}
 	
@@ -55,14 +50,17 @@ public class GraphicsShape2D<T extends Shape2D> extends GraphicsShape<T> impleme
 	public boolean getAllowSelections() {
 		return allowSelections;
 	}
+	
 	@Override
 	public void setAllowSelection(boolean selectable) {
 		this.allowSelections = selectable;
 	}
+	
 	@Override
 	public boolean isSelected() {
 		return selected;
 	}
+	
 	@Override
 	public void selectWithSelector(Selector<?, ?> sel) {
 		if (!allowSelections) {
@@ -72,6 +70,7 @@ public class GraphicsShape2D<T extends Shape2D> extends GraphicsShape<T> impleme
 		selected = true;
 		selector = sel;
 	}
+	
 	@Override
 	public Selector<?, ?> deselect() {
 		selected = false;
@@ -79,6 +78,7 @@ public class GraphicsShape2D<T extends Shape2D> extends GraphicsShape<T> impleme
 		selector = null;
 		return sel;
 	}
+	
 	@Override
 	public Selector<?, ?> getSelector() {
 		if (!allowSelections) {
@@ -86,33 +86,5 @@ public class GraphicsShape2D<T extends Shape2D> extends GraphicsShape<T> impleme
 					+ "that does not allow selections.");
 		}
 		return selector;
-	}
-	
-	/**
-	 * Delegate method for getting the resizing policy of this {@link GraphicsObject2D}'s
-	 * shape.
-	 */
-	public boolean isResizeable() {
-		return getShape().isResizeable();
-	}
-	/**
-	 * Delegate method for setting the resizing policy of this {@link GraphicsObject2D}'s
-	 * shape.
-	 */
-	public void setResizeable(boolean resizeable) {
-		getShape().setResizeable(resizeable);
-	}
-	
-	/**
-	 * A pretty damn long function.
-	 */
-	public boolean includeStrokeWeightInCalculations() {
-		return includeStrokeWeightInCalculations;
-	}
-	/**
-	 * A pretty damn long function.
-	 */
-	public void setIncludeStrokeWeightInCalculations(boolean val) {
-		includeStrokeWeightInCalculations = val;
 	}
 }
