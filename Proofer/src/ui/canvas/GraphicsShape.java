@@ -20,8 +20,8 @@ implements Drawable, Selectable {
 
 	private T shape;
 	private Brush.Builder brush;
-	// By default, GraphicsShapes are NOT selectable
-	private boolean allowSelections;
+	// By default, GraphicsShapes ARE selectable
+	private boolean allowSelections = true;
 	private boolean selected;
 	private Selector<?, ?> selector;
 	
