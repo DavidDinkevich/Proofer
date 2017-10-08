@@ -153,7 +153,7 @@ public final class Angle implements Figure {
 	
 	@Override
 	public String toString() {
-		return getName();
+		return Utils.ANGLE_SYMBOL + getName();
 	}
 	
 	@Override
