@@ -10,7 +10,6 @@ import ui.canvas.DiagramCanvas;
 import ui.canvas.Drawable;
 import ui.canvas.GraphicsRectEllipse;
 import ui.canvas.GraphicsShape;
-import ui.canvas.GraphicsShape2D;
 import ui.canvas.GraphicsTriangle;
 import ui.canvas.RenderList;
 import ui.canvas.StyleManager;
@@ -36,7 +35,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private DiagramCanvas canvas;
 	private RenderList renderList;
-	private IDList<GraphicsShape2D<?>> selectables;
+	private IDList<GraphicsShape<?>> selectables;
 	private IDList<Selector<?, ?>> selectors;
 	private IDList<Knob> knobs;
 	
@@ -56,7 +55,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	/**
 	 * The highlighted figure
 	 */
-	private GraphicsShape2D<?> highlightedFig;
+	private GraphicsShape<?> highlightedFig;
 
 	public InputManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
@@ -83,7 +82,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			 * Check for selection among knobs
 			 */
 			for (Knob knob : knobs) {
-				if (knob.getAllowSelections() && knob
+				if (knob.getAllowSelections() && knob.getShape()
 						.containsPoint(canvas.getMouseLocOnGrid(), true)) {
 					selectedKnob = knob;
 					return;
@@ -92,14 +91,14 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			
 			selectedKnob = null; // The knob that may or may not have been clicked on
 			// The figure that may or may not have been clicked on
-			GraphicsShape2D<?> objectClickedOn = null;
+			GraphicsShape<?> objectClickedOn = null;
 			
 			/*
 			 * Check for selection among selectables
 			 */
-			for (GraphicsShape2D<?> o : selectables) {
+			for (GraphicsShape<?> o : selectables) {
 				// If the object is selectable, and it was clicked on
-				if (o.getAllowSelections() && o
+				if (o.getAllowSelections() && o.getShape()
 						.containsPoint(canvas.getMouseLocOnGrid(), true)) {
 					objectClickedOn = o;
 					break; // We already found the selected figure, no need to search further
@@ -162,7 +161,8 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			// target objects as well
 			else if (selectors.count() > 0) {
 				for (Selector<?, ?> sel : selectors) {
-					sel.setLoc(dragSceneObject(sel.getLoc(), false)); // Don't snap to grid
+					Vec2 newSelLoc = dragSceneObject(sel.getShape().getCenter(true), false);
+					sel.moveSelector(newSelLoc); // Don't snap to grid
 					// If the shape of the selector's target object is a polygon,
 					// fix its vertex names (we moved it)
 					if (sel.getTargetObject().getShape() instanceof Polygon)
@@ -208,8 +208,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				};
 				GraphicsTriangle tri = new GraphicsTriangle(brush,
 						new Triangle(Arrays.asList(tpoints)));
-				tri.setAllowSelection(true);
-				tri.setResizeable(true);
 				
 				canvas.addDiagramElement(tri);
 				canvas.redraw();
@@ -219,14 +217,14 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	@Override
 	public void graphicsObjectAdded(Canvas c, GraphicsShape<?> o) {
-		if (o instanceof GraphicsShape2D) {
-			selectables.addObject((GraphicsShape2D<?>)o);
+		if (o instanceof GraphicsShape) {
+			selectables.addObject((GraphicsShape<?>)o);
 		}
 	}
 	
 	@Override
 	public void graphicsObjectRemoved(Canvas c, GraphicsShape<?> o) {
-		selectables.removeObject((GraphicsShape2D<?>) o);
+		selectables.removeObject((GraphicsShape<?>) o);
 	}
 	
 	/**
@@ -273,7 +271,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Selector<?, GraphicsShape2D<?>> createSelector(GraphicsShape2D<?> o, boolean redraw) {
+	private Selector<?, GraphicsShape<?>> createSelector(GraphicsShape<?> o, boolean redraw) {
 		@SuppressWarnings("rawtypes")
 		Selector sel = null;
 		
@@ -291,7 +289,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		
 		if (sel != null) {
 			selectors.addObject(sel);
-			sel.setResizeable(o.isResizeable());
+			sel.getShape().setResizeable(o.getShape().isResizeable());
 			knobs.addObjects(sel.getKnobs()); // Add to knobs list
 			renderList.add(sel); // Add to render list
 			
@@ -334,7 +332,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private void dragKnob(Knob knob) {		
 		// Drag knob
-		knob.moveKnob(dragSceneObject(knob.getLoc(), true));
+		knob.moveKnob(dragSceneObject(knob.getShape().getCenter(true), true));
 		
 		// If the knob is not a PolygonSelectorKnob, we have no more business in this method.
 		if (!(knob.getSelector().getTargetObject().getShape() instanceof Polygon))
@@ -439,7 +437,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		selectionContainer.setCorner2(loc); // Expand box
 		// Check for objects covered by the selection container
 		if (selectables.count() > 0) {
-			for (GraphicsShape2D<?> selectable : selectables) {
+			for (GraphicsShape<?> selectable : selectables) {
 				if (!selectable.getAllowSelections())
 					continue;
 				// If the object is covered by the box
@@ -466,14 +464,14 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	 */
 	private void highlightFigures() {
 		Vec2 mouseLoc = canvas.getMouseLocOnGrid();
-		GraphicsShape2D<?> newHighlightedFig = null;
+		GraphicsShape<?> newHighlightedFig = null;
 		
 		/*
 		 * Find the figure that the cursor hovers over.
 		 */
-		for (GraphicsShape2D<?> figure : selectables) {
+		for (GraphicsShape<?> figure : selectables) {
 			// If the cursor is hovering over this figure
-			if (figure.getAllowSelections() && figure.containsPoint(mouseLoc, true)) {
+			if (figure.getAllowSelections() && figure.getShape().containsPoint(mouseLoc, true)) {
 				// Don't want to operate on the already highlighted figure if it is still
 				// highlighted. NOTE: bc there is only ever one highlighted figure at a time,
 				// we can just compare a figure's brush to see if it is the designated brush
