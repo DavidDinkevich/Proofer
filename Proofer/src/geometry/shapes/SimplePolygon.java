@@ -18,7 +18,7 @@ import geometry.proofs.Figure;
  * {@link Vertex}es by name (char) and by index.
  * @author David Dinkevich
  */
-public class SimplePolygon extends AbstractShape2D implements Polygon, Iterable<Vertex> {
+public class SimplePolygon extends AbstractShape implements Polygon, Iterable<Vertex> {
 	protected List<Vertex> vertices;
 	
 	private List<Figure> children;
