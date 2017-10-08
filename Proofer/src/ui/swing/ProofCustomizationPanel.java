@@ -25,7 +25,7 @@ public class ProofCustomizationPanel extends JComponent {
 		setSize(1200, 700);
 		setLayout(new BorderLayout());
 		
-		canvas = new DiagramCanvas(new geometry.Dimension(700, 700));
+		canvas = new DiagramCanvas(this, new geometry.Dimension(700, 700));
 		add(canvas, BorderLayout.CENTER);
 
 		figRelationListPanel = new FigureRelationListPanel(this);
@@ -43,7 +43,7 @@ public class ProofCustomizationPanel extends JComponent {
 		return canvas;
 	}
 	
-	public FigureRelationListPanel getFigRelationListPanel() {
+	public FigureRelationListPanel getFigureRelationListPanel() {
 		return figRelationListPanel;
 	}
 	
