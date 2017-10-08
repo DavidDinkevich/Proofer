@@ -20,7 +20,7 @@ public class DiagramCanvas extends Canvas {
 	private InputManager selectionManager;
 	private DiagramCanvasGrid canvasGrid;
 	private PolygonBuffer polyBuff;
-	private IDList<GraphicsShape2D<?>> diagramElements;
+	private IDList<GraphicsShape<?>> diagramElements;
 
 	public DiagramCanvas(Dimension size, int background) {
 		super(size, background);
@@ -142,7 +142,7 @@ public class DiagramCanvas extends Canvas {
 		return old;
 	}
 	
-	public void addDiagramElement(GraphicsShape2D<?> shape) {
+	public void addDiagramElement(GraphicsShape<?> shape) {
 		diagramElements.addObject(shape);
 		addGraphicsObject(shape);
 		if (shape.getShape() instanceof Polygon) {
@@ -150,13 +150,13 @@ public class DiagramCanvas extends Canvas {
 		}
 	}
 	
-	public void addDiagramElements(Collection<GraphicsShape2D<?>> elements) {
-		for (GraphicsShape2D<?> shape : elements) {
+	public void addDiagramElements(Collection<GraphicsShape<?>> elements) {
+		for (GraphicsShape<?> shape : elements) {
 			addDiagramElement(shape);
 		}
 	}
 	
-	public boolean removeDiagramElement(GraphicsShape2D<?> shape) {
+	public boolean removeDiagramElement(GraphicsShape<?> shape) {
 		if (diagramElements.removeObject(shape)) {
 			removeGraphicsObject(shape);
 			if (shape.getShape() instanceof Polygon) {
@@ -167,13 +167,13 @@ public class DiagramCanvas extends Canvas {
 		return false;
 	}
 	
-	public void removeDiagramElements(Collection<GraphicsShape2D<?>> elements) {
-		for (GraphicsShape2D<?> shape : elements) {
+	public void removeDiagramElements(Collection<GraphicsShape<?>> elements) {
+		for (GraphicsShape<?> shape : elements) {
 			removeDiagramElement(shape);
 		}
 	}
 	
-	public IDList<GraphicsShape2D<?>> getDiagramElements() {
+	public IDList<GraphicsShape<?>> getDiagramElements() {
 		return diagramElements;
 	}
 
