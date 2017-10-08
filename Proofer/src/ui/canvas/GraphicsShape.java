@@ -1,15 +1,16 @@
 package ui.canvas;
 
 import exceptions.IllegalSelectionException;
-import geometry.shapes.AbstractShape;
+
 import geometry.shapes.Shape;
 
 import ui.canvas.selection.Selectable;
 import ui.canvas.selection.Selector;
+
 import util.IdentifiableObject;
 
 /**
- * A graphical representation of a {@link AbstractShape}.
+ * A graphical representation of a {@link Shape}.
  * @author David Dinkevich
  */
 public abstract class GraphicsShape<T extends Shape>
