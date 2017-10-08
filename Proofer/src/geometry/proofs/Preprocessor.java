@@ -13,7 +13,7 @@ import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
 import ui.canvas.DiagramCanvas;
-import ui.canvas.GraphicsShape2D;
+import ui.canvas.GraphicsShape;
 import ui.swing.FigureRelationListPanel;
 import ui.swing.FigureRelationPanel;
 
@@ -32,7 +32,7 @@ public class Preprocessor {
 		Diagram diagram = new Diagram();
 		
 		// Gather figures
-		for (GraphicsShape2D<?> shape : canvas.getDiagramElements()) {
+		for (GraphicsShape<?> shape : canvas.getDiagramElements()) {
 			diagram.addFigure(shape.getShape());
 		}
 		
