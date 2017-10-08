@@ -512,6 +512,8 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		
 		// IF A NEW FIGURE IS HIGHLIGHTED
 		if (newHighlightedFig != null) {
+			restoreHighlightedFigure();
+			
 			// Update highlighted figure
 			highlightedFig = newHighlightedFig;
 			// Remember the figure's brush before we change it
@@ -524,12 +526,16 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		// IF NO NEW FIGURE HAS BEEN HIGHLIGHTED, AND THE MOST RECENTLY HIGHLIGHTED
 		// FIGURE IS NO LONGER HOVERED OVER BY THE MOUSE
 		else {
-			if (highlightedFig != null) {
-				highlightedFig.setBrush(origHighlightedFigBrush);
-				highlightedFig = null;
-				origHighlightedFigBrush = null;
-				canvas.redraw();
-			}
+			restoreHighlightedFigure();
+		}
+	}
+	
+	private void restoreHighlightedFigure() {
+		if (highlightedFig != null) {
+			highlightedFig.setBrush(origHighlightedFigBrush);
+			highlightedFig = null;
+			origHighlightedFigBrush = null;
+			canvas.redraw();
 		}
 	}
 	
