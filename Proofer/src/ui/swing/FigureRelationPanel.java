@@ -5,6 +5,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
+import geometry.proofs.FigureRelation;
 import geometry.proofs.FigureRelationType;
 
 import java.awt.GridBagConstraints;
@@ -36,6 +37,13 @@ public class FigureRelationPanel extends JComponent {
 		add(getRelationBox(), gbc);
 		++gbc.gridx;
 		add(getFigTextField1(), gbc);
+	}
+	
+	public FigureRelationPanel(FigureRelation relation) {
+		this();
+		getFigTextField0().setText(relation.getFigure0().toString());
+		getFigTextField1().setText(relation.getFigure1().toString());
+		getRelationBox().setSelectedItem(relation.getRelationType());
 	}
 	
 	@Override
