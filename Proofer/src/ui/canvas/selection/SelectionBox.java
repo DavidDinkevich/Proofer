@@ -32,7 +32,7 @@ public class SelectionBox extends GraphicsRect {
 	private void resize() {
 		Vec2 loc = new Vec2(corner1.getX() - (corner1.getX()-corner2.getX())/2,
 				corner1.getY() - (corner1.getY()-corner2.getY())/2);
-		setLoc(loc);
+		getShape().setCenter(loc, true);
 		getShape().setSize(corner2.getX()-corner1.getX(), corner1.getY()-corner2.getY(), false);
 	}
 	

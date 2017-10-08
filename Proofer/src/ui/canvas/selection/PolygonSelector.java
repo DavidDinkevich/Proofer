@@ -41,7 +41,7 @@ public class PolygonSelector extends Selector<Polygon, GraphicsPolygon<?>> {
 		Vec2[] locs = getKnobPositions();
 		for (int i = 0; i < getKnobs().length; i++) {
 			getKnobs()[i] = new PolygonSelectorKnob();
-			getKnobs()[i].setLoc(locs[i]);
+			getKnobs()[i].getShape().setCenter(locs[i], true);
 			getKnobs()[i].setSelector(this);
 			PolygonSelectorKnob knob = (PolygonSelectorKnob)getKnobs()[i];
 			knob.setControlledVertex(getShape().getVertices()[i]);

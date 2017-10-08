@@ -30,7 +30,7 @@ extends GraphicsShape2D<SelShape> {
 		super(shape);
 		setLayer(LAYER_NAME);
 		if (getShape() != null)
-			setResizeable(false);
+			getShape().setResizeable(false);
 	}
 	public Selector() {
 		this(null);
@@ -97,20 +97,18 @@ extends GraphicsShape2D<SelShape> {
 	/**
 	 * Moving a {@link Selector} also moves its target object (assuming there is one)
 	 */
-	@Override
-	public void setLoc(Vec2 loc) {
+	public void moveSelector(Vec2 loc) {
 		// Check to save us from having to update the knob positions for no reason
-		if (!loc.equals(getLoc())) {
-			super.setLoc(loc);
-			targetObject.setLoc(loc);
+		if (!loc.equals(getShape().getCenter(true))) {
+			super.getShape().setCenter(loc, true);
+			targetObject.getShape().setCenter(loc, true);
 			updateKnobPositions();
 		}
 	}
 	
-	@Override
 	public void setScale(Vec2 scale, Vec2 dilationPoint) {
 		if (getShape() != null) {
-			super.setScale(scale, dilationPoint);
+			super.getShape().setScale(scale, dilationPoint);
 			updateKnobPositions();
 			/*
 			 * Notice that the scale of the knobs are not changed.
@@ -145,7 +143,7 @@ extends GraphicsShape2D<SelShape> {
 	public void updateKnobPositions() {
 		Vec2[] locs = getKnobPositions();
 		for (int i = 0; i < getKnobs().length; i++) {
-			getKnobs()[i].setLoc(locs[i]);
+			getKnobs()[i].getShape().setCenter(locs[i], true);
 		}
 	}
 	
@@ -156,8 +154,8 @@ extends GraphicsShape2D<SelShape> {
 	 */
 	protected abstract void createSelectorShape();
 	
-	@Override
 	public boolean isResizeable() {
-		return getTargetObject() != null ? getTargetObject().isResizeable() : super.isResizeable();
+		return getTargetObject() != null ? getTargetObject().getShape().isResizeable()
+				: super.getShape().isResizeable();
 	}
 }

@@ -19,7 +19,8 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 	private float offset = 0f;
 	
 	public RectSelector(T targetObject) {
-		super(new Rect(targetObject.getLoc(), targetObject.getSize()));
+		super(new Rect(targetObject.getShape().getCenter(true), 
+				targetObject.getShape().getSize(true)));
 		setTargetObject(targetObject);
 	}
 	public RectSelector() {
@@ -48,7 +49,7 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 			// Set selector of the knob to this
 			knob.setSelector(this);
 			// Set position
-			knob.setLoc(locs[i]);
+			knob.getShape().setCenter(locs[i], true);
 			
 			/*
 			 * Set knob types. The getKnobPositions() method orders the position
