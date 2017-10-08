@@ -103,7 +103,7 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 			o.getShape().setScale(scaleVec, canvas.getMouseLocOnGrid());
 		}
 		// Resize the selectors of all scene objects (if any are selected)
-		for (Selector<?, ?> sel : canvas.getSelectionManager().getSelectors()) {
+		for (Selector<?, ?> sel : canvas.getInputManager().getSelectors()) {
 			sel.setScale(scaleVec, canvas.getMouseLocOnGrid());
 		}
 		

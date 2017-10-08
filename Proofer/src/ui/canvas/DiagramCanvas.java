@@ -17,7 +17,7 @@ import util.IDList;
 public class DiagramCanvas extends Canvas {
 	private static final long serialVersionUID = -6415389681784791979L;
 	
-	private InputManager selectionManager;
+	private InputManager inputManager;
 	private DiagramCanvasGrid canvasGrid;
 	private PolygonBuffer polyBuff;
 	private IDList<GraphicsShape<?>> diagramElements;
@@ -38,7 +38,7 @@ public class DiagramCanvas extends Canvas {
 	}
 	
 	private void _init() { // Underscore bc init() already exists in PApplet
-		setSelectionManager(selectionManager = new InputManager(this));
+		setInputManager(inputManager = new InputManager(this));
 		setCanvasGrid(canvasGrid = new DiagramCanvasGrid(this, new Dimension(50)));
 		diagramElements = new IDList<>();
 		polyBuff = new PolygonBuffer();
@@ -85,31 +85,31 @@ public class DiagramCanvas extends Canvas {
 		
 		getRenderList().draw(this);
 		
-		if (selectionManager != null)
-			selectionManager.draw(this);
+		if (inputManager != null)
+			inputManager.draw(this);
 	}
 	
 	/**
 	 * Return this {@link Canvas}'s {@link InputManager}. If
-	 * no selection manager has been assigned to this {@link Canvas},
+	 * no {@link InputManager} has been assigned to this {@link Canvas},
 	 * this will return null.
 	 */
-	public InputManager getSelectionManager() {
-		return selectionManager;
+	public InputManager getInputManager() {
+		return inputManager;
 	}
 	
 	/**
 	 * Set this {@link Canvas}'s {@link InputManager}. If this
-	 * {@link Canvas} already has a selection manager, the given
+	 * {@link Canvas} already has an {@link InputManager}, the given
 	 * manager will override the old one.
 	 * @return the old {@link InputManager}, or null if this
 	 * {@link Canvas} did not previously have one.
 	 */
-	public InputManager setSelectionManager(InputManager sel) {
-		InputManager old = selectionManager;
-		selectionManager = sel;
-		if (selectionManager != null)
-			addCanvasListener(selectionManager);
+	public InputManager setInputManager(InputManager sel) {
+		InputManager old = inputManager;
+		inputManager = sel;
+		if (inputManager != null)
+			addCanvasListener(inputManager);
 		else {
 			removeCanvasListener(old);
 		}
