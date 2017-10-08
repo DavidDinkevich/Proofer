@@ -1,16 +1,19 @@
 package ui.canvas;
 
-import geometry.Vec2;
 import geometry.shapes.AbstractShape;
 import geometry.shapes.Shape;
+
+import ui.canvas.selection.Selectable;
+
 import util.IdentifiableObject;
 
 /**
  * A graphical representation of a {@link AbstractShape}.
  * @author David Dinkevich
  */
-public abstract class GraphicsShape<T extends Shape> extends IdentifiableObject
-implements Drawable {	
+public abstract class GraphicsShape<T extends Shape>
+extends IdentifiableObject
+implements Drawable, Selectable {	
 
 	private T shape;
 	private Brush.Builder brush;
@@ -45,56 +48,12 @@ implements Drawable {
 	public void draw(Canvas c) {
 		c.setBrush(getBrush());
 	}
-		
-	public boolean offScreen(Canvas c) {
-		return getLoc().getX() < 0f || getLoc().getX() >= c.width || getLoc().getY() < 0f
-				|| getLoc().getY() >= c.height;
-	}
 	
 	public T getShape() {
 		return shape;
 	}
 	protected void setShape(T shape) {
 		this.shape = shape;
-	}
-	
-	public Vec2 getLoc() {
-		return shape.getCenter(true);
-	}
-
-	public void setLoc(Vec2 loc) {
-		shape.setCenter(loc, true);
-	}
-	
-	/**
-	 * Delegate method for setting the scale of this {@link GraphicsShape}'s shape.
-	 * @param scale the new scale
-	 */
-	public void setScale(Vec2 scale) {
-		shape.setScale(scale);
-	}
-	
-	/**
-	 * Delegate method for setting the scale of this {@link GraphicsShape}'s shape.
-	 * @param scale the new scale
-	 * @param dilationPoint the point of dilation
-	 */
-	public void setScale(Vec2 scale, Vec2 dilationPoint) {
-		shape.setScale(scale, dilationPoint);
-	}
-	
-	/**
-	 * Delegate method for getting the scale of this {@link GraphicsShape}'s shape.
-	 */
-	public Vec2 getScale() {
-		return shape.getScale();
-	}
-	/**
-	 * Delegate method for getting whether this {@link GraphicsShape}'s shape contains
-	 * the given point.
-	 */
-	public boolean containsPoint(Vec2 point, boolean incorporateScale) {
-		return shape.containsPoint(point, incorporateScale);
 	}
 	
 	public Brush.Builder getBrush() {
