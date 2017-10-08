@@ -7,15 +7,14 @@ import geometry.shapes.Shape2D;
 
 import ui.canvas.Canvas;
 import ui.canvas.GraphicsShape;
-import ui.canvas.GraphicsShape2D;
 import ui.canvas.StyleManager;
 
 /**
  * {@linkplain Selector}s select {@link GraphicsShape}s.
  * @author David Dinkevich
  */
-public abstract class Selector<SelShape extends Shape2D, TargetType extends GraphicsShape2D<?>>
-extends GraphicsShape2D<SelShape> {
+public abstract class Selector<SelShape extends Shape2D, TargetType extends GraphicsShape<?>>
+extends GraphicsShape<SelShape> {
 
 	public static final String LAYER_NAME;
 	
@@ -85,13 +84,6 @@ extends GraphicsShape2D<SelShape> {
 			targetObject = null;
 			knobs = null;
 		}
-	}
-	
-	/**
-	 * Returns true if this {@link Selector} can select the given object.
-	 */
-	public static boolean canSelect(GraphicsShape<?> o) {
-		return o instanceof GraphicsShape2D;
 	}
 		
 	/**
