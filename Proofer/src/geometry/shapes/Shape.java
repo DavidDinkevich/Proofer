@@ -52,4 +52,20 @@ public interface Shape extends Figure, Scalable, Resizeable {
 		}
 		return true;
 	}
+	
+	/**
+	 * Get whether this {@link Shape} contains <i>at least one</i> point in the given
+	 * list of points.
+	 * @param pts the list of points
+	 * @param toScale include scale or not
+	 * @return whether this {@link Shape} contains <i>at least one</i> point in the given
+	 * list of points.
+	 */
+	default public boolean containsAPointIn(Collection<Vec2> pts, boolean toScale) {
+		for (Vec2 point : pts) {
+			if (containsPoint(point, toScale))
+				return true;
+		}
+		return false;
+	}
 }
