@@ -38,12 +38,17 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private IDList<GraphicsShape<?>> selectables;
 	private IDList<Selector<?, ?>> selectors;
 	private IDList<Knob> knobs;
+	private Knob selectedKnob;
 	
-	// Selection of objects
+	// Selection container
 	
 	private SelectionBox selectionContainer;
 	private boolean displaySelectionContainer = false;
-	private Knob selectedKnob;
+	
+	// UIRelationMaker
+	
+	private UIRelationMaker relMaker;
+	private boolean displayRelMaker;
 	
 	// Highlighting figures
 	
@@ -61,6 +66,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		this.canvas = canvas;
 		renderList = canvas.getRenderList();
 		selectionContainer = new SelectionBox();
+		relMaker = new UIRelationMaker();
 		selectors = new IDList<>();
 		knobs = new IDList<>();
 		selectables = new IDList<>();
@@ -68,16 +74,25 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	@Override
 	public void draw(Canvas c) {
-		// Draw the selection manager onto the canvas without actually
+		// Draw the selection container onto the canvas without actually
 		// adding the selection container as a graphics object.
 		if (displaySelectionContainer) {
 			selectionContainer.draw(c);
 		}
+		// Draw the UI relation maker onto the canvas without
+		// adding it as a graphics object
+		if (displayRelMaker)
+			relMaker.draw(c);
 	}
 		
 	@Override
 	public void mousePressed(Canvas c, MouseEvent e) {
 		if (canvas.mouseButton == PConstants.LEFT) {
+			// Set the first corner of UI relation maker
+			if (displayUIRelationMaker()) {
+				relMaker.getShape().setVertexLoc(0, canvas.getMouseLocOnGrid(), true);
+				return;
+			}
 			/*
 			 * Check for selection among knobs
 			 */
@@ -146,6 +161,13 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	@Override
 	public void mouseDragged(Canvas c, MouseEvent e) {
 		if (canvas.mouseButton == PConstants.LEFT) {
+			// Expand UI relation maker
+			if (displayUIRelationMaker()) {
+				displayRelMaker = true;
+				relMaker.getShape().setVertexLoc(1, c.getMouseLocOnGrid(), true);
+				canvas.redraw();
+				return;
+			}
 			// Expand/shrink selection container - ONLY IF it is being displayed (active)
 			if (displaySelectionContainer) {
 				expandSelectionContainer(canvas.getMouseLocOnGrid());
@@ -182,6 +204,8 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	public void mouseReleased(Canvas c, MouseEvent e) {
 		// Erase the selection container (if it exists)
 		setDisplaySelectionContainer(false, true);
+		// Erase UI relation maker
+		setDisplayUIRelationMaker(false, true);
 	}
 	
 	@Override
@@ -506,6 +530,25 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				origHighlightedFigBrush = null;
 				canvas.redraw();
 			}
+		}
+	}
+	
+	private boolean displayUIRelationMaker() {
+		return canvas.keyPressed && canvas.key == PConstants.CODED && 
+				canvas.keyCode == PConstants.CONTROL;
+	}
+	
+	/**
+	 * Set whether or not the {@link UIRelationMaker} is rendered to the
+	 * canvas.
+	 * @param render whether or not to render the {@link UIRelationMaker} box
+	 * @param redraw whether or not to redraw the canvas
+	 */
+	private void setDisplayUIRelationMaker(boolean render, boolean redraw) {
+		if (displayRelMaker != render) {
+			displayRelMaker = render;
+			if (redraw)
+				canvas.redraw();
 		}
 	}
 	
