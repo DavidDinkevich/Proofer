@@ -60,7 +60,7 @@ public final class StyleManager {
 				brushBuilder.buildBrush(), new Ellipse(new Dimension(12f))
 		);
 		
-		brushBuilder.setStrokeWeight(4f);
+		brushBuilder.setStroke(LIGHT_BLUE).setStrokeWeight(4f);
 		uiRelationMakerBrush = brushBuilder.buildBrush();
 		
 		textFont = new TextFont(16);
