@@ -14,26 +14,33 @@ import ui.canvas.selection.InputManager;
 
 import util.IDList;
 
+import ui.swing.ProofCustomizationPanel;
+
 public class DiagramCanvas extends Canvas {
 	private static final long serialVersionUID = -6415389681784791979L;
 	
+	private ProofCustomizationPanel parentPanel;
 	private InputManager inputManager;
 	private DiagramCanvasGrid canvasGrid;
 	private PolygonBuffer polyBuff;
 	private IDList<GraphicsShape<?>> diagramElements;
 
-	public DiagramCanvas(Dimension size, int background) {
+	public DiagramCanvas(ProofCustomizationPanel parentPanel,
+			Dimension size, int background) {
 		super(size, background);
+		this.parentPanel = parentPanel;
 		_init();
 	}
 
-	public DiagramCanvas(Dimension size) {
+	public DiagramCanvas(ProofCustomizationPanel parentPanel, Dimension size) {
 		super(size);
+		this.parentPanel = parentPanel;
 		_init();
 	}
 
-	public DiagramCanvas(int background) {
+	public DiagramCanvas(ProofCustomizationPanel parentPanel, int background) {
 		super(background);
+		this.parentPanel = parentPanel;
 		_init();
 	}
 	
@@ -183,5 +190,9 @@ public class DiagramCanvas extends Canvas {
 
 	public void setPolygonBuffer(PolygonBuffer polyBuff) {
 		this.polyBuff = polyBuff;
+	}
+	
+	public ProofCustomizationPanel getProofCustomizationPanel() {
+		return parentPanel;
 	}
 }
