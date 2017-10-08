@@ -8,7 +8,7 @@ import geometry.Vec2;
  * {@link Ellipse}s.
  * @author David Dinkevich
  */
-public abstract class RectEllipse extends AbstractShape2D {
+public abstract class RectEllipse extends AbstractShape implements Shape2D {
 	private Dimension.Mutable size;
 
 	public RectEllipse(Vec2 loc, Dimension size) {
