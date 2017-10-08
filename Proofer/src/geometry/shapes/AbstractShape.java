@@ -22,6 +22,10 @@ public abstract class AbstractShape implements Shape {
 	 */
 	private Vec2.Mutable scale = new Vec2.Mutable(1, 1);
 	/**
+	 * Get whether this {@link AbstractShape} is resizeable.
+	 */
+	private boolean resizeable = true;
+	/**
 	 * The name of this {@link AbstractShape}.
 	 */
 	private String name = "";
@@ -167,6 +171,16 @@ public abstract class AbstractShape implements Shape {
 	@Override
 	public void setScale(Vec2 scale) {
 		setScale(scale, Vec2.ZERO);
+	}
+	
+	@Override
+	public boolean isResizeable() {
+		return resizeable;
+	}
+
+	@Override
+	public void setResizeable(boolean resizeable) {
+		this.resizeable = resizeable;
 	}
 }
 
