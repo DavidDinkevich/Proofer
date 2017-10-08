@@ -29,7 +29,7 @@ public class RectSelectorKnob extends Knob {
 		RectSelector<?> selector = (RectSelector<?>)getSelector();
 		
 		// Dist from old location
-		Vec2 dragDist = Vec2.sub(newPos, selector.getLoc());
+		Vec2 dragDist = Vec2.sub(newPos, selector.getShape().getCenter(true));
 		
 		// Corner knobs
 		if (getDirection() == Directions.All) {
