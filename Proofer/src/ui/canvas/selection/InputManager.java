@@ -294,8 +294,8 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private void destroyAllSelectedObjects() {
 		for (int i = selectables.count()-1; i >= 0; i--) {
 			if (selectables.get(i).isSelected()) {
-				canvas.getPolygonBuffer().removePoly((Polygon)selectables.get(i).getShape());
-				canvas.removeGraphicsObject(selectables.get(i));
+				// Remove from diagram
+				canvas.removeDiagramElement(selectables.get(i));
 			}
 		}
 		destroyAllSelectors();
