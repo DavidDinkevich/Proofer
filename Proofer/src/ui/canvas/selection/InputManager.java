@@ -8,6 +8,7 @@ import ui.canvas.Brush;
 import ui.canvas.Canvas;
 import ui.canvas.DiagramCanvas;
 import ui.canvas.Drawable;
+import ui.canvas.GraphicsArc;
 import ui.canvas.GraphicsRectEllipse;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsTriangle;
@@ -18,11 +19,14 @@ import ui.swing.FigureRelationListPanel;
 import ui.swing.FigureRelationPanel;
 import ui.swing.ProofCustomizationPanel;
 
+import geometry.Dimension;
 import geometry.Vec2;
 import geometry.proofs.FigureRelation;
 import geometry.proofs.FigureRelationType;
+import geometry.shapes.Arc;
 import geometry.shapes.Polygon;
 import geometry.shapes.PolygonBuffer;
+import geometry.shapes.Segment;
 import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
@@ -31,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import util.IDList;
+import util.Utils;
 
 /**
  * Controls and manages selections made on a {@link DiagramCanvas}.
@@ -523,11 +528,16 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			
 			// Update highlighted figure
 			highlightedFig = newHighlightedFig;
-			// Remember the figure's brush before we change it
-			origHighlightedFigBrush = newHighlightedFig.getBrush().buildBrush();
+			
+			if (highlightedFig instanceof GraphicsTriangle) {
+				highlightAnglesInPolygon((GraphicsTriangle)highlightedFig);
+			}
+			
+//			// Remember the figure's brush before we change it
+//			origHighlightedFigBrush = newHighlightedFig.getBrush().buildBrush();
 			// Set the figure's brush to the designated brush for highlighted
 			// figures
-			highlightedFig.setBrush(StyleManager.getHighlightedFigureBrush());
+//			highlightedFig.setBrush(StyleManager.getHighlightedFigureBrush());
 			canvas.redraw();
 		}
 		// IF NO NEW FIGURE HAS BEEN HIGHLIGHTED, AND THE MOST RECENTLY HIGHLIGHTED
@@ -539,10 +549,72 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private void restoreHighlightedFigure() {
 		if (highlightedFig != null) {
-			highlightedFig.setBrush(origHighlightedFigBrush);
+//			highlightedFig.setBrush(origHighlightedFigBrush);
 			highlightedFig = null;
 			origHighlightedFigBrush = null;
 			canvas.redraw();
+		}
+	}
+	
+	private void highlightAnglesInPolygon(GraphicsTriangle graphicsPoly) {
+		// Get the shape
+		Triangle poly = graphicsPoly.getShape();
+		// Position of mouse
+		Vec2 mouse = canvas.getMouseLocOnGrid();
+		// For all the vertices in the polygon
+		for (Vertex centralVert : poly.getVertices()) {
+			/*
+			 * Calculate the distance from the vertex that the mouse must be
+			 * in order to highlight the angle
+			 */
+			// Get segments adjacent to vertex
+			Segment[] adjSegs = poly.getAdjacentSegments(centralVert.getName());
+			// 1/3 length of smallest segment
+			final float distToVert = Math.min(adjSegs[0].getLength(true), 
+					adjSegs[1].getLength(true)) * 0.3f;
+			// Get loc of vertex
+			Vec2 centVLoc = centralVert.getCenter(true);
+			// If the mouse is inside the poly and the mouse is close enough to
+			// the vertex
+			if (poly.containsPoint(mouse, true) && Vec2.dist(mouse, centVLoc) < distToVert) {
+				// Get the angle between the two segments adjacent to the vertex
+				String angle = Utils.getAngleBetween(adjSegs[0].toString(), adjSegs[1].toString());
+				// A vertex in the triangle (not the central vertex)
+				Vec2 otherPolyVert0 = poly.getVertexLoc(angle.charAt(0), true);
+				// The other vertex in the triangle (not central vertex)
+				Vec2 otherPolyVert1 = poly.getVertexLoc(angle.charAt(2), true);
+				// A side of the arc
+				Vec2 arcVert0 = Vec2.add(centVLoc, Vec2.sub(otherPolyVert0, centVLoc)
+						.valueAtMag(distToVert));
+				// The other side of the arc
+				Vec2 arcVert1 = Vec2.add(centVLoc, Vec2.sub(otherPolyVert1, centVLoc)
+						.valueAtMag(distToVert));
+				// The angle of the arc
+				final float arcAngle = Vec2.angleBetween(arcVert0, arcVert1);
+				
+				// Create the arc
+				GraphicsArc arc = new GraphicsArc(
+						// Brush
+						StyleManager.getHighlightedFigureBrush(),
+						// Create shape (arc)
+						new Arc(centVLoc, new Dimension(distToVert), 0, arcAngle*2.1f)
+						// For some reason, multiplying the angle in between of the two vectors
+						// by exactly 2.1 produces the desired measurement. I don't know why.
+						// TODO: figure out why.
+				);
+								
+				System.out.println(Utils.radiansToDegrees(arcAngle));
+				System.out.println(arcVert0 + ", " + arcVert1);
+				
+				canvas.pushMatrix();
+				canvas.translate(arc.getShape().getCenter(true));
+				canvas.rotate(-arcVert0.getHeading() + 0.02f);
+				arc.getShape().setCenter(Vec2.ZERO, true);
+				arc.draw(canvas);
+				canvas.popMatrix();						
+		
+				break;
+			}
 		}
 	}
 	
