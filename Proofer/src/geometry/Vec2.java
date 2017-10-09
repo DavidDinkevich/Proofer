@@ -310,12 +310,12 @@ public class Vec2 {
 	 * Calculates and returns the angle (in radians) between two vectors.
 	 *
 	 * @param v1
-	 *            the x, y, and z components of a {@link Vec2}.
+	 *            the x and y components of a {@link Vec2}.
 	 * @param v2
-	 *            the x, y, and z components of a {@link Vec2}
+	 *            the x and y components of a {@link Vec2}
 	 * @see https://github.com/processing/processing/blob/master/core/src/processing/core/PVector.java
 	 */
-	static public float angleBetween(Vec2 v1, Vec2 v2) {
+	public static float angleBetween(Vec2 v1, Vec2 v2) {
 
 		// We get NaN if we pass in a zero vector which can cause problems
 		// Zero seems like a reasonable angle between a (0,0) vector and
