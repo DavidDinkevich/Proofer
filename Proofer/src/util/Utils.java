@@ -17,6 +17,8 @@ public final class Utils {
 	public static final String DELTA = "Δ";
 	public static final String ANGLE_SYMBOL = "<";
 	public static final String GEOMETRY_CHARS = DELTA + ANGLE_SYMBOL;
+	public static final float PI = (float)Math.PI;
+	public static final float TWO_PI = (float)(Math.PI*2D);
 
 	// Don't instantiate an object of this class, or it'll bite you back...
 	private Utils() {
