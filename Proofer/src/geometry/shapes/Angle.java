@@ -48,7 +48,7 @@ public final class Angle implements Figure {
 	}
 	
 	public Angle(Segment a, Segment b) {
-		this(makeAngle(a, b));
+		this(Utils.getAngleBetween(a, b));
 	}
 	
 	public Angle() {
@@ -58,26 +58,6 @@ public final class Angle implements Figure {
 	public Angle(Angle other) {
 		name = other.getName();
 		vertices = Arrays.copyOf(other.vertices, other.vertices.length);
-	}
-	
-	private static List<Vertex> makeAngle(Segment a, Segment b) {
-		String name = Utils.getAngleBetween(a.getName(), b.getName());
-		if (name == null)
-			throw new NullPointerException();
-		
-		Vertex shared = (Vertex)a.getChild(name.substring(1, 2));
-		Vertex unshared0, unshared1;
-		String unshared0Name = name.substring(0, 1);
-		String unshared1Name = name.substring(2);
-		
-		if (a.getChild(unshared0Name) == null) {
-			unshared0 = (Vertex)b.getChild(unshared0Name);
-			unshared1 = (Vertex)a.getChild(unshared1Name);
-		} else {
-			unshared1 = (Vertex)b.getChild(unshared1Name);
-			unshared0 = (Vertex)a.getChild(unshared0Name);
-		}
-		return Arrays.asList(unshared0, shared, unshared1);
 	}
 	
 	private void syncNameWithVertexNames() {
