@@ -589,29 +589,39 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				// The other side of the arc
 				Vec2 arcVert1 = Vec2.add(centVLoc, Vec2.sub(otherPolyVert1, centVLoc)
 						.valueAtMag(distToVert));
-				// The angle of the arc
-				final float arcAngle = Vec2.angleBetween(arcVert0, arcVert1);
-				
+								
+				Vec2 horizontal = new Vec2(centVLoc.getX() + 1, centVLoc.getY());
+				final float startAngle = Vec2.angleBetween(horizontal, arcVert0);
+//				System.out.println(Utils.radiansToDegrees(startAngle));
+
+				final float endAngle = startAngle + Vec2.angleBetween(arcVert0, arcVert1);
+
 				// Create the arc
 				GraphicsArc arc = new GraphicsArc(
 						// Brush
 						StyleManager.getHighlightedFigureBrush(),
 						// Create shape (arc)
-						new Arc(centVLoc, new Dimension(distToVert), 0, arcAngle*2.1f)
+//						new Arc(centVLoc, new Dimension(distToVert), 0, arcAngle*2.1f)
+						new Arc(centVLoc, new Dimension(distToVert), startAngle, endAngle)
 						// For some reason, multiplying the angle in between of the two vectors
 						// by exactly 2.1 produces the desired measurement. I don't know why.
 						// TODO: figure out why.
 				);
-								
-				System.out.println(Utils.radiansToDegrees(arcAngle));
-				System.out.println(arcVert0 + ", " + arcVert1);
 				
-				canvas.pushMatrix();
-				canvas.translate(arc.getShape().getCenter(true));
-				canvas.rotate(-arcVert0.getHeading() + 0.02f);
-				arc.getShape().setCenter(Vec2.ZERO, true);
+				System.out.println(arcVert0.getHeading());
+				
+				canvas.fill(0);
+				canvas.strokeWeight(10f);
+				canvas.line(centVLoc, arcVert0);
+//				canvas.circle(horizontal, 20f);
+//				canvas.triangle(arcVert0, centVLoc, arcVert1);
+				
+//				canvas.pushMatrix();
+//				canvas.translate(arc.getShape().getCenter(true));
+//				canvas.rotate(startAngle);
+//				arc.getShape().setCenter(Vec2.ZERO, true);
 				arc.draw(canvas);
-				canvas.popMatrix();						
+//				canvas.popMatrix();						
 		
 				break;
 			}
