@@ -1,11 +1,13 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import geometry.shapes.Angle;
 import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
+import geometry.shapes.Vertex;
 
 /**
  * Utility class.
@@ -147,6 +149,33 @@ public final class Utils {
 		String angleName = 
 				String.valueOf(unshared0) + String.valueOf(shared) + String.valueOf(unshared1);
 		return angleName;
+	}
+	
+	/**
+	 * Get a list of {@link Vertex}es that form the angle
+	 * between the two given segments
+	 * @param a the first segment
+	 * @param b the second segment
+	 * @return the list of vertices that compose the angle
+	 */
+	public static List<Vertex> getAngleBetween(Segment a, Segment b) {
+		String name = getAngleBetween(a.getName(), b.getName());
+		if (name == null)
+			throw new NullPointerException();
+		
+		Vertex shared = (Vertex)a.getChild(name.substring(1, 2));
+		Vertex unshared0, unshared1;
+		String unshared0Name = name.substring(0, 1);
+		String unshared1Name = name.substring(2);
+		
+		if (a.getChild(unshared0Name) == null) {
+			unshared0 = (Vertex)b.getChild(unshared0Name);
+			unshared1 = (Vertex)a.getChild(unshared1Name);
+		} else {
+			unshared1 = (Vertex)b.getChild(unshared1Name);
+			unshared0 = (Vertex)a.getChild(unshared0Name);
+		}
+		return Arrays.asList(unshared0, shared, unshared1);
 	}
 	
 	/**
