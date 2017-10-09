@@ -120,4 +120,22 @@ public class Triangle extends SimplePolygon {
 	public final int getVertexCount() {
 		return 3; // Triangles have 3 corners :-)
 	}
+	
+	/**
+	 * Get the segments adjacent to the given vertex.
+	 * @param vert the vertex
+	 * @return the 2 segments, or null if the given vertex is not contained
+	 * in this triangle.
+	 */
+	public Segment[] getAdjacentSegments(String vert) {
+		final int indexOfVert = getName().indexOf(vert);
+		if (indexOfVert < 0)
+			return null;
+		StringBuilder builder = new StringBuilder(getName());
+		builder.deleteCharAt(indexOfVert);
+		return new Segment[] {
+				(Segment)getChild(vert + builder.charAt(0)),
+				(Segment)getChild(vert + builder.charAt(1))
+		};
+	}
 }
