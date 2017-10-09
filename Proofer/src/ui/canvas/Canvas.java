@@ -15,6 +15,7 @@ import java.util.Collection;
 
 import geometry.Dimension;
 import geometry.Vec2;
+import geometry.shapes.Arc;
 import geometry.shapes.Ellipse;
 import geometry.shapes.Polygon;
 import geometry.shapes.Rect;
@@ -278,6 +279,16 @@ public class Canvas extends PApplet {
 			vertex(p.getVertexLoc(i, true));
 		}
 		endShape(PConstants.CLOSE);
+	}
+	
+	public void arc(Vec2 loc, Dimension size, float start, float stop, int mode) {
+		arc(loc.getX(), loc.getY(), size.getWidth(), size.getHeight(),
+				start, stop, mode);
+	}
+	
+	public void arc(Arc arc) {
+		arc(arc.getCenter(true), arc.getSize(), arc.getStartAngle(), arc.getStopAngle(),
+				arc.getMode());
 	}
 	
 	/** Get a random int within the given parameters. Inclusive, inclusive. */
