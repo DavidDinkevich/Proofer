@@ -26,12 +26,10 @@ public final class Utils {
 	}
 	
 	public static float degreesToRadians(float degrees) {
-		final float PI = (float)Math.PI;
 		return degrees * (PI/180.0f);
 	}
 	
 	public static float radiansToDegrees(float radians) {
-		final float PI = (float)Math.PI;
 		return radians * (180.0f/PI);
 	}
 
