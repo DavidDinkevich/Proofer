@@ -555,7 +555,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			canvas.redraw();
 		}
 	}
-	
+		
 	private void highlightAnglesInPolygon(GraphicsTriangle graphicsPoly) {
 		// Get the shape
 		Triangle poly = graphicsPoly.getShape();
@@ -586,43 +586,42 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				// A side of the arc
 				Vec2 arcVert0 = Vec2.add(centVLoc, Vec2.sub(otherPolyVert0, centVLoc)
 						.valueAtMag(distToVert));
+				System.out.println(Vec2.sub(arcVert0, centVLoc));
 				// The other side of the arc
 				Vec2 arcVert1 = Vec2.add(centVLoc, Vec2.sub(otherPolyVert1, centVLoc)
 						.valueAtMag(distToVert));
 								
-				Vec2 horizontal = new Vec2(centVLoc.getX() + 1, centVLoc.getY());
-				final float startAngle = Vec2.angleBetween(horizontal, arcVert0);
-//				System.out.println(Utils.radiansToDegrees(startAngle));
+				final float startAngle = arcVert0.getHeading() > 0f ? Utils.TWO_PI-arcVert0.getHeading()
+						: Math.abs(arcVert0.getHeading());
+				
+				System.out.println(Utils.radiansToDegrees(arcVert0.getHeading()) + ", " +
+						Utils.radiansToDegrees(startAngle));
 
-				final float endAngle = startAngle + Vec2.angleBetween(arcVert0, arcVert1);
-
+				final float endAngle = startAngle + Vec2.angleBetween(
+						Vec2.sub(arcVert0, centVLoc), Vec2.sub(arcVert1, centVLoc));
+				
 				// Create the arc
 				GraphicsArc arc = new GraphicsArc(
 						// Brush
 						StyleManager.getHighlightedFigureBrush(),
 						// Create shape (arc)
-//						new Arc(centVLoc, new Dimension(distToVert), 0, arcAngle*2.1f)
 						new Arc(centVLoc, new Dimension(distToVert), startAngle, endAngle)
-						// For some reason, multiplying the angle in between of the two vectors
-						// by exactly 2.1 produces the desired measurement. I don't know why.
-						// TODO: figure out why.
 				);
-				
-				System.out.println(arcVert0.getHeading());
-				
-				canvas.fill(0);
+
 				canvas.strokeWeight(10f);
 				canvas.line(centVLoc, arcVert0);
-//				canvas.circle(horizontal, 20f);
-//				canvas.triangle(arcVert0, centVLoc, arcVert1);
+//				canvas.line(centVLoc, arcVert1);
+				canvas.stroke(0, 255, 0);
+				canvas.pushMatrix();
+				canvas.translate(centVLoc);
+				canvas.rotate(Utils.PI/2f + startAngle);
+//				System.out.println(Utils.radiansToDegrees(startAngle) + ", "
+//						+ Utils.radiansToDegrees(endAngle));
+				canvas.circle(Vec2.ZERO, 20f);
+				canvas.line(Vec2.ZERO, arcVert0);
+				canvas.popMatrix();
 				
-//				canvas.pushMatrix();
-//				canvas.translate(arc.getShape().getCenter(true));
-//				canvas.rotate(startAngle);
-//				arc.getShape().setCenter(Vec2.ZERO, true);
 				arc.draw(canvas);
-//				canvas.popMatrix();						
-		
 				break;
 			}
 		}
