@@ -1,9 +1,13 @@
 package geometry.shapes;
 
+import java.util.List;
+
 import geometry.Dimension;
 import geometry.Vec2;
 
 import processing.core.PConstants;
+
+import util.Utils;
 
 public class Arc extends Vertex {
 	private Dimension.Mutable size;
@@ -59,6 +63,56 @@ public class Arc extends Vertex {
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o) && o instanceof Arc;
+	}
+	
+	/**
+	 * Get the {@link Arc} formed between two intersecting {@link Segment}s.
+	 * @param a the first segment
+	 * @param b the second segment
+	 * @param arcSize the size of the arc (the width and height)
+	 * @return the {@link Arc}
+	 */
+	public static Arc getArcBetween(Segment a, Segment b, float arcSize) {
+		List<Vertex> angle = Utils.getAngleBetween(a, b);
+		Vec2 otherVert0 = angle.get(0).getCenter(true);
+		Vec2 otherVert1 = angle.get(2).getCenter(true);
+		Vec2 vertex = angle.get(1).getCenter(true);
+		
+		// Get the headings of both of the segments
+		final float arcVert0Heading = Vec2.sub(otherVert0, vertex).getHeading();
+		final float arcVert1Heading = Vec2.sub(otherVert1, vertex).getHeading();
+		// Determine which segment's heading will be used for the arc's start angle
+		float startHeading;
+		if (arcVert0Heading > 0f) {
+			startHeading = Math.abs(arcVert0Heading) < Math.abs(arcVert1Heading)
+					? arcVert0Heading : arcVert1Heading;
+		} else {
+			startHeading = Math.abs(arcVert0Heading) > Math.abs(arcVert1Heading)
+					? arcVert0Heading : arcVert1Heading;
+		}
+		
+		/*
+		 * We can't just use the startHeading as it is for the start angle of the arc.
+		 * This is because Vec2.getHeading() returns an angle on the following scale:
+		 * 			 -PI/2
+		 * 		2PI		     0
+		 * 			  PI/2
+		 * However, the Arc class uses a different scale:
+		 * 			 1.5 PI
+		 * 		PI			 0
+		 * 			  PI/2
+		 * We have to account for this.
+		 */
+		final float startAngle = startHeading < 0f ? Utils.TWO_PI + startHeading 
+				: startHeading;
+		// Get the angle between the two segments
+		final float angleBetween = Vec2.angleBetween(
+				Vec2.sub(otherVert0, vertex), Vec2.sub(otherVert1, vertex));
+		// The end angle
+		final float endAngle = startAngle + angleBetween;
+		
+		// Create the arc
+		return new Arc(vertex, new Dimension(arcSize), startAngle, endAngle);
 	}
 
 	public float getStartAngle() {
