@@ -19,7 +19,6 @@ import ui.swing.FigureRelationListPanel;
 import ui.swing.FigureRelationPanel;
 import ui.swing.ProofCustomizationPanel;
 
-import geometry.Dimension;
 import geometry.Vec2;
 import geometry.proofs.FigureRelation;
 import geometry.proofs.FigureRelationType;
@@ -35,7 +34,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import util.IDList;
-import util.Utils;
 
 /**
  * Controls and manages selections made on a {@link DiagramCanvas}.
@@ -577,51 +575,13 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			// If the mouse is inside the poly and the mouse is close enough to
 			// the vertex
 			if (poly.containsPoint(mouse, true) && Vec2.dist(mouse, centVLoc) < distToVert) {
-				// Get the angle between the two segments adjacent to the vertex
-				String angle = Utils.getAngleBetween(adjSegs[0].toString(), adjSegs[1].toString());
-				// A vertex in the triangle (not the central vertex)
-				Vec2 otherPolyVert0 = poly.getVertexLoc(angle.charAt(0), true);
-				// The other vertex in the triangle (not central vertex)
-				Vec2 otherPolyVert1 = poly.getVertexLoc(angle.charAt(2), true);
-				// A side of the arc
-				Vec2 arcVert0 = Vec2.add(centVLoc, Vec2.sub(otherPolyVert0, centVLoc)
-						.valueAtMag(distToVert));
-				System.out.println(Vec2.sub(arcVert0, centVLoc));
-				// The other side of the arc
-				Vec2 arcVert1 = Vec2.add(centVLoc, Vec2.sub(otherPolyVert1, centVLoc)
-						.valueAtMag(distToVert));
-								
-				final float startAngle = arcVert0.getHeading() > 0f ? Utils.TWO_PI-arcVert0.getHeading()
-						: Math.abs(arcVert0.getHeading());
-				
-				System.out.println(Utils.radiansToDegrees(arcVert0.getHeading()) + ", " +
-						Utils.radiansToDegrees(startAngle));
-
-				final float endAngle = startAngle + Vec2.angleBetween(
-						Vec2.sub(arcVert0, centVLoc), Vec2.sub(arcVert1, centVLoc));
-				
-				// Create the arc
-				GraphicsArc arc = new GraphicsArc(
-						// Brush
+				Arc arc = Arc.getArcBetween(adjSegs[0], adjSegs[1], distToVert);
+				// Create graphics arc
+				GraphicsArc gArc = new GraphicsArc(
 						StyleManager.getHighlightedFigureBrush(),
-						// Create shape (arc)
-						new Arc(centVLoc, new Dimension(distToVert), startAngle, endAngle)
+						arc
 				);
-
-				canvas.strokeWeight(10f);
-				canvas.line(centVLoc, arcVert0);
-//				canvas.line(centVLoc, arcVert1);
-				canvas.stroke(0, 255, 0);
-				canvas.pushMatrix();
-				canvas.translate(centVLoc);
-				canvas.rotate(Utils.PI/2f + startAngle);
-//				System.out.println(Utils.radiansToDegrees(startAngle) + ", "
-//						+ Utils.radiansToDegrees(endAngle));
-				canvas.circle(Vec2.ZERO, 20f);
-				canvas.line(Vec2.ZERO, arcVert0);
-				canvas.popMatrix();
-				
-				arc.draw(canvas);
+				gArc.draw(canvas);
 				break;
 			}
 		}
