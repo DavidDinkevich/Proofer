@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import util.IDList;
+import util.Utils;
 
 /**
  * Controls and manages selections made on a {@link DiagramCanvas}.
@@ -575,7 +576,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			// If the mouse is inside the poly and the mouse is close enough to
 			// the vertex
 			if (poly.containsPoint(mouse, true) && Vec2.dist(mouse, centVLoc) < distToVert) {
-				Arc arc = Arc.getArcBetween(adjSegs[0], adjSegs[1], distToVert);
+				Arc arc = Utils.getArcBetween(adjSegs[0], adjSegs[1], distToVert);
 				// Create graphics arc
 				GraphicsArc gArc = new GraphicsArc(
 						StyleManager.getHighlightedFigureBrush(),
