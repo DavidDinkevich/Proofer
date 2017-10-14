@@ -37,8 +37,8 @@ public class PolygonBuffer implements Iterable<Polygon> {
 	
 	/**
 	 * Get the index (in the char buffer) of the given char belonging to the given polygon.
-	 * @param poly
-	 * @param name
+	 * @param poly the polygon
+	 * @param name the name of the vertex
 	 * @return the index, or -1 if the given poly doesn't contain the given char,
 	 * or if this poly buffer does not contain the given polygon.
 	 */
