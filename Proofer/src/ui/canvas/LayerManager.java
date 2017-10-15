@@ -22,6 +22,7 @@ public final class LayerManager {
 		addLayer(new Layer(GraphicsShape.LAYER_NAME, Layer.LOWEST_PRIORITY+1));
 		addLayer(new Layer(Selector.LAYER_NAME, Layer.LOWEST_PRIORITY+2));
 		addLayer(new Layer(Knob.LAYER_NAME, Layer.LOWEST_PRIORITY+3));
+		addLayer(new Layer("Polygon Components", Layer.LOWEST_PRIORITY+4));
 	}
 	
 	// Do not instantiate a layer manager
