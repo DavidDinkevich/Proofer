@@ -42,11 +42,11 @@ public final class StyleManager {
 				.setStrokeWeight(2.5f).setStroke(StyleManager.PINK).setAlpha(75);
 		defaultFigureBrush = brushBuilder.buildBrush();
 		
-		brushBuilder.setAlpha(130f); // Slightly less transparent
+		brushBuilder.setAlpha(130f).setRenderStroke(false); // Slightly less transparent
 		highlightedFigureBrush = brushBuilder.buildBrush();
 		
 		brushBuilder.setFill(makeColor(255, 255, 0)).setAlpha(80)
-			.setStroke(makeColor(255, 220, 0)).setStrokeWeight(2);
+			.setStroke(makeColor(255, 220, 0)).setStrokeWeight(2).setRenderStroke(true);
 		selectionContainerBrush = brushBuilder.buildBrush();
 		
 		brushBuilder.setFill(0).setAlpha(255).setStroke(0).setStrokeWeight(0.05f);
