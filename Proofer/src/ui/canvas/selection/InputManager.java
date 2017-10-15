@@ -568,21 +568,26 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			 */
 			// Get segments adjacent to vertex
 			Segment[] adjSegs = poly.getAdjacentSegments(centralVert.getName());
-			// 1/3 length of smallest segment
+			// The distance to the vertex the mouse must be
 			final float distToVert = Math.min(adjSegs[0].getLength(true), 
-					adjSegs[1].getLength(true)) * 0.3f;
+					adjSegs[1].getLength(true)) * 0.2f;
 			// Get loc of vertex
 			Vec2 centVLoc = centralVert.getCenter(true);
+			
+			Arc arc = Utils.getArcBetween(adjSegs[0], adjSegs[1], distToVert * 2f);
+			// Create graphics arc
+			GraphicsArc gArc = new GraphicsArc(
+					StyleManager.getHighlightedFigureBrush(),
+					arc
+			);
+			gArc.setLayer("Polygon Components");
+			renderList.getLayerList("Polygon Components").clear();
 			// If the mouse is inside the poly and the mouse is close enough to
 			// the vertex
 			if (poly.containsPoint(mouse, true) && Vec2.dist(mouse, centVLoc) < distToVert) {
-				Arc arc = Utils.getArcBetween(adjSegs[0], adjSegs[1], distToVert);
-				// Create graphics arc
-				GraphicsArc gArc = new GraphicsArc(
-						StyleManager.getHighlightedFigureBrush(),
-						arc
-				);
-				gArc.draw(canvas);
+//				gArc.draw(canvas);
+//				renderList.getLayerList("Polygon Components").clear();
+				renderList.add(gArc);
 				break;
 			}
 		}
@@ -590,7 +595,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private boolean displayUIRelationMaker() {
 		return canvas.keyPressed && canvas.key == PConstants.CODED && 
-				canvas.keyCode == PConstants.CONTROL;
+				canvas.keyCode == PConstants.SHIFT;
 	}
 	
 	/**
