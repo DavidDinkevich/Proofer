@@ -9,7 +9,7 @@ public class GraphicsPolygon<T extends Polygon> extends GraphicsShape<T> {
 	private GraphicsVertex[] vertices;
 	private boolean drawVertices = true;
 	private boolean drawName = true;
-	
+		
 	public GraphicsPolygon(Brush brush, T shape) {
 		super(brush, shape);
 		vertexTextFont = StyleManager.getTextFont();
@@ -49,6 +49,7 @@ public class GraphicsPolygon<T extends Polygon> extends GraphicsShape<T> {
 		if (drawName)
 			c.text(getShape().getName(), getShape().getCenter(true));
 	}
+	
 	public TextFont getVertexTextFont() {
 		return vertexTextFont;
 	}
