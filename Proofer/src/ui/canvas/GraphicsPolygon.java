@@ -56,7 +56,7 @@ public class GraphicsPolygon<T extends Polygon> extends GraphicsShape<T> {
 		this.vertexTextFont = vertexTextFont;
 	}
 	
-	public boolean doDrawName() {
+	public boolean drawName() {
 		return drawName;
 	}
 	public void setDrawName(boolean drawName) {
