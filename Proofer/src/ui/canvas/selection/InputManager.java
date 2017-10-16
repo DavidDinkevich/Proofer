@@ -8,7 +8,6 @@ import ui.canvas.Brush;
 import ui.canvas.Canvas;
 import ui.canvas.DiagramCanvas;
 import ui.canvas.Drawable;
-import ui.canvas.GraphicsArc;
 import ui.canvas.GraphicsRectEllipse;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsTriangle;
@@ -22,10 +21,8 @@ import ui.swing.ProofCustomizationPanel;
 import geometry.Vec2;
 import geometry.proofs.FigureRelation;
 import geometry.proofs.FigureRelationType;
-import geometry.shapes.Arc;
 import geometry.shapes.Polygon;
 import geometry.shapes.PolygonBuffer;
-import geometry.shapes.Segment;
 import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
@@ -34,7 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import util.IDList;
-import util.Utils;
 
 /**
  * Controls and manages selections made on a {@link DiagramCanvas}.
@@ -63,11 +59,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	// Highlighting figures
 	
-	/**
-	 * The brush that belonged to the highlighted figure
-	 * before it was highlighted
-	 */
-	private Brush origHighlightedFigBrush;
 	/**
 	 * The highlighted figure
 	 */
@@ -548,49 +539,13 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private void restoreHighlightedFigure() {
 		if (highlightedFig != null) {
-//			highlightedFig.setBrush(origHighlightedFigBrush);
 			highlightedFig = null;
-			origHighlightedFigBrush = null;
 			canvas.redraw();
 		}
 	}
 		
 	private void highlightAnglesInPolygon(GraphicsTriangle graphicsPoly) {
-		// Get the shape
-		Triangle poly = graphicsPoly.getShape();
-		// Position of mouse
-		Vec2 mouse = canvas.getMouseLocOnGrid();
-		// For all the vertices in the polygon
-		for (Vertex centralVert : poly.getVertices()) {
-			/*
-			 * Calculate the distance from the vertex that the mouse must be
-			 * in order to highlight the angle
-			 */
-			// Get segments adjacent to vertex
-			Segment[] adjSegs = poly.getAdjacentSegments(centralVert.getName());
-			// The distance to the vertex the mouse must be
-			final float distToVert = Math.min(adjSegs[0].getLength(true), 
-					adjSegs[1].getLength(true)) * 0.2f;
-			// Get loc of vertex
-			Vec2 centVLoc = centralVert.getCenter(true);
-			
-			Arc arc = Utils.getArcBetween(adjSegs[0], adjSegs[1], distToVert * 2f);
-			// Create graphics arc
-			GraphicsArc gArc = new GraphicsArc(
-					StyleManager.getHighlightedFigureBrush(),
-					arc
-			);
-			gArc.setLayer("Polygon Components");
-			renderList.getLayerList("Polygon Components").clear();
-			// If the mouse is inside the poly and the mouse is close enough to
-			// the vertex
-			if (poly.containsPoint(mouse, true) && Vec2.dist(mouse, centVLoc) < distToVert) {
-//				gArc.draw(canvas);
-//				renderList.getLayerList("Polygon Components").clear();
-				renderList.add(gArc);
-				break;
-			}
-		}
+		graphicsPoly.highlightComponentAtPoint(renderList, canvas.getMouseLocOnGrid());
 	}
 	
 	private boolean displayUIRelationMaker() {
