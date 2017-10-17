@@ -64,7 +64,7 @@ public class Vec2 {
 	}
 	
 	public Vec2 valueAtMag(float mag) {
-		return normalized().mult(mag);
+		return Vec2.mult(normalized(), mag);
 	}
 	
 	/**
@@ -97,90 +97,6 @@ public class Vec2 {
 	 */
 	public Vec2 negated() {
 		return new Vec2(-x, -y);
-	}
-	
-	/*
-	 * Non-static add/sub/div/mult operations
-	 */
-	
-	/**
-	 * Returns the result of adding the given {@link Vec2} to this
-	 * {@link Vec2}. As this class is <i>immutable,</i>
-	 * the x and y values in <i>this {@link Vec2} are
-	 * not changed</i>.
-	 */
-	public Vec2 add(Vec2 v) {
-		return new Vec2(x+v.x, y+v.y);
-	}
-	
-	/**
-	 * Returns the result of adding the given float to this
-	 * {@link Vec2}. As this class is <i>immutable,</i>
-	 * the x and y values in <i>this {@link Vec2} are
-	 * not changed</i>.
-	 */
-	public Vec2 add(float n) {
-		return new Vec2(x+n, y+n);
-	}
-	
-	/**
-	 * Returns the result of subtracting the given {@link Vec2} from
-	 * this {@link Vec2}. As this class is <i>immutable,</i>
-	 * the x and y values in this {@link Vec2} <i>are
-	 * not changed</i>.
-	 */
-	public Vec2 sub(Vec2 v) {
-		return new Vec2(x-v.x, y-v.y);
-	}
-	
-	/**
-	 * Returns the result of subtracting the given float from
-	 * this {@link Vec2}. As this class is <i>immutable,</i>
-	 * the x and y values in this {@link Vec2} <i>are
-	 * not changed</i>.
-	 */
-	public Vec2 sub(float n) {
-		return new Vec2(x-n, y-n);
-	}
-	
-	/**
-	 * Returns the result of multiplying this {@link Vec2} by the
-	 * given {@link Vec2}. As this class is <i>immutable,</i>
-	 * the x and y values in this {@link Vec2} <i>are
-	 * not changed</i>.
-	 */
-	public Vec2 mult(Vec2 v) {
-		return new Vec2(x*v.x, y*v.y);
-	}
-	
-	/**
-	 * Returns the result of multiplying this {@link Vec2} by the
-	 * given float. As this class is <i>immutable,</i>
-	 * the x and y values in this {@link Vec2} <i>are
-	 * not changed</i>.
-	 */
-	public Vec2 mult(float n) {
-		return new Vec2(x*n, y*n);
-	}
-	
-	/**
-	 * Returns the result of dividing this {@link Vec2} by the
-	 * given {@link Vec2}. As this class is <i>immutable,</i>
-	 * the x and y values in this {@link Vec2} <i>are
-	 * not changed</i>.
-	 */
-	public Vec2 div(Vec2 v) {
-		return new Vec2(x/v.x, y/v.y);
-	}
-	
-	/**
-	 * Returns the result of dividing this {@link Vec2} by the
-	 * given float. As this class is <i>immutable,</i>
-	 * the x and y values in this {@link Vec2} <i>are
-	 * not changed</i>.
-	 */
-	public Vec2 div(float n) {
-		return new Vec2(x/n, y/n);
 	}
 	
 	/*
@@ -293,17 +209,6 @@ public class Vec2 {
 		x = lerp(start.x, stop.x, amt);
 		y = lerp(start.y, stop.y, amt);
 		return new Vec2(x, y);
-	}
-	
-	/**
-	 * Linear interpolate this vector to the given vector by the given
-	 * amount.
-	 * <p>
-	 * NOTE: Because this class is immutable, the x and y
-	 * values of this vector will not be affected.
-	 */
-	public Vec2 lerp(Vec2 to, float amt) {
-		return lerp(this, to, amt);
 	}
 	
 	/**
@@ -441,7 +346,7 @@ public class Vec2 {
 		 * As this class is <i>mutable,</i> the x and y values are modified.
 		 */
 		public Mutable lerp(Vec2 to, float amount) {
-			return set(super.lerp(to, amount));
+			return set(Vec2.lerp(this, to, amount));
 		}
 		
 		/**
@@ -459,9 +364,8 @@ public class Vec2 {
 		 * to this mutable vector. As this class is <i>mutable,</i>
 		 * the x and y values are modified.
 		 */
-		@Override
 		public Mutable add(Vec2 vec) {
-			return set(super.add(vec));
+			return set(x+vec.x, y+vec.y);
 		}
 		
 		/**
@@ -469,9 +373,8 @@ public class Vec2 {
 		 * to the given float. As this class is <i>mutable,</i>
 		 * the x and y values are modified.
 		 */
-		@Override
 		public Mutable add(float n) {
-			return set(super.add(n));
+			return set(x + n, y + n);
 		}
 		
 		/**
@@ -479,9 +382,8 @@ public class Vec2 {
 		 * from this mutable vector. As this class is <i>mutable,</i>
 		 * the x and y values are modified.
 		 */
-		@Override
 		public Mutable sub(Vec2 vec) {
-			return set(super.sub(vec));
+			return set(x - vec.x, y - vec.y);
 		}
 		
 		/**
@@ -489,9 +391,8 @@ public class Vec2 {
 		 * from this mutable vector. As this class is <i>mutable,</i>
 		 * the x and y values are modified.
 		 */
-		@Override
 		public Mutable sub(float n) {
-			return set(super.sub(n));
+			return set(x - n, y - n);
 		}
 		
 		/**
@@ -499,9 +400,8 @@ public class Vec2 {
 		 * by the given {@link Vec2}. As this class is <i>mutable,</i>
 		 * the x and y values are modified.
 		 */
-		@Override
 		public Mutable mult(Vec2 vec) {
-			return set(super.mult(vec));
+			return set(x * vec.x, y * vec.y);
 		}
 		
 		/**
@@ -509,9 +409,8 @@ public class Vec2 {
 		 * by the given float. As this class is <i>mutable,</i>
 		 * the x and y values are modified.
 		 */
-		@Override
 		public Mutable mult(float n) {
-			return set(super.mult(n));
+			return set(x * n, y * n);
 		}
 		
 		/**
@@ -519,9 +418,8 @@ public class Vec2 {
 		 * by the given {@link Vec2}. As this class is <i>mutable,</i>
 		 * the x and y values are modified.
 		 */
-		@Override
 		public Mutable div(Vec2 vec) {
-			return set(super.div(vec));
+			return set(x / vec.x, y / vec.y);
 		}
 		
 		/**
@@ -529,9 +427,8 @@ public class Vec2 {
 		 * by the given float. As this class is <i>mutable,</i>
 		 * the x and y values are modified.
 		 */
-		@Override
 		public Mutable div(float n) {
-			return set(super.div(n));
+			return set(x / n, y / n);
 		}
 	}
 }
