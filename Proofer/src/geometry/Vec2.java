@@ -10,7 +10,7 @@ package geometry;
  * @author David Dinkevich
  */
 public class Vec2 {
-	public static final Vec2 ZERO = new Vec2(0, 0);
+	public static final Vec2 ZERO = new Vec2(0f, 0f);
 	
 	protected float x, y;
 	
