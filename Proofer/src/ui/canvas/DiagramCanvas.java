@@ -2,6 +2,8 @@ package ui.canvas;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
 import geometry.Dimension;
 import geometry.Vec2;
@@ -11,9 +13,6 @@ import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
 import ui.canvas.selection.InputManager;
-
-import util.IDList;
-
 import ui.swing.ProofCustomizationPanel;
 
 public class DiagramCanvas extends Canvas {
@@ -23,7 +22,7 @@ public class DiagramCanvas extends Canvas {
 	private InputManager inputManager;
 	private DiagramCanvasGrid canvasGrid;
 	private PolygonBuffer polyBuff;
-	private IDList<GraphicsShape<?>> diagramElements;
+	private List<GraphicsShape<?>> diagramElements;
 
 	public DiagramCanvas(ProofCustomizationPanel parentPanel,
 			Dimension size, int background) {
@@ -47,7 +46,7 @@ public class DiagramCanvas extends Canvas {
 	private void _init() { // Underscore bc init() already exists in PApplet
 		setInputManager(inputManager = new InputManager(this));
 		setCanvasGrid(canvasGrid = new DiagramCanvasGrid(this, new Dimension(50)));
-		diagramElements = new IDList<>();
+		diagramElements = new ArrayList<>();
 		polyBuff = new PolygonBuffer();
 	}
 	
@@ -150,7 +149,7 @@ public class DiagramCanvas extends Canvas {
 	}
 	
 	public void addDiagramElement(GraphicsShape<?> shape) {
-		diagramElements.addObject(shape);
+		diagramElements.add(shape);
 		addGraphicsObject(shape);
 		if (shape.getShape() instanceof Polygon) {
 			polyBuff.addPoly((Polygon)shape.getShape());
@@ -164,7 +163,7 @@ public class DiagramCanvas extends Canvas {
 	}
 	
 	public boolean removeDiagramElement(GraphicsShape<?> shape) {
-		if (diagramElements.removeObject(shape)) {
+		if (diagramElements.remove(shape)) {
 			removeGraphicsObject(shape);
 			if (shape.getShape() instanceof Polygon) {
 				polyBuff.removePoly((Polygon)shape.getShape());
@@ -180,7 +179,7 @@ public class DiagramCanvas extends Canvas {
 		}
 	}
 	
-	public IDList<GraphicsShape<?>> getDiagramElements() {
+	public List<GraphicsShape<?>> getDiagramElements() {
 		return diagramElements;
 	}
 

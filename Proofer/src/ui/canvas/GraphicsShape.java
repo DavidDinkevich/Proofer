@@ -7,14 +7,11 @@ import geometry.shapes.Shape;
 import ui.canvas.selection.Selectable;
 import ui.canvas.selection.Selector;
 
-import util.IdentifiableObject;
-
 /**
  * A graphical representation of a {@link Shape}.
  * @author David Dinkevich
  */
 public abstract class GraphicsShape<T extends Shape>
-extends IdentifiableObject
 implements Drawable, Selectable {	
 	
 	public static final String LAYER_NAME = "shapes";
@@ -51,6 +48,24 @@ implements Drawable, Selectable {
 	@Override
 	public String toString() {
 		return shape.toString();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof GraphicsShape))
+			return false;
+		GraphicsShape<?> other = (GraphicsShape<?>)o;
+		return brush.equals(other.brush) && shape.equals(other.shape);
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + shape.hashCode();
+		result = 31 * result + brush.hashCode();
+		return result;
 	}
 	
 	@Override

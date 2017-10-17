@@ -1,9 +1,9 @@
 package ui.canvas;
 
+import java.util.Map;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import util.IDList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * A container to store {@link GraphicsShape}s and sort them in their
@@ -11,25 +11,22 @@ import util.IDList;
  * @author David Dinkevich
  */
 public class RenderList implements Drawable {	
-	private ArrayList<IDList<GraphicsShape<?>>> renderList;
-	private HashMap<String, Long> listCodes;
+	private Map<String, List<GraphicsShape<?>>> renderList;
 	
 	public RenderList() {
-		renderList = new ArrayList<>();
-		listCodes = new HashMap<>();
+		// LinkedHashMap to maintain insertion order
+		renderList = new LinkedHashMap<>();
 		// Fill the render list with all existing layers
 		for (Layer lay : LayerManager.getLayers()) {
-			IDList<GraphicsShape<?>> list = new IDList<>();
-			renderList.add(list); // Add list for layer
-			listCodes.put(lay.getName(), list.getListCode()); // Store list code
+			renderList.put(lay.getName(), new ArrayList<>());
 		}
 	}
 	
 	@Override
 	public void draw(Canvas c) {
-		for (IDList<GraphicsShape<?>> idMan : renderList) {
-			for (int i = 0; i < idMan.count(); i++) {
-				idMan.get(i).draw(c);
+		for (List<GraphicsShape<?>> list : renderList.values()) {
+			for (int i = 0; i < list.size(); i++) {
+				list.get(i).draw(c);
 			}
 		}
 	}
@@ -38,7 +35,7 @@ public class RenderList implements Drawable {
 	 * Add a {@link GraphicsShape} to the list of its {@link Layer}.
 	 */
 	public void add(GraphicsShape<?> o) {
-		getLayerList(o.getLayer()).addObject(o);
+		getLayerList(o.getLayer()).add(o);
 	}
 	
 	/**
@@ -47,22 +44,15 @@ public class RenderList implements Drawable {
 	 * and successfully removed. False otherwise.
 	 */
 	public boolean remove(GraphicsShape<?> o) {
-		return getLayerList(o.getLayer()).removeObject(o);
+		return getLayerList(o.getLayer()).remove(o);
 	}
 	
 	/**
-	 * Get the {@link IDList} that stores the {@link GraphicsShape}s of the given
+	 * Get the {@link List} that stores the {@link GraphicsShape}s of the given
 	 * {@link Layer}.
 	 */
-	public IDList<GraphicsShape<?>> getLayerList(String layerName) {
-		long listCode = listCodes.get(layerName);
-		for (int i = 0; i < renderList.size(); i++) {
-			IDList<GraphicsShape<?>> list = renderList.get(i);
-			if (list.getListCode() == listCode) {
-				return list;
-			}
-		}
-		return null;
+	public List<GraphicsShape<?>> getLayerList(String layerName) {
+		return renderList.get(layerName);
 	}
 	
 	public GraphicsShape<?> get(String layerName, int index) {
@@ -75,14 +65,14 @@ public class RenderList implements Drawable {
 	
 	public int getObjectCount() {
 		int count = 0;
-		for (IDList<?> list : renderList) {
-			count += list.count();
+		for (List<?> list : renderList.values()) {
+			count += list.size();
 		}
 		return count;
 	}
 	
 	public boolean contains(GraphicsShape<?> o) {
-		IDList<GraphicsShape<?>> list = getLayerList(o.getLayer());
+		List<GraphicsShape<?>> list = getLayerList(o.getLayer());
 		if (list == null)
 			return false;
 		return list.contains(o);

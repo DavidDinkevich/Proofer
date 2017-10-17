@@ -1,6 +1,8 @@
 package ui.canvas;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import geometry.Dimension;
 import geometry.Vec2;
@@ -13,15 +15,13 @@ import processing.event.MouseEvent;
 import ui.canvas.event.CanvasAdapter;
 import ui.canvas.selection.Selector;
 
-import util.IDList;
-
 /**
  * Draws a grid, controls the scale of objects, translation of grid, etc.
  * @author David Dinkevich
  */
 public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 	private DiagramCanvas canvas;	
-	private IDList<GraphicsShape<?>> graphicsShapes;
+	private List<GraphicsShape<?>> graphicsShapes;
 	
 	private boolean drawGrid = true;
 	
@@ -36,11 +36,11 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 	private float maxScale = 6f;
 	
 	// Minimum distance for a vertex to be snapped to a snap-point
-	private float snapDist = 10f; // 18f
+	private float snapDist = 10f;
 	
 	public DiagramCanvasGrid(DiagramCanvas c, Dimension defaultCellSize) {
 		canvas = c;
-		graphicsShapes = new IDList<>();
+		graphicsShapes = new ArrayList<>();
 		this.defaultCellSize = defaultCellSize;
 		defaultPixelSize = Dimension.ONE;
 		pixelSize = new Dimension.Mutable(defaultPixelSize);
@@ -125,12 +125,12 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 	
 	@Override
 	public void graphicsObjectAdded(Canvas c, GraphicsShape<?> o) {
-		graphicsShapes.addObject(o);
+		graphicsShapes.add(o);
 	}
 	
 	@Override
 	public void graphicsObjectRemoved(Canvas c, GraphicsShape<?> o) {
-		graphicsShapes.removeObject(o);
+		graphicsShapes.remove(o);
 	}
 	
 	/**
