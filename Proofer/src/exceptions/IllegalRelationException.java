@@ -1,4 +1,4 @@
-package geometry.proofs;
+package exceptions;
 
 @SuppressWarnings("serial")
 public class IllegalRelationException extends RuntimeException {

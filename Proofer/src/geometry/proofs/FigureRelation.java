@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import exceptions.IllegalRelationException;
 import geometry.shapes.Angle;
 import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
