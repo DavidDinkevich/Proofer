@@ -17,11 +17,11 @@ import util.Utils;
  * @author David Dinkevich
  */
 public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
-	private List<String> componentsToRender;
+	private List<GraphicsShape<?>> childrenToRender;
 
 	public GraphicsTriangle(Brush brush, Triangle shape) {
 		super(brush, shape);
-		componentsToRender = new ArrayList<>();
+		childrenToRender = new ArrayList<>();
 	}
 	
 	public GraphicsTriangle(Triangle shape) {
@@ -39,7 +39,7 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 	public GraphicsTriangle(GraphicsTriangle other) {
 		super(other);
 		setShape(new Triangle(other.getShape()));
-		componentsToRender = new ArrayList<>(other.componentsToRender);
+		childrenToRender = new ArrayList<>(other.childrenToRender);
 	}
 	
 	@Override
@@ -47,8 +47,16 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		super.draw(c);
 	}
 	
+	private boolean ChildsToRenderContains(String name) {
+		for (GraphicsShape<?> gShape : childrenToRender) {
+			if (gShape.getShape().isValidName(name))
+				return true;
+		}
+		return false;
+	}
+	
 	public boolean drawAngle(RenderList rList, Arc arc) {
-		if (componentsToRender.contains(arc.getName()))
+		if (ChildsToRenderContains(arc.getName()))
 			return false;
 				
 		// Create graphics arc
@@ -59,15 +67,15 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		// Set layer of the graphics arc
 		gArc.setLayer("Polygon Components");
 							
-		// Render component
-		componentsToRender.add(arc.getName());
+		// Render Child
+		childrenToRender.add(gArc);
 		// Add to render list
 		rList.add(gArc);
 		
 		return true;
 	}
 	
-	public Shape getComponentAtPoint(Vec2 point) {
+	public Shape getChildAtPoint(Vec2 point) {
 		// In the case of an Angle
 		for (Vertex vert : getShape().getVertices()) {
 			// Get the name of the vertex
@@ -94,8 +102,8 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		return null;
 	}
 	
-	public boolean highlightComponentAtPoint(RenderList rList, Vec2 point) {
-		Shape comp = getComponentAtPoint(point);
+	public boolean highlightChildAtPoint(RenderList rList, Vec2 point) {
+		Shape comp = getChildAtPoint(point);
 		if (comp == null)
 			return false;
 		if (comp instanceof Arc) {
@@ -106,8 +114,12 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		return false;
 	}
 	
-	public void unhighlightComponentAtPoint(RenderList rList, Vec2 point) {
-		
+	public void unhighlightAllChildren(RenderList rList) {
+		// Angles
+		for (int i = childrenToRender.size()-1; i >= 0; i--) {
+			rList.remove(childrenToRender.get(i));
+			childrenToRender.remove(i);
+		}
 	}
 	
 	
