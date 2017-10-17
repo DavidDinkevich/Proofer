@@ -27,10 +27,9 @@ import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import util.IDList;
 
 /**
  * Controls and manages selections made on a {@link DiagramCanvas}.
@@ -42,9 +41,9 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private DiagramCanvas canvas;
 	private RenderList renderList;
-	private IDList<GraphicsShape<?>> selectables;
-	private IDList<Selector<?, ?>> selectors;
-	private IDList<Knob> knobs;
+	private List<GraphicsShape<?>> selectables;
+	private List<Selector<?, ?>> selectors;
+	private List<Knob> knobs;
 	private Knob selectedKnob;
 	
 	// Selection container
@@ -69,9 +68,9 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		renderList = canvas.getRenderList();
 		selectionContainer = new SelectionBox();
 		relMaker = new UIRelationMaker();
-		selectors = new IDList<>();
-		knobs = new IDList<>();
-		selectables = new IDList<>();
+		selectors = new ArrayList<>();
+		knobs = new ArrayList<>();
+		selectables = new ArrayList<>();
 	}
 	
 	@Override
@@ -183,7 +182,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			
 			// Move all existing selectors. NOTE: moving selectors will move their
 			// target objects as well
-			else if (selectors.count() > 0) {
+			else if (!selectors.isEmpty()) {
 				for (Selector<?, ?> sel : selectors) {
 					Vec2 newSelLoc = dragSceneObject(sel.getShape().getCenter(true), false);
 					sel.moveSelector(newSelLoc); // Don't snap to grid
@@ -244,24 +243,24 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	@Override
 	public void graphicsObjectAdded(Canvas c, GraphicsShape<?> o) {
 		if (o instanceof GraphicsShape) {
-			selectables.addObject((GraphicsShape<?>)o);
+			selectables.add((GraphicsShape<?>)o);
 		}
 	}
 	
 	@Override
 	public void graphicsObjectRemoved(Canvas c, GraphicsShape<?> o) {
-		selectables.removeObject((GraphicsShape<?>) o);
+		selectables.remove((GraphicsShape<?>) o);
 	}
 	
 	/**
 	 * Destroys all existing selectors. Selected objects are deselected.
 	 */
 	private void destroyAllSelectors() {
+		// Remove knobs
+		knobs.clear();
 		// Deselect all selected objects
-		for (int i = selectors.count()-1; i >= 0; i--) {
+		for (int i = selectors.size()-1; i >= 0; i--) {
 			Selector<?, ?> sel = selectors.get(i);
-			// Remove knobs
-			knobs.removeObjects(sel.getKnobs());
 			// Deselect target object of selector
 			sel.deselectTargetObject();
 		}
@@ -274,20 +273,20 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private void destroySelector(Selector<?, ?> sel) {
 		// Remove knobs
-		knobs.removeObjects(sel.getKnobs());
+		knobs.removeAll(Arrays.asList(sel.getKnobs()));
 		// Deselect target object of selector
 		sel.deselectTargetObject();
 		// Remove from render list
 		renderList.remove(sel);
 		// Remove from selectors list
-		selectors.removeObject(sel);
+		selectors.remove(sel);
 	}
 	
 	/**
 	 * Destroy all selected objects and their selectors.
 	 */
 	private void destroyAllSelectedObjects() {
-		for (int i = selectables.count()-1; i >= 0; i--) {
+		for (int i = selectables.size()-1; i >= 0; i--) {
 			if (selectables.get(i).isSelected()) {
 				// Remove from diagram
 				canvas.removeDiagramElement(selectables.get(i));
@@ -314,9 +313,9 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		}
 		
 		if (sel != null) {
-			selectors.addObject(sel);
+			selectors.add(sel);
 			sel.getShape().setResizeable(o.getShape().isResizeable());
-			knobs.addObjects(sel.getKnobs()); // Add to knobs list
+			knobs.addAll(Arrays.asList(sel.getKnobs())); // Add to knobs list
 			renderList.add(sel); // Add to render list
 			
 			if (redraw)
@@ -462,7 +461,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private void expandSelectionContainer(Vec2 loc) {
 		selectionContainer.setCorner2(loc); // Expand box
 		// Check for objects covered by the selection container
-		if (selectables.count() > 0) {
+		if (selectables.size() > 0) {
 			for (GraphicsShape<?> selectable : selectables) {
 				if (!selectable.getAllowSelections())
 					continue;
@@ -545,8 +544,9 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 	
 	private boolean displayUIRelationMaker() {
-		return canvas.keyPressed && canvas.key == PConstants.CODED && 
-				canvas.keyCode == PConstants.SHIFT;
+//		return canvas.keyPressed && canvas.key == PConstants.CODED && 
+//				canvas.keyCode == PConstants.SHIFT;
+		return false;
 	}
 	
 	/**
@@ -573,7 +573,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			// Get the end-points of the UIRelationMaker 
 			List<Vec2> endpts = Arrays.asList(relMaker.getShape().getVertexLocations());
 			// Num of diagram elements
-			final int COUNT = canvas.getDiagramElements().count();
+			final int COUNT = canvas.getDiagramElements().size();
 			
 			// For each figure
 			for (int i = 0; i < COUNT; i++) {
@@ -611,7 +611,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		}
 	}
 	
-	public IDList<Selector<?, ?>> getSelectors() {
+	public List<Selector<?, ?>> getSelectors() {
 		return selectors;
 	}
 }

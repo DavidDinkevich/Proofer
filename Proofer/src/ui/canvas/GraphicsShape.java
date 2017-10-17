@@ -7,14 +7,11 @@ import geometry.shapes.Shape;
 import ui.canvas.selection.Selectable;
 import ui.canvas.selection.Selector;
 
-import util.IdentifiableObject;
-
 /**
  * A graphical representation of a {@link Shape}.
  * @author David Dinkevich
  */
 public abstract class GraphicsShape<T extends Shape>
-extends IdentifiableObject
 implements Drawable, Selectable {	
 	
 	public static final String LAYER_NAME = "shapes";
