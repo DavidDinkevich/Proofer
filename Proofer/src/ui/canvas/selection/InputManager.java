@@ -522,12 +522,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			if (highlightedFig instanceof GraphicsTriangle) {
 				highlightAnglesInPolygon((GraphicsTriangle)highlightedFig);
 			}
-			
-//			// Remember the figure's brush before we change it
-//			origHighlightedFigBrush = newHighlightedFig.getBrush().buildBrush();
-			// Set the figure's brush to the designated brush for highlighted
-			// figures
-//			highlightedFig.setBrush(StyleManager.getHighlightedFigureBrush());
 			canvas.redraw();
 		}
 		// IF NO NEW FIGURE HAS BEEN HIGHLIGHTED, AND THE MOST RECENTLY HIGHLIGHTED
@@ -545,7 +539,9 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 		
 	private void highlightAnglesInPolygon(GraphicsTriangle graphicsPoly) {
-		graphicsPoly.highlightComponentAtPoint(renderList, canvas.getMouseLocOnGrid());
+		graphicsPoly.unhighlightAllChildren(renderList);
+		Vec2 mouse = canvas.getMouseLocOnGrid();
+		graphicsPoly.highlightChildAtPoint(renderList, mouse);
 	}
 	
 	private boolean displayUIRelationMaker() {
