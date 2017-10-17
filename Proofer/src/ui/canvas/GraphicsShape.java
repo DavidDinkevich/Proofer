@@ -54,6 +54,24 @@ implements Drawable, Selectable {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof GraphicsShape))
+			return false;
+		GraphicsShape<?> other = (GraphicsShape<?>)o;
+		return brush.equals(other.brush) && shape.equals(other.shape);
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + shape.hashCode();
+		result = 31 * result + brush.hashCode();
+		return result;
+	}
+	
+	@Override
 	public void draw(Canvas c) {
 		c.setBrush(getBrush());
 	}
