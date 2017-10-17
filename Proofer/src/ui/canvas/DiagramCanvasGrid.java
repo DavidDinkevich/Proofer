@@ -116,8 +116,8 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 		if (c.mouseButton == PConstants.RIGHT) {
 			Vec2 from = canvas.getOldMouseLocOnGrid();
 			Vec2 to = canvas.getMouseLocOnGrid();
-			Vec2 offset = from.sub(c.getTranslation());
-			Vec2 dest = to.sub(offset);
+			Vec2 offset = Vec2.sub(from, c.getTranslation());
+			Vec2 dest = Vec2.sub(to, offset);
 			c.setTranslation(dest);
 			c.redraw();
 		}
