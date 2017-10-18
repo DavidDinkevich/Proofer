@@ -32,7 +32,7 @@ public class Preprocessor {
 		Diagram diagram = new Diagram();
 		
 		// Gather figures
-		for (GraphicsShape<?> shape : canvas.getDiagramElements()) {
+		for (GraphicsShape<?> shape : canvas.getDiagramFigures()) {
 			diagram.addFigure(shape.getShape());
 		}
 		
