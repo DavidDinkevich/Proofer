@@ -44,7 +44,7 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 	}
 	public DiagramCanvasGrid(DiagramCanvas c) {
 		// Default cell size is 50x50
-		this(c, new Dimension(50));
+		this(c, new Dimension(50f));
 	}
 
 	@Override
