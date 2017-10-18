@@ -9,7 +9,5 @@ public interface Selectable {
 	public boolean getAllowSelections();
 	public void setAllowSelection(boolean selectable);
 	public boolean isSelected();
-	public void selectWithSelector(Selector<?, ?> sel);
-	public Selector<?, ?> deselect();
-	public Selector<?, ?> getSelector();
+	public void setSelected(boolean val);
 }
