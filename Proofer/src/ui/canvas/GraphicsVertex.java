@@ -2,9 +2,7 @@ package ui.canvas;
 
 import geometry.Vec2;
 import geometry.shapes.Vertex;
-import ui.canvas.selection.Selector;
 
-// TODO: implement unimplemented methods
 public class GraphicsVertex extends GraphicsShape<Vertex> {
 	private TextFont textFont;
 	
@@ -56,31 +54,7 @@ public class GraphicsVertex extends GraphicsShape<Vertex> {
 
 	@Override
 	public boolean getAllowSelections() {
-		return false;
-	}
-
-	@Override
-	public void setAllowSelection(boolean selectable) {
-		
-	}
-
-	@Override
-	public boolean isSelected() {
-		return false;
-	}
-
-	@Override
-	public void selectWithSelector(Selector<?, ?> sel) {		
-	}
-
-	@Override
-	public Selector<?, ?> deselect() {
-		return null;
-	}
-
-	@Override
-	public Selector<?, ?> getSelector() {
-		return null;
+		return false; // TODO: can vertices be selected?
 	}
 	
 }

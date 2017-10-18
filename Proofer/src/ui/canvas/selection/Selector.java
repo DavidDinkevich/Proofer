@@ -70,7 +70,7 @@ extends GraphicsShape<SelShape> {
 			return;
 		}
 		targetObject = object;
-		targetObject.selectWithSelector(this);
+		targetObject.setSelected(true);
 		createSelectorShape();
 		createKnobs();
 	}
@@ -80,7 +80,7 @@ extends GraphicsShape<SelShape> {
 	
 	public void deselectTargetObject() {
 		if (targetObject != null) {
-			targetObject.deselect();
+			targetObject.setSelected(false);
 			targetObject = null;
 			knobs = null;
 		}

@@ -1,11 +1,8 @@
 package ui.canvas;
 
-import exceptions.IllegalSelectionException;
-
 import geometry.shapes.Shape;
 
 import ui.canvas.selection.Selectable;
-import ui.canvas.selection.Selector;
 
 /**
  * A graphical representation of a {@link Shape}.
@@ -21,7 +18,6 @@ implements Drawable, Selectable {
 	// By default, GraphicsShapes ARE selectable
 	private boolean allowSelections = true;
 	private boolean selected;
-	private Selector<?, ?> selector;
 	
 	// The Layer to which this object belongs
 	private String layer = LayerManager.DEFAULT_LAYER;
@@ -109,29 +105,7 @@ implements Drawable, Selectable {
 	}
 	
 	@Override
-	public void selectWithSelector(Selector<?, ?> sel) {
-		if (!allowSelections) {
-			throw new IllegalSelectionException("Cannot select a selectable object"
-					+ "that does not allow selections.");
-		}
-		selected = true;
-		selector = sel;
-	}
-	
-	@Override
-	public Selector<?, ?> deselect() {
-		selected = false;
-		Selector<?, ?> sel = selector;
-		selector = null;
-		return sel;
-	}
-	
-	@Override
-	public Selector<?, ?> getSelector() {
-		if (!allowSelections) {
-			throw new IllegalSelectionException("Cannot get selector from a selectable object "
-					+ "that does not allow selections.");
-		}
-		return selector;
+	public void setSelected(boolean val) {
+		selected = val;
 	}
 }
