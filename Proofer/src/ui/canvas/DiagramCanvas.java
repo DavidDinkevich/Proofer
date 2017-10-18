@@ -68,11 +68,12 @@ public class DiagramCanvas extends Canvas {
 		};
 		GraphicsTriangle tri = new GraphicsTriangle(brush, new Triangle(Arrays.asList(tpoints)));
 		tri.setAllowSelection(true);
+		tri.setSelected(true);
 		
 		GraphicsTriangle tri2 = new GraphicsTriangle(brush, new Triangle(Arrays.asList(
 				new Vertex[] {
-						new Vertex(new Vec2(-10, 100)),
-						new Vertex(new Vec2(-10, -200)),
+						new Vertex(new Vec2(-10f, 100f)),
+						new Vertex(new Vec2(-10f, -200f)),
 						new Vertex(new Vec2(-300f, 100f))
 					}
 		)));
@@ -153,6 +154,10 @@ public class DiagramCanvas extends Canvas {
 		diagramFigures.add(shape);
 		// Add to render list
 		getRenderList().add(shape);
+		// Add to list of selectables
+		if (inputManager != null) {
+			inputManager.addSelectableFigure(shape);
+		}
 		// If it's a polygon, add it to PolygonBuffer
 		if (shape.getShape() instanceof Polygon) {
 			polyBuff.addPoly((Polygon)shape.getShape());
@@ -170,6 +175,10 @@ public class DiagramCanvas extends Canvas {
 		if (diagramFigures.remove(shape)) {
 			// Remove from RenderList
 			getRenderList().remove(shape);
+			// Remove from list of selectables
+			if (inputManager != null) {
+				inputManager.removeSelectableFigure(shape);
+			}
 			// If it's a polygon, remove from polygon buffer
 			if (shape.getShape() instanceof Polygon) {
 				polyBuff.removePoly((Polygon)shape.getShape());
