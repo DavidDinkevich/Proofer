@@ -1,14 +1,13 @@
 package ui.canvas;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import geometry.Dimension;
 import geometry.Vec2;
 import geometry.shapes.Polygon;
 import geometry.shapes.SimplePolygon;
 import geometry.shapes.Vertex;
+
 import processing.core.PConstants;
 import processing.event.MouseEvent;
 
@@ -21,7 +20,6 @@ import ui.canvas.selection.Selector;
  */
 public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 	private DiagramCanvas canvas;	
-	private List<GraphicsShape<?>> graphicsShapes;
 	
 	private boolean drawGrid = true;
 	
@@ -40,7 +38,6 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 	
 	public DiagramCanvasGrid(DiagramCanvas c, Dimension defaultCellSize) {
 		canvas = c;
-		graphicsShapes = new ArrayList<>();
 		this.defaultCellSize = defaultCellSize;
 		defaultPixelSize = Dimension.ONE;
 		pixelSize = new Dimension.Mutable(defaultPixelSize);
@@ -99,7 +96,7 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 		Vec2 scaleVec = new Vec2(scale, scale);
 		
 		// Resize all scene objects
-		for (GraphicsShape<?> o : graphicsShapes) {
+		for (GraphicsShape<?> o : canvas.getDiagramFigures()) {
 			o.getShape().setScale(scaleVec, canvas.getMouseLocOnGrid());
 		}
 		// Resize the selectors of all scene objects (if any are selected)
@@ -121,16 +118,6 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 			c.setTranslation(dest);
 			c.redraw();
 		}
-	}
-	
-	@Override
-	public void graphicsObjectAdded(Canvas c, GraphicsShape<?> o) {
-		graphicsShapes.add(o);
-	}
-	
-	@Override
-	public void graphicsObjectRemoved(Canvas c, GraphicsShape<?> o) {
-		graphicsShapes.remove(o);
 	}
 	
 	/**
