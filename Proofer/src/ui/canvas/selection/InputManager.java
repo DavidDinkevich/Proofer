@@ -234,7 +234,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				GraphicsTriangle tri = new GraphicsTriangle(brush,
 						new Triangle(Arrays.asList(tpoints)));
 				
-				canvas.addDiagramElement(tri);
+				canvas.addDiagramFigure(tri);
 				canvas.redraw();
 			}
 		}
@@ -289,7 +289,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		for (int i = selectables.size()-1; i >= 0; i--) {
 			if (selectables.get(i).isSelected()) {
 				// Remove from diagram
-				canvas.removeDiagramElement(selectables.get(i));
+				canvas.removeDiagramFigure(selectables.get(i));
 			}
 		}
 		destroyAllSelectors();
@@ -573,12 +573,12 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			// Get the end-points of the UIRelationMaker 
 			List<Vec2> endpts = Arrays.asList(relMaker.getShape().getVertexLocations());
 			// Num of diagram elements
-			final int COUNT = canvas.getDiagramElements().size();
+			final int COUNT = canvas.getDiagramFigures().size();
 			
 			// For each figure
 			for (int i = 0; i < COUNT; i++) {
 				// Get the shape of the figure
-				Shape shape0 = canvas.getDiagramElements().get(i).getShape();
+				Shape shape0 = canvas.getDiagramFigures().get(i).getShape();
 				// If the figure does NOT contain at least ONE of the UIRelationMaker's
 				// end-points
 				if (!shape0.containsAPointIn(endpts, true))
@@ -586,7 +586,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				// For every figure
 				for (int j = 0; j < COUNT; j++) {
 					// Get the shape of the second figure
-					Shape shape1 = canvas.getDiagramElements().get(j).getShape();
+					Shape shape1 = canvas.getDiagramFigures().get(j).getShape();
 					// If the second figure is the same as the first, OR if the second
 					// figure does NOT contain at least ONE of the UIRelationMaker's
 					// end-points
