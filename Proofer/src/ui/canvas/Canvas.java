@@ -9,9 +9,7 @@ import ui.canvas.event.CanvasListener;
 import ui.canvas.selection.InputManager;
 
 import java.awt.EventQueue;
-
 import java.util.ArrayList;
-import java.util.Collection;
 
 import geometry.Dimension;
 import geometry.Vec2;
@@ -153,39 +151,6 @@ public class Canvas extends PApplet {
 		// Notify listeners
 		for (CanvasListener c : listeners) {
 			c.keyTyped(this, e);
-		}
-	}
-	
-	// TODO: notify listeners when grid is moved
-	
-	/**
-	 * Add a {@link GraphicsShape} to the {@link Canvas}.
-	 * @param o the object to add
-	 */
-	public void addGraphicsObject(GraphicsShape<?> o) {
-		renderList.add(o);
-		// Notify listeners
-		for (CanvasListener c : listeners) {
-			c.graphicsObjectAdded(this, o);
-		}
-	}
-	
-	public void addGraphicsObjects(Collection<GraphicsShape<?>> o) {
-		for (GraphicsShape<?> object : o) {
-			addGraphicsObject(object);
-		}
-	}
-	public void removeGraphicsObject(GraphicsShape<?> o) {
-		renderList.remove(o);
-		// Notify listeners
-		for (CanvasListener c : listeners) {
-			c.graphicsObjectRemoved(this, o);
-		}
-	}
-	
-	public void removeGraphicsObjects(Collection<GraphicsShape<?>> o) {
-		for (GraphicsShape<?> g : o) {
-			removeGraphicsObject(g);
 		}
 	}
 	
