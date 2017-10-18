@@ -22,7 +22,7 @@ public class DiagramCanvas extends Canvas {
 	private InputManager inputManager;
 	private DiagramCanvasGrid canvasGrid;
 	private PolygonBuffer polyBuff;
-	private List<GraphicsShape<?>> diagramElements;
+	private List<GraphicsShape<?>> diagramFigures;
 
 	public DiagramCanvas(ProofCustomizationPanel parentPanel,
 			Dimension size, int background) {
@@ -46,7 +46,7 @@ public class DiagramCanvas extends Canvas {
 	private void _init() { // Underscore bc init() already exists in PApplet
 		setInputManager(inputManager = new InputManager(this));
 		setCanvasGrid(canvasGrid = new DiagramCanvasGrid(this, new Dimension(50)));
-		diagramElements = new ArrayList<>();
+		diagramFigures = new ArrayList<>();
 		polyBuff = new PolygonBuffer();
 	}
 	
@@ -78,7 +78,7 @@ public class DiagramCanvas extends Canvas {
 		)));
 		tri2.setAllowSelection(true);
 		
-		addDiagramElements(Arrays.asList(tri, tri2));
+		addDiagramFigures(Arrays.asList(tri, tri2));
 	}
 	
 	@Override
@@ -148,23 +148,29 @@ public class DiagramCanvas extends Canvas {
 		return old;
 	}
 	
-	public void addDiagramElement(GraphicsShape<?> shape) {
-		diagramElements.add(shape);
-		addGraphicsObject(shape);
+	public void addDiagramFigure(GraphicsShape<?> shape) {
+		// Add to list to diagram figures list
+		diagramFigures.add(shape);
+		// Add to render list
+		getRenderList().add(shape);
+		// If it's a polygon, add it to PolygonBuffer
 		if (shape.getShape() instanceof Polygon) {
 			polyBuff.addPoly((Polygon)shape.getShape());
 		}
 	}
 	
-	public void addDiagramElements(Collection<GraphicsShape<?>> elements) {
+	public void addDiagramFigures(Collection<GraphicsShape<?>> elements) {
 		for (GraphicsShape<?> shape : elements) {
-			addDiagramElement(shape);
+			addDiagramFigure(shape);
 		}
 	}
 	
-	public boolean removeDiagramElement(GraphicsShape<?> shape) {
-		if (diagramElements.remove(shape)) {
-			removeGraphicsObject(shape);
+	public boolean removeDiagramFigure(GraphicsShape<?> shape) {
+		// Remove from diagram figures list
+		if (diagramFigures.remove(shape)) {
+			// Remove from RenderList
+			getRenderList().remove(shape);
+			// If it's a polygon, remove from polygon buffer
 			if (shape.getShape() instanceof Polygon) {
 				polyBuff.removePoly((Polygon)shape.getShape());
 			}
@@ -173,22 +179,18 @@ public class DiagramCanvas extends Canvas {
 		return false;
 	}
 	
-	public void removeDiagramElements(Collection<GraphicsShape<?>> elements) {
+	public void removeDiagramFigures(Collection<GraphicsShape<?>> elements) {
 		for (GraphicsShape<?> shape : elements) {
-			removeDiagramElement(shape);
+			removeDiagramFigure(shape);
 		}
 	}
 	
-	public List<GraphicsShape<?>> getDiagramElements() {
-		return diagramElements;
+	public List<GraphicsShape<?>> getDiagramFigures() {
+		return diagramFigures;
 	}
 
 	public PolygonBuffer getPolygonBuffer() {
 		return polyBuff;
-	}
-
-	public void setPolygonBuffer(PolygonBuffer polyBuff) {
-		this.polyBuff = polyBuff;
 	}
 	
 	public ProofCustomizationPanel getProofCustomizationPanel() {
