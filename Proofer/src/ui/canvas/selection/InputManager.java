@@ -92,12 +92,10 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		if (selectables.remove(shape)) {
 			// If the figure is selected at the time of removal
 			if (shape.isSelected()) {
-				System.out.println(selectors.size());
 				// Get the selector
 				Selector<?, ?> selForFigure = getSelectorForFigure(shape);
 				// Destroy the selector
 				destroySelector(selForFigure);
-				System.out.println(selectors.size());
 			}
 			canvas.redraw();
 			return true;
