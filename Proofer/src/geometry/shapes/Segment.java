@@ -38,8 +38,11 @@ public class Segment extends AbstractShape {
 	
 	public Segment(Segment other) {
 		super(other);
-		// TODO: copy internal vertices in other.vertices
-		vertices = other.vertices;
+		vertices = new Vertex[2];
+		// Copy internal vertices
+		for (int i = 0; i < 2; i++) {
+			vertices[i] = new Vertex(other.vertices[i]);
+		}
 		syncNameWithVertexNames();
 	}
 	
