@@ -8,31 +8,36 @@ import geometry.Vec2;
 import geometry.proofs.Figure;
 
 /**
- * NOTE: This class is no longer supported. This will not receive updates.
- * Do not use this class, as it poses a significant danger of crashing.
+ * An Ellipse.
  * @author David Dinkevich
  */
 public class Ellipse extends RectEllipse {
 	public Ellipse(Vec2 loc, Dimension size) {
 		super(loc, size);
+		init();
 	}
 	public Ellipse(Vec2 loc) {
 		super(loc, Dimension.ZERO);
+		init();
 	}
 	public Ellipse(Dimension size) {
 		super(size);
+		init();
 	}
 	public Ellipse() {
+		init();
 	}
 	public Ellipse(RectEllipse other) {
 		super(other);
 	}
 	
+	private void init() {
+		setNameLengthRange(1, 1, false);
+	}
+	
 	@Override
 	public boolean equals(Object o) {
-		if (!super.equals(o))
-			return false;
-		return o instanceof Ellipse;
+		return super.equals(o) && o instanceof Ellipse;
 	}
 
 	@Override
@@ -86,6 +91,7 @@ public class Ellipse extends RectEllipse {
 	
 	@Override
 	public boolean isValidName(String name) {
-		throw new UnsupportedOperationException("Not yet implemented.");
+		// Name length is only one char
+		return getName().equals(name);
 	}
 }
