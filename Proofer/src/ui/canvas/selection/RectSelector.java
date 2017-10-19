@@ -12,18 +12,15 @@ import ui.canvas.selection.Knob.Directions;
  * @author David Dinkevich
  */
 public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rect, T> {
-	/**
-	 * Distance from target object.
-	 * NOT CURRENTLY IMPLEMENTED!
-	 */
-	private float offset = 0f;
-	
 	public RectSelector(T targetObject) {
-		super(new Rect(targetObject.getShape().getCenter(true), 
-				targetObject.getShape().getSize(true)));
+		// Create the selector's shape
+		super(new Rect(targetObject.getShape().getCenter(false), 
+				targetObject.getShape().getSize(false)));
+		// Set the target object
 		setTargetObject(targetObject);
 	}
 	public RectSelector() {
+		super(new Rect());
 	}
 	
 	public static boolean canSelect(GraphicsShape<?> o) {
@@ -32,13 +29,14 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 	
 	@Override
 	public void createKnobs() {
-		if (getShape() == null) {
+		if (getTargetObject() == null) {
 			return;
 		}
 
 		setKnobs(new RectSelectorKnob[8]); // 8 knobs		
-		
+		// Get the positions of the knobs
 		Vec2[] locs = getKnobPositions();
+		// For each knob
 		for (int i = 0; i < getKnobs().length; i++) {
 			// Create knob
 			getKnobs()[i] = new RectSelectorKnob();
@@ -81,7 +79,7 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 	 */
 	@Override
 	public Vec2[] getKnobPositions() {
-		if (getShape() == null) {
+		if (getTargetObject() == null) {
 			return null;
 		}
 
@@ -115,6 +113,7 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 	@Override
 	protected void createSelectorShape() {
 		if (getTargetObject() != null) {
+			// Use boundary rect for shape
 			setShape(new Rect(getTargetObject().getShape().getBoundaryRect()));
 		}
 	}
@@ -122,10 +121,11 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 	/**
 	 * Get the size of this {@link RectSelector}. If this {@link RectSelector} has a target
 	 * object, this will return the size of the target object. Otherwise, null.
-	 * @return the size, or null
+	 * @return the size, or null if there is no target object
 	 */
 	public Dimension getSize() {
-		return getShape().getSize(true) == null ? null : getShape().getSize(true);
+		return getTargetObject().getShape().getSize(true) == null ? null : 
+			getTargetObject().getShape().getSize(true);
 	}
 	
 	/**
@@ -136,10 +136,7 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 	 * @param size the new size
 	 */
 	public void setSize(Dimension size) {
-		if (getShape() == null) {
-			return;
-		}
-		if (!getShape().isResizeable()) {
+		if (!getShape().isResizeable() || getTargetObject() == null) {
 			return;
 		}
 		
@@ -184,12 +181,5 @@ public class RectSelector<T extends GraphicsRectEllipse<?>> extends Selector<Rec
 		if (getShape() != null) {
 			setSize(new Dimension(getSize().getWidth(), height));
 		}
-	}
-	
-	public float getOffset() {
-		return offset;
-	}
-	public void setOffset(float offset) {
-		this.offset = offset;
 	}
 }

@@ -14,6 +14,7 @@ import ui.canvas.GraphicsPolygon;
  */
 public class PolygonSelector extends Selector<Polygon, GraphicsPolygon<?>> {
 	public PolygonSelector(GraphicsPolygon<?> o) {
+		super(new SimplePolygon(o.getShape().getVertices()));
 		setTargetObject(o);
 	}
 	public PolygonSelector() {
@@ -27,36 +28,48 @@ public class PolygonSelector extends Selector<Polygon, GraphicsPolygon<?>> {
 	@Override
 	public void draw(Canvas c) {
 		super.draw(c);
+		// If this selector is not resizeable
 		if (!isResizeable()) {
+			// Draw the polygon's body
 			c.polygon(getShape());
 		}
 	}
 	
 	@Override
 	protected void createKnobs() {
-		if (getShape() == null) {
+		// Can't make knobs unless there is a target object
+		if (getTargetObject() == null)
 			return;
-		}
+		
 		setKnobs(new PolygonSelectorKnob[3]); // 3 knobs
+		// Get the positions of the knobs
 		Vec2[] locs = getKnobPositions();
+		// For each new knob
 		for (int i = 0; i < getKnobs().length; i++) {
+			// Instantiate
 			getKnobs()[i] = new PolygonSelectorKnob();
+			// Set center
 			getKnobs()[i].getShape().setCenter(locs[i], true);
+			// Tell them that this selector is da boss
 			getKnobs()[i].setSelector(this);
 			PolygonSelectorKnob knob = (PolygonSelectorKnob)getKnobs()[i];
+			// Give them a vertex to control (move, etc.)
 			knob.setControlledVertex(getShape().getVertices()[i]);
 		}
 	}
 
 	@Override
 	public Vec2[] getKnobPositions() {
-		return getShape() == null ? null : getShape().getVertexLocations();
+		// Assuming there is a target object, the knobs' locations are the locations
+		// of the vertices
+		return getTargetObject() == null ? null : getShape().getVertexLocations();
 	}
 	
 	@Override
 	protected void createSelectorShape() {
 		if (getTargetObject() != null) {
-			setShape(getTargetObject().getShape());
+			// Copy the shape
+			setShape(new SimplePolygon(getTargetObject().getShape().getVertices()));
 		}
 	}
 	
