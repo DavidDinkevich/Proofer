@@ -46,5 +46,7 @@ public class PolygonSelectorKnob extends Knob {
 	 */
 	public void setControlledVertex(Vertex vertex) {
 		controlledVertex = vertex;
+		// Set the name of this knob to that of the vertex it controls
+		getShape().setName(controlledVertex.getName());
 	}
 }
