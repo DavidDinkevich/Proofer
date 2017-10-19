@@ -14,6 +14,8 @@ import ui.canvas.GraphicsPolygon;
  */
 public class PolygonSelector extends Selector<Polygon, GraphicsPolygon<?>> {
 	public PolygonSelector(GraphicsPolygon<?> o) {
+		// Copy the vertices AND THE NAME of the target object.
+		// (we can derive a name from the names of the vertices)
 		super(new SimplePolygon(o.getShape().getVertices()));
 		setTargetObject(o);
 	}
