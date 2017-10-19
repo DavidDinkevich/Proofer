@@ -29,6 +29,7 @@ import geometry.shapes.Vertex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -71,6 +72,45 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		selectors = new ArrayList<>();
 		knobs = new ArrayList<>();
 		selectables = new ArrayList<>();
+	}
+	
+	public boolean addSelectableFigure(GraphicsShape<?> shape) {
+		// If the shape was successfully added
+		if (selectables.add(shape)) {
+			// If the shape is already selected
+			if (shape.isSelected()) {
+				// Create a selector for it
+				createSelector(shape, true);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean removeSelectableFigure(GraphicsShape<?> shape) {
+		// If successfully removed figure
+		if (selectables.remove(shape)) {
+			// If the figure is selected at the time of removal
+			if (shape.isSelected()) {
+				System.out.println(selectors.size());
+				// Get the selector
+				Selector<?, ?> selForFigure = getSelectorForFigure(shape);
+				// Destroy the selector
+				destroySelector(selForFigure);
+				System.out.println(selectors.size());
+			}
+			canvas.redraw();
+			return true;
+		}
+		return false;
+	}
+	
+	public List<GraphicsShape<?>> getSelectableFigures() {
+		return Collections.unmodifiableList(selectables);
+	}
+	
+	public List<Selector<?, ?>> getSelectors() {
+		return selectors;
 	}
 	
 	@Override
@@ -240,16 +280,16 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		}
 	}
 	
-	@Override
-	public void graphicsObjectAdded(Canvas c, GraphicsShape<?> o) {
-		if (o instanceof GraphicsShape) {
-			selectables.add((GraphicsShape<?>)o);
+	/**
+	 * Get the {@link Selector} for the given {@link GraphicsShape}
+	 * @return the {@link Selector}, or null if it was not found
+	 */
+	private Selector<?, ?> getSelectorForFigure(GraphicsShape<?> shape) {
+		for (Selector<?, ?> sel : selectors) {
+			if (sel.getTargetObject().equals(shape))
+				return sel;
 		}
-	}
-	
-	@Override
-	public void graphicsObjectRemoved(Canvas c, GraphicsShape<?> o) {
-		selectables.remove((GraphicsShape<?>) o);
+		return null;
 	}
 	
 	/**
@@ -476,7 +516,8 @@ public class InputManager extends CanvasAdapter implements Drawable {
 					// If the object IS selected
 					if (selectable.isSelected()) {
 						// Deselect the object
-						destroySelector(selectable.getSelector());
+						Selector<?, ?> sel = getSelectorForFigure(selectable);
+						destroySelector(sel);
 					}
 				}
 			}
@@ -609,9 +650,5 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				}
 			}
 		}
-	}
-	
-	public List<Selector<?, ?>> getSelectors() {
-		return selectors;
 	}
 }
