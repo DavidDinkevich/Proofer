@@ -54,6 +54,10 @@ public class SimplePolygon extends AbstractShape implements Polygon, Iterable<Ve
 		syncNameWithVertexNames();
 	}
 	
+	public SimplePolygon(Vertex[] verts) {
+		this(Arrays.asList(verts));
+	}
+	
 	public SimplePolygon() {
 		this("\0\0\0");
 	}
