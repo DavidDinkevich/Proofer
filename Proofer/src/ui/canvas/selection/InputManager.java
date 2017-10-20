@@ -44,6 +44,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private DiagramCanvas canvas;
 	private RenderList renderList;
+	private PolygonBuffer polyBuff;
 	private List<GraphicsShape<?>> selectables;
 	private List<Selector<?, ?>> selectors;
 	private List<Knob> knobs;
@@ -69,6 +70,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	public InputManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
 		renderList = canvas.getRenderList();
+		polyBuff = canvas.getPolygonBuffer();
 		selectionContainer = new SelectionBox();
 		relMaker = new UIRelationMaker();
 		selectors = new ArrayList<>();
@@ -247,7 +249,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 					// If the shape of the selector's target object is a polygon,
 					// fix its vertex names (we moved it)
 					if (sel.getTargetObject().getShape() instanceof Polygon)
-						fixVertexNames((Polygon)sel.getTargetObject().getShape());
+						updateVertexNames((Polygon)sel.getTargetObject().getShape());
 				}
 				canvas.redraw();
 			}
@@ -423,59 +425,35 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		
 		// Get the knob as a polygon knob
 		PolygonSelectorKnob polyKnob = ((PolygonSelectorKnob) selectedKnob);
-		
+		Polygon targetFigure = (Polygon)polyKnob.getSelector().getTargetObject().getShape();
+		Vertex controlledVert = polyKnob.getControlledVertex();
+		updateVertexName(targetFigure, controlledVert);
+	}
+	
+	/**
+	 * A helper method for {@link PolygonBuffer#updateVertexName(Polygon, char, boolean)}.
+	 * @param p the polygon
+	 * @param vert the vertex to be updated
+	 */
+	private void updateVertexName(Polygon p, Vertex vert) {
 		// Get the name of the vertex that the knob moves		
-		final char vertexName = polyKnob.getControlledVertex().getNameChar();					
+		final char vertexName = vert.getNameChar();					
+		final Vec2 vertLoc =vert.getCenter(true);
 		
-		fixVertexName((Polygon)polyKnob.getSelector().getTargetObject().getShape(), vertexName);
+		// Whether to merge the vertex with another, or demerge it from another
+		final boolean mergeVert = canvas.getCanvasGrid().pointIsSnapped(vertLoc);
+		
+		polyBuff.updateVertexName(p, vertexName, mergeVert);		
 	}
 	
-	private boolean fixVertexName(Polygon poly, char vertexName) {
-		// If given polygon doesn't contain given vertex name, return error
-		if (!poly.containsVertex(vertexName))
-			return false;
+	private void updateVertexNames(Polygon p) {
+		Vertex[] vertices = p.getVertices();
 		
-		Vec2 vertexLoc = poly.getVertexLoc(vertexName, true);
-		
-		PolygonBuffer buff = canvas.getPolygonBuffer();
-		
-		// Check if the knob is snapped to the canvas's grid
-		if (canvas.getCanvasGrid().pointIsSnapped(vertexLoc)) {
-			// See if any other vertex shares the given vertex's location
-			boolean otherVertSharesLoc = false;
-			char otherVertName = '\n';
-			outer:
-			for (Polygon p : buff) {
-				// For each OTHER vertex
-				for (Vertex otherVert : p.getVertices()) {
-					Vec2 otherVertLoc = otherVert.getCenter(true);
-					otherVertName = otherVert.getNameChar();
-					// If the vertices overlap and have different names
-					if (otherVertName != vertexName && otherVertLoc.equals(vertexLoc)) {
-						otherVertSharesLoc = true;
-						break outer;
-					}
-				}
-			}
-			
-			// If no other vertex shares given vertex's location
-			if (!otherVertSharesLoc)
-				return true; // Vertex safely moved
-			
-			// We found another vertex with the same loc as the given vertex
-			buff.mergeVertices(poly, vertexName, otherVertName);
-			return true;
-		} else {
-			buff.demergeVertices(poly, vertexName);
-			return true;
-		}
-	}
-	
-	private void fixVertexNames(Polygon p) {
 		for (int i = 0; i < p.getVertexCount(); i++) {
-			fixVertexName(p, p.getVertexName(i));
+			updateVertexName(p, vertices[i]);
 		}
 	}
+	
 	
 	/**
 	 * Snap the given {@link Selector} and its target object
@@ -488,14 +466,14 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		if (sel.getShape() instanceof Polygon) {
 			Polygon shape = (Polygon)sel.getShape();
 			canvas.getCanvasGrid().snapToGrid(shape);
-			fixVertexNames(shape);
+			updateVertexNames(shape);
 			sel.updateKnobPositions();
 		}
 		// Snap target object of selector (if it's a polygon)
 		if (sel.getTargetObject().getShape() instanceof Polygon) {
 			Polygon targetObjectShape = (Polygon)sel.getTargetObject().getShape();
 			canvas.getCanvasGrid().snapToGrid(targetObjectShape);
-			fixVertexNames(targetObjectShape);
+			updateVertexNames(targetObjectShape);
 		}
 		// Redraw if instructed to
 		if (redraw)
