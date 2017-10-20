@@ -11,9 +11,8 @@ import geometry.shapes.Segment;
 import geometry.shapes.Segment.Slope;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
-
-import ui.canvas.DiagramCanvas;
 import ui.canvas.GraphicsShape;
+import ui.canvas.diagram.DiagramCanvas;
 import ui.swing.FigureRelationListPanel;
 import ui.swing.FigureRelationPanel;
 

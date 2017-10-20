@@ -6,13 +6,13 @@ import processing.event.MouseEvent;
 
 import ui.canvas.Brush;
 import ui.canvas.Canvas;
-import ui.canvas.DiagramCanvas;
 import ui.canvas.Drawable;
 import ui.canvas.GraphicsRectEllipse;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsTriangle;
 import ui.canvas.RenderList;
 import ui.canvas.StyleManager;
+import ui.canvas.diagram.DiagramCanvas;
 import ui.canvas.event.CanvasAdapter;
 import ui.swing.FigureRelationListPanel;
 import ui.swing.FigureRelationPanel;

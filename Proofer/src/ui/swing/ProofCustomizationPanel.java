@@ -8,9 +8,8 @@ import geometry.proofs.Diagram;
 import geometry.proofs.Preprocessor;
 import geometry.proofs.ProofSolveRequestManager;
 import geometry.proofs.ProofSolveRequestManager.Request;
+import ui.canvas.diagram.DiagramCanvas;
 import geometry.proofs.ProofSolver;
-
-import ui.canvas.DiagramCanvas;
 
 @SuppressWarnings("serial")
 public class ProofCustomizationPanel extends JComponent {
