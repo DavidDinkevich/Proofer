@@ -26,7 +26,6 @@ public class Canvas extends PApplet {
 	
 	private ArrayList<CanvasListener> listeners;
 	private Brush.Builder brush;
-	private RenderList renderList;
 	private Vec2.Mutable translation;
 	private int background;
 	
@@ -36,7 +35,6 @@ public class Canvas extends PApplet {
 		
 		brush = new Brush.Builder();
 		listeners = new ArrayList<>();
-		renderList = new RenderList();
 	}
 	public Canvas(Dimension size) {
 		this(size, 255);
@@ -332,10 +330,6 @@ public class Canvas extends PApplet {
 	 */
 	public Vec2 getCenterLocOnGrid() {
 		return getLocOnGrid(new Vec2(width/2, height/2));
-	}
-	
-	public RenderList getRenderList() {
-		return renderList;
 	}
 	
 	public Vec2 getTranslation() {
