@@ -39,7 +39,8 @@ import java.util.List;
  */
 public class InputManager extends CanvasAdapter implements Drawable {
 	public static final char NULL_KEY = '\0';
-	public static char multipleSelectionKey = PConstants.SHIFT;
+	private static char multipleSelectionKey = PConstants.SHIFT;
+	private static char uiRelMakerKey = PConstants.SHIFT;
 	
 	private DiagramCanvas canvas;
 	private RenderList renderList;
@@ -73,6 +74,22 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		selectors = new ArrayList<>();
 		knobs = new ArrayList<>();
 		selectables = new ArrayList<>();
+	}
+	
+	public static char getUIRelationMakerKey() {
+		return uiRelMakerKey;
+	}
+	
+	public static void setUIRelationMakerKey(char c) {
+		uiRelMakerKey = c;
+	}
+	
+	public static char getMultipleFigureSelectionKey() {
+		return multipleSelectionKey;
+	}
+	
+	public static void setMultipleFigureSelectionKey(char c) {
+		multipleSelectionKey = c;
 	}
 	
 	public boolean addSelectableFigure(GraphicsShape<?> shape) {
@@ -586,9 +603,9 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 	
 	private boolean displayUIRelationMaker() {
-//		return canvas.keyPressed && canvas.key == PConstants.CODED && 
-//				canvas.keyCode == PConstants.SHIFT;
-		return false;
+		// If no figures are selected AND the user is holding shift
+		return selectors.isEmpty() && canvas.keyPressed && canvas.key == PConstants.CODED && 
+				canvas.keyCode == uiRelMakerKey;
 	}
 	
 	/**
