@@ -11,6 +11,7 @@ import geometry.shapes.Polygon;
 import geometry.shapes.PolygonBuffer;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
+
 import ui.canvas.Brush;
 import ui.canvas.Canvas;
 import ui.canvas.GraphicsShape;
@@ -26,14 +27,9 @@ public class DiagramCanvas extends Canvas {
 	private InputManager inputManager;
 	private DiagramCanvasGrid canvasGrid;
 	private PolygonBuffer polyBuff;
-	private List<GraphicsShape<?>> diagramFigures;
+	private RenderList renderList;
 	
-	/*
-	 * Layers
-	 */
-	public static enum Layers {
-		DEFAULT, GRID, GRAPHICS_SHAPE, SELECTOR, KNOB, POLYGON_COMPONENT
-	}
+	private List<GraphicsShape<?>> diagramFigures;
 
 	public DiagramCanvas(ProofCustomizationPanel parentPanel,
 			Dimension size, int background) {
@@ -55,13 +51,14 @@ public class DiagramCanvas extends Canvas {
 	}
 	
 	private void _init() { // Underscore bc init() already exists in PApplet
+		renderList = new RenderList();
 		setInputManager(inputManager = new InputManager(this));
 		setCanvasGrid(canvasGrid = new DiagramCanvasGrid(this, new Dimension(50f)));
 		diagramFigures = new ArrayList<>();
 		polyBuff = new PolygonBuffer();
 		// Add layers to render list
-		for (Layers lay : Layers.values()) {
-			getRenderList().addLayer(lay.toString());
+		for (UIDiagramLayers lay : UIDiagramLayers.values()) {
+			renderList.addLayer(lay);
 		}
 	}
 	
@@ -105,7 +102,7 @@ public class DiagramCanvas extends Canvas {
 		if (canvasGrid != null)
 			canvasGrid.draw(this);
 		
-		getRenderList().draw(this);
+		renderList.draw(this);
 		
 		if (inputManager != null)
 			inputManager.draw(this);
@@ -139,6 +136,14 @@ public class DiagramCanvas extends Canvas {
 	}
 	
 	/**
+	 * Get this RenderList
+	 * @return the render list
+	 */
+	public RenderList getRenderList() {
+		return renderList;
+	}
+	
+	/**
 	 * Return this {@link Canvas}'s {@link DiagramCanvasGrid}. If
 	 * no {@link DiagramCanvasGrid} has been assigned to this {@link Canvas},
 	 * this will return null.
@@ -168,7 +173,7 @@ public class DiagramCanvas extends Canvas {
 		// Add to list to diagram figures list
 		diagramFigures.add(shape);
 		// Add to render list
-		getRenderList().addDrawable(shape);
+		renderList.addDrawable(shape);
 		// Add to list of selectables
 		if (inputManager != null) {
 			inputManager.addSelectableFigure(shape);
@@ -189,7 +194,7 @@ public class DiagramCanvas extends Canvas {
 		// Remove from diagram figures list
 		if (diagramFigures.remove(shape)) {
 			// Remove from RenderList
-			getRenderList().removeDrawable(shape);
+			renderList.removeDrawable(shape);
 			// Remove from list of selectables
 			if (inputManager != null) {
 				inputManager.removeSelectableFigure(shape);
