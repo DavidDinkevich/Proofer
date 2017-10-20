@@ -77,6 +77,8 @@ extends GraphicsShape<SelShape> {
 		targetObject.setSelected(true);
 		createSelectorShape();
 		createKnobs();
+		// Set the name of this selector to that of its target object
+		getShape().setName(object.getShape().getName());
 	}
 	public TargetType getTargetObject() {
 		return targetObject;
