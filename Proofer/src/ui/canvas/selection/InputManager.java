@@ -63,9 +63,9 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	// Highlighting figures
 	
 	/**
-	 * The highlighted figure
+	 * Highlighted figures
 	 */
-	private GraphicsShape<?> highlightedFig;
+	private List<GraphicsShape<?>> highlightedFigs;
 
 	public InputManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
@@ -76,6 +76,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		selectors = new ArrayList<>();
 		knobs = new ArrayList<>();
 		selectables = new ArrayList<>();
+		highlightedFigs = new ArrayList<>();
 	}
 	
 	public static char getUIRelationMakerKey() {
@@ -525,59 +526,73 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	 * over them.
 	 */
 	private void highlightFigures() {
+		highlightedFigs.clear();
+		
+		// Location of the mouse
 		Vec2 mouseLoc = canvas.getMouseLocOnGrid();
-		GraphicsShape<?> newHighlightedFig = null;
 		
-		/*
-		 * Find the figure that the cursor hovers over.
-		 */
-		for (GraphicsShape<?> figure : selectables) {
-			// If the cursor is hovering over this figure
-			if (figure.getAllowSelections() && figure.getShape().containsPoint(mouseLoc, true)) {
-				// Don't want to operate on the already highlighted figure if it is still
-				// highlighted. NOTE: bc there is only ever one highlighted figure at a time,
-				// we can just compare a figure's brush to see if it is the designated brush
-				// for highlighted figures.
-				// IF THE SAME FIGURE AS BEFORE HAS BEEN HIGHLIGHTED
-				if (highlightedFig != null && figure.getBrush().equals(StyleManager
-						.getHighlightedFigureBrush()))
-					return;
-				// A new figure has been highlighted
-				newHighlightedFig = figure;
-				break;
+		boolean figureIsHighlighted = false;
+		
+		for (GraphicsShape<?> shape : canvas.getDiagramFigures()) {
+			if (shape.getShape().containsPoint(mouseLoc, true)) {
+				figureIsHighlighted = true;
+				if (highlightedFigs.contains(shape))
+					continue;
+				
+				if (shape instanceof GraphicsTriangle) {
+					GraphicsTriangle tri = (GraphicsTriangle)shape;
+					highlightedFigs.add(tri);
+					renderAnglesInPolygon(tri);
+					System.out.println(highlightedFigs.size());
+					canvas.redraw();
+					break;
+				}
 			}
 		}
 		
-		// IF A NEW FIGURE IS HIGHLIGHTED
-		if (newHighlightedFig != null) {
-			restoreHighlightedFigure();
-			
-			// Update highlighted figure
-			highlightedFig = newHighlightedFig;
-			
-			if (highlightedFig instanceof GraphicsTriangle) {
-				highlightAnglesInPolygon((GraphicsTriangle)highlightedFig);
-			}
-			canvas.redraw();
-		}
-		// IF NO NEW FIGURE HAS BEEN HIGHLIGHTED, AND THE MOST RECENTLY HIGHLIGHTED
-		// FIGURE IS NO LONGER HOVERED OVER BY THE MOUSE
-		else {
-			restoreHighlightedFigure();
+		if (!figureIsHighlighted) {
+			eraseAllPolyChildren();
 		}
 	}
 	
-	private void restoreHighlightedFigure() {
-		if (highlightedFig != null) {
-			highlightedFig = null;
-			canvas.redraw();
-		}
-	}
-		
-	private void highlightAnglesInPolygon(GraphicsTriangle graphicsPoly) {
-		graphicsPoly.renderAllChildren(renderList);
+	/**
+	 * Erase all rendered children, then render the angle under the cursor.
+	 * (If their is an angle under the cursor)
+	 * @param graphicsPoly the polygon
+	 */
+	private void renderAnglesInPolygon(GraphicsTriangle graphicsPoly) {
+		System.out.println("happened");
+		graphicsPoly.eraseAllRenderedChildren(renderList);
 		Vec2 mouse = canvas.getMouseLocOnGrid();
 		graphicsPoly.renderChildAtPoint(renderList, mouse);
+	}
+	
+	/**
+	 * Erase all rendered children in all polygons.
+	 */
+	private void eraseAllPolyChildren() {
+		// If there are no highlighted figures, return
+		if (highlightedFigs.isEmpty())
+			return;
+		
+		System.out.println("hap");
+		
+		// For all highlighted figures
+		for (int i = highlightedFigs.size()-1; i >= 0; i--) {
+			// Get the shape of the figure
+			GraphicsShape<?> shape = highlightedFigs.get(i);
+			
+			// If it's a triangle
+			if (shape instanceof GraphicsTriangle) {
+				GraphicsTriangle tri = (GraphicsTriangle)shape;
+				// Remove it from the list
+				highlightedFigs.remove(tri);
+				// Erase all of its children
+				tri.eraseAllRenderedChildren(renderList);
+			}
+		}
+		// Redraw
+		canvas.redraw();
 	}
 	
 	private boolean displayUIRelationMaker() {
