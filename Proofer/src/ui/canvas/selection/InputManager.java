@@ -74,6 +74,11 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		selectables = new ArrayList<>();
 	}
 	
+	@Override
+	public String getLayer() {
+		return DiagramCanvas.Layers.DEFAULT.toString();
+	}
+	
 	public boolean addSelectableFigure(GraphicsShape<?> shape) {
 		// If the shape was successfully added
 		if (selectables.add(shape)) {

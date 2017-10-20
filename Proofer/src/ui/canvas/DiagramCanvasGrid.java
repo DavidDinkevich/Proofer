@@ -129,6 +129,11 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 		Vec2 nearestSnap = getNearestSnapPoint(loc);
 		return loc.equals(nearestSnap);
 	}
+	
+	@Override
+	public String getLayer() {
+		return DiagramCanvas.Layers.GRID.toString();
+	}
 
 	/**
 	 * Get where the given {@link Vec2} should lie on the grid. If
