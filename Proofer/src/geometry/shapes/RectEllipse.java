@@ -37,6 +37,8 @@ public abstract class RectEllipse extends AbstractShape implements Shape2D {
 	public boolean equals(Object o) {
 		if (!super.equals(o))
 			return false;
+		if (!(o instanceof RectEllipse))
+			return false;
 		return size.equals(((RectEllipse)o).size);
 	}
 	
