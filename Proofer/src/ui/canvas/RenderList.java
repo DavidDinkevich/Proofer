@@ -1,6 +1,9 @@
 package ui.canvas;
 
 import java.util.Map;
+
+import ui.canvas.diagram.DiagramCanvas;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -16,10 +19,6 @@ public class RenderList implements Drawable {
 	public RenderList() {
 		// LinkedHashMap to maintain insertion order
 		renderList = new LinkedHashMap<>();
-		// Fill the render list with all existing layers
-		for (Layer lay : LayerManager.getLayers()) {
-			renderList.put(lay.getName(), new ArrayList<>());
-		}
 	}
 	
 	@Override
@@ -48,15 +47,33 @@ public class RenderList implements Drawable {
 	}
 	
 	/**
+	 * Add a layer to this {@link RenderList}.
+	 * @param name the name of the layer
+	 * @return true if the layer was added, false otherwise
+	 */
+	public boolean addLayer(String name) {
+		if (renderList.containsKey(name)) {
+			return false;
+		}
+		renderList.put(name, new ArrayList<>());
+		return true;
+	}
+	
+	/**
+	 * Remove a layer from this {@link RenderList}.
+	 * @param name the name of the layer to remove
+	 * @return true if the layer was successfully removed
+	 */
+	public boolean removeLayer(String name) {
+		return renderList.remove(name) != null;
+	}
+	
+	/**
 	 * Get the {@link List} that stores the {@link Drawable}s of the given
 	 * {@link Layer}.
 	 */
 	public List<Drawable> getLayerList(String layerName) {
 		return renderList.get(layerName);
-	}
-	
-	public Drawable get(String layerName, int index) {
-		return getLayerList(layerName).get(index);
 	}
 	
 	public int getLayerCount() {
