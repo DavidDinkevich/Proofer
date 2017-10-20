@@ -28,7 +28,7 @@ public class DiagramCanvas extends Canvas {
 	 * Layers
 	 */
 	public static enum Layers {
-		DEFAULT, GRAPHICS_SHAPE, SELECTOR, KNOB, POLYGON_COMPONENT
+		DEFAULT, GRID, GRAPHICS_SHAPE, SELECTOR, KNOB, POLYGON_COMPONENT
 	}
 
 	public DiagramCanvas(ProofCustomizationPanel parentPanel,
