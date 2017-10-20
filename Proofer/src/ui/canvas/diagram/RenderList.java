@@ -1,8 +1,9 @@
-package ui.canvas;
+package ui.canvas.diagram;
 
 import java.util.Map;
 
-import ui.canvas.diagram.DiagramCanvas;
+import ui.canvas.Canvas;
+import ui.canvas.Drawable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -14,31 +15,35 @@ import java.util.List;
  * @author David Dinkevich
  */
 public class RenderList implements Drawable {	
-	private Map<String, List<Drawable>> renderList;
+	private Map<UIDiagramLayers, List<Drawable>> list;
 	
 	public RenderList() {
 		// LinkedHashMap to maintain insertion order
-		renderList = new LinkedHashMap<>();
+		list = new LinkedHashMap<>();
 	}
 	
 	@Override
 	public void draw(Canvas c) {
-		for (List<Drawable> list : renderList.values()) {
+		for (List<Drawable> list : list.values()) {
 			for (int i = 0; i < list.size(); i++) {
 				list.get(i).draw(c);
 			}
 		}
 	}
 	
+	protected Map<UIDiagramLayers, List<Drawable>> getList() {
+		return list;
+	}
+	
 	/**
-	 * Add a {@link Drawable} to the list of its {@link Layer}.
+	 * Add a {@link Drawable} to the list of its layer.
 	 */
 	public void addDrawable(Drawable o) {
 		getLayerList(o.getLayer()).add(o);
 	}
 	
 	/**
-	 * Remove a {@link Drawable} from the list of its {@link Layer}.
+	 * Remove a {@link Drawable} from the list of its layer.
 	 * @return true if the {@link Drawable} was contained in the list
 	 * and successfully removed. False otherwise.
 	 */
@@ -48,14 +53,15 @@ public class RenderList implements Drawable {
 	
 	/**
 	 * Add a layer to this {@link RenderList}.
-	 * @param name the name of the layer
+	 * @param lay the name of the layer
 	 * @return true if the layer was added, false otherwise
 	 */
-	public boolean addLayer(String name) {
-		if (renderList.containsKey(name)) {
+	// Package private
+	boolean addLayer(UIDiagramLayers lay) {
+		if (list.containsKey(lay)) {
 			return false;
 		}
-		renderList.put(name, new ArrayList<>());
+		list.put(lay, new ArrayList<>());
 		return true;
 	}
 	
@@ -64,25 +70,26 @@ public class RenderList implements Drawable {
 	 * @param name the name of the layer to remove
 	 * @return true if the layer was successfully removed
 	 */
-	public boolean removeLayer(String name) {
-		return renderList.remove(name) != null;
+	// Package private
+	boolean removeLayer(UIDiagramLayers name) {
+		return list.remove(name) != null;
 	}
 	
 	/**
 	 * Get the {@link List} that stores the {@link Drawable}s of the given
-	 * {@link Layer}.
+	 * layer.
 	 */
-	public List<Drawable> getLayerList(String layerName) {
-		return renderList.get(layerName);
+	public List<Drawable> getLayerList(UIDiagramLayers layer) {
+		return list.get(layer);
 	}
 	
 	public int getLayerCount() {
-		return renderList.size();
+		return list.size();
 	}
 	
 	public int getDrawableCount() {
 		int count = 0;
-		for (List<?> list : renderList.values()) {
+		for (List<?> list : list.values()) {
 			count += list.size();
 		}
 		return count;
@@ -93,10 +100,5 @@ public class RenderList implements Drawable {
 		if (list == null)
 			return false;
 		return list.contains(o);
-	}
-
-	@Override
-	public String getLayer() {
-		return DiagramCanvas.Layers.DEFAULT.toString();
 	}
 }
