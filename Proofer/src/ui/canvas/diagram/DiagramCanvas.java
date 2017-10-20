@@ -52,14 +52,14 @@ public class DiagramCanvas extends Canvas {
 	
 	private void _init() { // Underscore bc init() already exists in PApplet
 		renderList = new RenderList();
-		setInputManager(inputManager = new InputManager(this));
-		setCanvasGrid(canvasGrid = new DiagramCanvasGrid(this, new Dimension(50f)));
 		diagramFigures = new ArrayList<>();
 		polyBuff = new PolygonBuffer();
 		// Add layers to render list
 		for (UIDiagramLayers lay : UIDiagramLayers.values()) {
 			renderList.addLayer(lay);
 		}
+		setInputManager(inputManager = new InputManager(this));
+		setCanvasGrid(canvasGrid = new DiagramCanvasGrid(this, new Dimension(50f)));
 	}
 	
 	@Override
