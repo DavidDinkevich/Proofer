@@ -121,8 +121,7 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		return false;
 	}
 	
-	public void renderAllChildren(RenderList rList) {
-		// Angles
+	public void eraseAllRenderedChildren(RenderList rList) {
 		for (int i = childrenToRender.size()-1; i >= 0; i--) {
 			rList.removeDrawable(childrenToRender.get(i));
 			childrenToRender.remove(i);
