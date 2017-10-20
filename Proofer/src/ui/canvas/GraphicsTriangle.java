@@ -50,7 +50,7 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		super.draw(c);
 	}
 	
-	private boolean ChildsToRenderContains(String name) {
+	private boolean childrenToRenderContains(String name) {
 		for (GraphicsShape<?> gShape : childrenToRender) {
 			if (gShape.getShape().isValidName(name))
 				return true;
@@ -58,8 +58,12 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		return false;
 	}
 	
-	public boolean drawAngle(RenderList rList, Arc arc) {
-		if (ChildsToRenderContains(arc.getName()))
+	public int getRenderedFigureCount() {
+		return childrenToRender.size();
+	}
+	
+	private boolean drawAngle(RenderList rList, Arc arc) {
+		if (childrenToRenderContains(arc.getName()))
 			return false;
 				
 		// Create graphics arc
@@ -105,7 +109,7 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		return null;
 	}
 	
-	public boolean highlightChildAtPoint(RenderList rList, Vec2 point) {
+	public boolean renderChildAtPoint(RenderList rList, Vec2 point) {
 		Shape comp = getChildAtPoint(point);
 		if (comp == null)
 			return false;
@@ -117,7 +121,7 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		return false;
 	}
 	
-	public void unhighlightAllChildren(RenderList rList) {
+	public void renderAllChildren(RenderList rList) {
 		// Angles
 		for (int i = childrenToRender.size()-1; i >= 0; i--) {
 			rList.removeDrawable(childrenToRender.get(i));

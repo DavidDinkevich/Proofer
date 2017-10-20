@@ -575,9 +575,9 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 		
 	private void highlightAnglesInPolygon(GraphicsTriangle graphicsPoly) {
-		graphicsPoly.unhighlightAllChildren(renderList);
+		graphicsPoly.renderAllChildren(renderList);
 		Vec2 mouse = canvas.getMouseLocOnGrid();
-		graphicsPoly.highlightChildAtPoint(renderList, mouse);
+		graphicsPoly.renderChildAtPoint(renderList, mouse);
 	}
 	
 	private boolean displayUIRelationMaker() {
