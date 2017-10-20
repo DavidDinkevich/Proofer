@@ -70,7 +70,7 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		// Render Child
 		childrenToRender.add(gArc);
 		// Add to render list
-		rList.add(gArc);
+		rList.addDrawable(gArc);
 		
 		return true;
 	}
@@ -117,7 +117,7 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 	public void unhighlightAllChildren(RenderList rList) {
 		// Angles
 		for (int i = childrenToRender.size()-1; i >= 0; i--) {
-			rList.remove(childrenToRender.get(i));
+			rList.removeDrawable(childrenToRender.get(i));
 			childrenToRender.remove(i);
 		}
 	}

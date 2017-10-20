@@ -23,6 +23,13 @@ public class DiagramCanvas extends Canvas {
 	private DiagramCanvasGrid canvasGrid;
 	private PolygonBuffer polyBuff;
 	private List<GraphicsShape<?>> diagramFigures;
+	
+	/*
+	 * Layers
+	 */
+	public static enum Layers {
+		DEFAULT, GRAPHICS_SHAPE, SELECTOR, KNOB, POLYGON_COMPONENT
+	}
 
 	public DiagramCanvas(ProofCustomizationPanel parentPanel,
 			Dimension size, int background) {
@@ -48,6 +55,10 @@ public class DiagramCanvas extends Canvas {
 		setCanvasGrid(canvasGrid = new DiagramCanvasGrid(this, new Dimension(50)));
 		diagramFigures = new ArrayList<>();
 		polyBuff = new PolygonBuffer();
+		// Layers and render list
+		for (Layers lay : Layers.values()) {
+			// TODO: add layers here
+		}
 	}
 	
 	@Override
@@ -153,7 +164,7 @@ public class DiagramCanvas extends Canvas {
 		// Add to list to diagram figures list
 		diagramFigures.add(shape);
 		// Add to render list
-		getRenderList().add(shape);
+		getRenderList().addDrawable(shape);
 		// Add to list of selectables
 		if (inputManager != null) {
 			inputManager.addSelectableFigure(shape);
@@ -174,7 +185,7 @@ public class DiagramCanvas extends Canvas {
 		// Remove from diagram figures list
 		if (diagramFigures.remove(shape)) {
 			// Remove from RenderList
-			getRenderList().remove(shape);
+			getRenderList().removeDrawable(shape);
 			// Remove from list of selectables
 			if (inputManager != null) {
 				inputManager.removeSelectableFigure(shape);

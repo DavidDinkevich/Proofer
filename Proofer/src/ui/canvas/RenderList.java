@@ -34,7 +34,7 @@ public class RenderList implements Drawable {
 	/**
 	 * Add a {@link GraphicsShape} to the list of its {@link Layer}.
 	 */
-	public void add(GraphicsShape<?> o) {
+	public void addDrawable(GraphicsShape<?> o) {
 		getLayerList(o.getLayer()).add(o);
 	}
 	
@@ -43,7 +43,7 @@ public class RenderList implements Drawable {
 	 * @return true if the {@link GraphicsShape} was contained in the list
 	 * and successfully removed. False otherwise.
 	 */
-	public boolean remove(GraphicsShape<?> o) {
+	public boolean removeDrawable(GraphicsShape<?> o) {
 		return getLayerList(o.getLayer()).remove(o);
 	}
 	
@@ -63,7 +63,7 @@ public class RenderList implements Drawable {
 		return renderList.size();
 	}
 	
-	public int getObjectCount() {
+	public int getDrawableCount() {
 		int count = 0;
 		for (List<?> list : renderList.values()) {
 			count += list.size();

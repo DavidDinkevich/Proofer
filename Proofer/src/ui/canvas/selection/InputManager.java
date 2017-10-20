@@ -317,7 +317,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		// Deselect target object of selector
 		sel.deselectTargetObject();
 		// Remove from render list
-		renderList.remove(sel);
+		renderList.removeDrawable(sel);
 		// Remove from selectors list
 		selectors.remove(sel);
 	}
@@ -356,7 +356,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			selectors.add(sel);
 			sel.getShape().setResizeable(o.getShape().isResizeable());
 			knobs.addAll(Arrays.asList(sel.getKnobs())); // Add to knobs list
-			renderList.add(sel); // Add to render list
+			renderList.addDrawable(sel); // Add to render list
 			
 			if (redraw)
 				canvas.redraw();
