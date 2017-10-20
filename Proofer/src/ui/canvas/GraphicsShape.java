@@ -1,7 +1,7 @@
 package ui.canvas;
 
 import geometry.shapes.Shape;
-
+import ui.canvas.diagram.UIDiagramLayers;
 import ui.canvas.selection.Selectable;
 
 /**
@@ -10,9 +10,6 @@ import ui.canvas.selection.Selectable;
  */
 public abstract class GraphicsShape<T extends Shape>
 implements Drawable, Selectable {	
-	
-	public static final String LAYER_NAME = "shapes";
-
 	private T shape;
 	private Brush.Builder brush;
 	// By default, GraphicsShapes ARE selectable
@@ -20,7 +17,7 @@ implements Drawable, Selectable {
 	private boolean selected;
 	
 	// The Layer to which this object belongs
-	private String layer = LayerManager.DEFAULT_LAYER;
+	private UIDiagramLayers layer = UIDiagramLayers.GRAPHICS_SHAPE;
 	
 	public GraphicsShape(Brush brush, T shape) {
 		this.brush = new Brush.Builder(brush);
@@ -82,10 +79,10 @@ implements Drawable, Selectable {
 	public void setBrush(Brush brush) {
 		this.brush.set(brush);
 	}
-	public String getLayer() {
+	public UIDiagramLayers getLayer() {
 		return layer;
 	}
-	public void setLayer(String layer) {
+	public void setLayer(UIDiagramLayers layer) {
 		this.layer = layer;
 	}
 	

@@ -1,5 +1,7 @@
 package ui.canvas;
 
+import ui.canvas.diagram.UIDiagramLayers;
+
 /**
  * All object that inherit from this interface must be able to draw
  * themselves to a <code>Canvas</code>.
@@ -15,5 +17,7 @@ public interface Drawable {
 	 * Get the layer of this Drawable.
 	 * @return the layer
 	 */
-	public String getLayer();
+	default public UIDiagramLayers getLayer() {
+		return UIDiagramLayers.DEFAULT;
+	}
 }

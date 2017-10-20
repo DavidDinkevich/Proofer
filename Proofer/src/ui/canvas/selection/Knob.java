@@ -7,6 +7,7 @@ import geometry.shapes.Ellipse;
 import ui.canvas.GraphicsEllipse;
 import ui.canvas.GraphicsShape;
 import ui.canvas.StyleManager;
+import ui.canvas.diagram.UIDiagramLayers;
 
 /**
  * A knob/handle for adjusting the size of {@link GraphicsShape}s. Used in a
@@ -14,7 +15,6 @@ import ui.canvas.StyleManager;
  * @author David Dinkevich
  */
 public abstract class Knob extends GraphicsEllipse {
-	public static final String LAYER_NAME = "sel knobs";
 	
 	public static enum Directions {
 		UpDown, LeftRight, All
@@ -28,7 +28,7 @@ public abstract class Knob extends GraphicsEllipse {
 		setShape(new Ellipse(StyleManager.getKnobBody().getShape()));
 		
 		setBrush(StyleManager.getKnobBody().getBrush());
-		setLayer(LAYER_NAME);
+		setLayer(UIDiagramLayers.KNOB);
 		setAllowSelection(true);
 		direction = Directions.All;
 	}

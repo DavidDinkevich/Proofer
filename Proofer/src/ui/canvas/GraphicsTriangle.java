@@ -10,6 +10,9 @@ import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 import geometry.shapes.Shape;
 
+import ui.canvas.diagram.UIDiagramLayers;
+import ui.canvas.diagram.RenderList;
+
 import util.Utils;
 
 /**
@@ -65,7 +68,7 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 				arc
 		);
 		// Set layer of the graphics arc
-		gArc.setLayer("Polygon Components");
+		gArc.setLayer(UIDiagramLayers.POLYGON_COMPONENT);
 							
 		// Render Child
 		childrenToRender.add(gArc);

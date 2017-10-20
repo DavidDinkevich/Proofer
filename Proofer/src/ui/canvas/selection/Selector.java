@@ -8,6 +8,7 @@ import geometry.shapes.Shape2D;
 import ui.canvas.Canvas;
 import ui.canvas.GraphicsShape;
 import ui.canvas.StyleManager;
+import ui.canvas.diagram.UIDiagramLayers;
 
 /**
  * {@linkplain Selector}s select {@link GraphicsShape}s.
@@ -15,19 +16,13 @@ import ui.canvas.StyleManager;
  */
 public abstract class Selector<SelShape extends Shape2D, TargetType extends GraphicsShape<?>>
 extends GraphicsShape<SelShape> {
-
-	public static final String LAYER_NAME;
-	
-	static {
-		LAYER_NAME = "selectors";
-	}
 	
 	private TargetType targetObject;
 	private Knob[] knobs;
 	
 	public Selector(SelShape shape) {
 		super(shape);
-		setLayer(LAYER_NAME);
+		setLayer(UIDiagramLayers.SELECTOR);
 	}
 	
 	/**

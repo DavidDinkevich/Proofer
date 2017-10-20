@@ -134,8 +134,8 @@ public class DiagramCanvasGrid extends CanvasAdapter implements Drawable {
 	}
 	
 	@Override
-	public String getLayer() {
-		return DiagramCanvas.Layers.GRID.toString();
+	public UIDiagramLayers getLayer() {
+		return UIDiagramLayers.GRID;
 	}
 
 	/**

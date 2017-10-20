@@ -10,9 +10,10 @@ import ui.canvas.Drawable;
 import ui.canvas.GraphicsRectEllipse;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsTriangle;
-import ui.canvas.RenderList;
 import ui.canvas.StyleManager;
 import ui.canvas.diagram.DiagramCanvas;
+import ui.canvas.diagram.UIDiagramLayers;
+import ui.canvas.diagram.RenderList;
 import ui.canvas.event.CanvasAdapter;
 import ui.swing.FigureRelationListPanel;
 import ui.swing.FigureRelationPanel;
@@ -72,11 +73,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		selectors = new ArrayList<>();
 		knobs = new ArrayList<>();
 		selectables = new ArrayList<>();
-	}
-	
-	@Override
-	public String getLayer() {
-		return DiagramCanvas.Layers.DEFAULT.toString();
 	}
 	
 	public boolean addSelectableFigure(GraphicsShape<?> shape) {
@@ -310,7 +306,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			sel.deselectTargetObject();
 		}
 		// Destroy all selectors in render list
-		renderList.getLayerList(Selector.LAYER_NAME).clear();
+		renderList.getLayerList(UIDiagramLayers.SELECTOR).clear();
 
 		// Destroy all selectors
 		selectors.clear();
