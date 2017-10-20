@@ -148,9 +148,11 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			GraphicsShape<?> objectClickedOn = null;
 			
 			/*
-			 * Check for selection among selectables
+			 * Check for selection among selectables. Loop backwards
+			 * because we want to check the figures on the TOP first.
 			 */
-			for (GraphicsShape<?> o : selectables) {
+			for (int i = selectables.size()-1; i >= 0; i--) {
+				GraphicsShape<?> o = selectables.get(i);
 				// If the object is selectable, and it was clicked on
 				if (o.getAllowSelections() && o.getShape()
 						.containsPoint(canvas.getMouseLocOnGrid(), true)) {
