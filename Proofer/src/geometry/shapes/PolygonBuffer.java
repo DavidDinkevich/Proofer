@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import geometry.Vec2;
+
 /**
  * TODO: write description
  * @author David Dinkevich
@@ -135,6 +137,58 @@ public class PolygonBuffer implements Iterable<Polygon> {
 			return true;			
 		}
 		return false;
+	}
+	
+	/**
+	 * Update the name of the vertex in the given polygon. This is necessary
+	 * when the vertex's location is changed: you might want to merge the vertex
+	 * with another if it shares the other's location, or demerge it if it no longer
+	 * shares the other's location.
+	 * @param poly the polygon whose vertex will be updated
+	 * @param vertexName the name of the vertex to be updated
+	 * @param mergeIfNecessary whether or not to merge the given vertex with
+	 * another IF it shares the location of another vertex.
+	 * @return false if the given vertex name is not contained within the given
+	 * polygon. true otherwise. 
+	 */
+	public boolean updateVertexName(
+			Polygon poly, char vertexName, boolean mergeIfNecessary) {
+		// If given polygon doesn't contain given vertex name, return error
+		if (!poly.containsVertex(vertexName))
+			return false;
+		
+		Vec2 vertexLoc = poly.getVertexLoc(vertexName, true);
+				
+		if (mergeIfNecessary) {
+			// See if any other vertex shares the given vertex's location
+			boolean otherVertSharesLoc = false;
+			char otherVertName = '\n';
+			outer:
+			for (Polygon p : pgons) {
+				// For each OTHER vertex
+				for (Vertex otherVert : p.getVertices()) {
+					// Details
+					Vec2 otherVertLoc = otherVert.getCenter(true);
+					otherVertName = otherVert.getNameChar();
+					// If the vertices overlap and have different names
+					if (otherVertName != vertexName && otherVertLoc.equals(vertexLoc)) {
+						otherVertSharesLoc = true;
+						break outer;
+					}
+				}
+			}
+			
+			// If no other vertex shares given vertex's location
+			if (!otherVertSharesLoc)
+				return true; // No need to merge anything
+			
+			// We found another vertex with the same loc as the given vertex
+			// and with a different name
+			mergeVertices(poly, vertexName, otherVertName);
+		} else {
+			demergeVertices(poly, vertexName);
+		}
+		return true;
 	}
 	
 	@Override
