@@ -6,12 +6,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * A container to store {@link GraphicsShape}s and sort them in their
+ * A container to store {@link Drawable}s and sort them in their
  * respective {@link Layer}s.
  * @author David Dinkevich
  */
 public class RenderList implements Drawable {	
-	private Map<String, List<GraphicsShape<?>>> renderList;
+	private Map<String, List<Drawable>> renderList;
 	
 	public RenderList() {
 		// LinkedHashMap to maintain insertion order
@@ -24,7 +24,7 @@ public class RenderList implements Drawable {
 	
 	@Override
 	public void draw(Canvas c) {
-		for (List<GraphicsShape<?>> list : renderList.values()) {
+		for (List<Drawable> list : renderList.values()) {
 			for (int i = 0; i < list.size(); i++) {
 				list.get(i).draw(c);
 			}
@@ -32,30 +32,30 @@ public class RenderList implements Drawable {
 	}
 	
 	/**
-	 * Add a {@link GraphicsShape} to the list of its {@link Layer}.
+	 * Add a {@link Drawable} to the list of its {@link Layer}.
 	 */
-	public void addDrawable(GraphicsShape<?> o) {
+	public void addDrawable(Drawable o) {
 		getLayerList(o.getLayer()).add(o);
 	}
 	
 	/**
-	 * Remove a {@link GraphicsShape} from the list of its {@link Layer}.
-	 * @return true if the {@link GraphicsShape} was contained in the list
+	 * Remove a {@link Drawable} from the list of its {@link Layer}.
+	 * @return true if the {@link Drawable} was contained in the list
 	 * and successfully removed. False otherwise.
 	 */
-	public boolean removeDrawable(GraphicsShape<?> o) {
+	public boolean removeDrawable(Drawable o) {
 		return getLayerList(o.getLayer()).remove(o);
 	}
 	
 	/**
-	 * Get the {@link List} that stores the {@link GraphicsShape}s of the given
+	 * Get the {@link List} that stores the {@link Drawable}s of the given
 	 * {@link Layer}.
 	 */
-	public List<GraphicsShape<?>> getLayerList(String layerName) {
+	public List<Drawable> getLayerList(String layerName) {
 		return renderList.get(layerName);
 	}
 	
-	public GraphicsShape<?> get(String layerName, int index) {
+	public Drawable get(String layerName, int index) {
 		return getLayerList(layerName).get(index);
 	}
 	
@@ -71,10 +71,15 @@ public class RenderList implements Drawable {
 		return count;
 	}
 	
-	public boolean contains(GraphicsShape<?> o) {
-		List<GraphicsShape<?>> list = getLayerList(o.getLayer());
+	public boolean contains(Drawable o) {
+		List<Drawable> list = getLayerList(o.getLayer());
 		if (list == null)
 			return false;
 		return list.contains(o);
+	}
+
+	@Override
+	public String getLayer() {
+		return DiagramCanvas.Layers.DEFAULT.toString();
 	}
 }
