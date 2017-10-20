@@ -11,4 +11,9 @@ public interface Drawable {
 	 * @param c the Canvas.
 	 */
 	public void draw(Canvas c);
+	/**
+	 * Get the layer of this Drawable.
+	 * @return the layer
+	 */
+	public String getLayer();
 }
