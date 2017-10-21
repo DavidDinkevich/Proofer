@@ -58,8 +58,8 @@ public class DiagramCanvas extends Canvas {
 		for (UIDiagramLayers lay : UIDiagramLayers.values()) {
 			renderList.addLayer(lay);
 		}
-		setInputManager(inputManager = new InputManager(this));
 		setCanvasGrid(canvasGrid = new DiagramCanvasGrid(this, new Dimension(50f)));
+		setInputManager(inputManager = new InputManager(this));
 	}
 	
 	@Override
