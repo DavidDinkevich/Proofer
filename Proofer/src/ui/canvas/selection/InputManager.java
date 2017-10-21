@@ -42,9 +42,14 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private static char multipleSelectionKey = PConstants.SHIFT;
 	private static char uiRelMakerKey = PConstants.SHIFT;
 	
+	// Ease of access
+	
 	private DiagramCanvas canvas;
 	private RenderList renderList;
 	private PolygonBuffer polyBuff;
+	
+	// Selection
+	
 	private List<GraphicsShape<?>> selectables;
 	private List<Selector<?, ?>> selectors;
 	private List<Knob> knobs;
@@ -60,8 +65,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private UIRelationMaker relMaker;
 	private boolean displayRelMaker;
 	
-	// Highlighting figures
-
 	public InputManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
 		renderList = canvas.getRenderList();
