@@ -11,13 +11,14 @@ import ui.canvas.GraphicsRectEllipse;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsTriangle;
 import ui.canvas.StyleManager;
-import ui.canvas.diagram.DiagramCanvas;
-import ui.canvas.diagram.UIDiagramLayers;
-import ui.canvas.diagram.RenderList;
 import ui.canvas.event.CanvasAdapter;
 import ui.swing.FigureRelationListPanel;
 import ui.swing.FigureRelationPanel;
 import ui.swing.ProofCustomizationPanel;
+import ui.canvas.diagram.DiagramCanvas;
+import ui.canvas.diagram.DiagramCanvasGrid;
+import ui.canvas.diagram.UIDiagramLayers;
+import ui.canvas.diagram.RenderList;
 
 import geometry.Vec2;
 import geometry.proofs.FigureRelation;
@@ -45,6 +46,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	// Ease of access
 	
 	private DiagramCanvas canvas;
+	private DiagramCanvasGrid canvasGrid;
 	private RenderList renderList;
 	private PolygonBuffer polyBuff;
 	
@@ -68,6 +70,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	public InputManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
 		renderList = canvas.getRenderList();
+		canvasGrid = canvas.getCanvasGrid();
 		polyBuff = canvas.getPolygonBuffer();
 		selectionContainer = new SelectionBox();
 		relMaker = new UIRelationMaker();
@@ -397,7 +400,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		Vec2 dest = Vec2.sub(to, offset);
 		
 		if (snapToGrid) {
-			Vec2 snapPoint = canvas.getCanvasGrid().getPointOnGrid(dest);
+			Vec2 snapPoint = canvasGrid.getPointOnGrid(dest);
 			
 			// If the object is being moved towards the snap point,
 			// snap the object
@@ -439,7 +442,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		final Vec2 vertLoc =vert.getCenter(true);
 		
 		// Whether to merge the vertex with another, or demerge it from another
-		final boolean mergeVert = canvas.getCanvasGrid().pointIsSnapped(vertLoc);
+		final boolean mergeVert = canvasGrid.pointIsSnapped(vertLoc);
 		
 		polyBuff.updateVertexName(p, vertexName, mergeVert);		
 	}
@@ -460,18 +463,25 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	 * @param redraw whether or not to redraw the canvas
 	 */
 	private void snapSelector(Selector<?, ?> sel, boolean redraw) {
-		// Snap selector itself (if it's a polygon)
-		if (sel.getShape() instanceof Polygon) {
-			Polygon shape = (Polygon)sel.getShape();
-			canvas.getCanvasGrid().snapToGrid(shape);
-			updateVertexNames(shape);
-			sel.updateKnobPositions();
-		}
-		// Snap target object of selector (if it's a polygon)
-		if (sel.getTargetObject().getShape() instanceof Polygon) {
-			Polygon targetObjectShape = (Polygon)sel.getTargetObject().getShape();
-			canvas.getCanvasGrid().snapToGrid(targetObjectShape);
-			updateVertexNames(targetObjectShape);
+		// In the case of a PolygonSelector
+		if (sel instanceof PolygonSelector) {
+			// Get the selector as a PolygonSelector
+			PolygonSelector polySel = (PolygonSelector)sel;
+			// Get the knobs of the selector
+			PolygonSelectorKnob[] knobs = (PolygonSelectorKnob[]) polySel.getKnobs();
+			// For each knob
+			for (PolygonSelectorKnob knob : knobs) {
+				// Get the location of the knob
+				Vec2 knobLoc = knob.getControlledVertex().getCenter(true);
+				// Get the nearest snap point of the knob
+				Vec2 nearestSnap = canvasGrid.getNearestSnapPoint(knobLoc);
+				// Move the knob
+				knob.moveKnob(nearestSnap);
+			}
+			// Update the name of the target polygon figure
+			updateVertexNames(polySel.getTargetObject().getShape());
+			// Update the name of the selector
+			polySel.getShape().setName(polySel.getTargetObject().getShape().getName());
 		}
 		// Redraw if instructed to
 		if (redraw)
