@@ -61,11 +61,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private boolean displayRelMaker;
 	
 	// Highlighting figures
-	
-	/**
-	 * Highlighted figures
-	 */
-	private List<GraphicsShape<?>> highlightedFigs;
 
 	public InputManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
@@ -76,7 +71,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		selectors = new ArrayList<>();
 		knobs = new ArrayList<>();
 		selectables = new ArrayList<>();
-		highlightedFigs = new ArrayList<>();
 	}
 	
 	public static char getUIRelationMakerKey() {
@@ -283,7 +277,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 					snapSelector(sel, true);
 				}
 			}
-			// TODO: delete this
+
 			else if (canvas.key == 'n') {
 				Brush brush = StyleManager.getDefaultFigureBrush();
 
@@ -526,74 +520,83 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	 * over them.
 	 */
 	private void highlightFigures() {
-		highlightedFigs.clear();
+		// Mouse position
+		Vec2 mouse = canvas.getMouseLocOnGrid();
 		
-		// Location of the mouse
-		Vec2 mouseLoc = canvas.getMouseLocOnGrid();
-		
-		boolean figureIsHighlighted = false;
-		
+		// For each diagram figure
 		for (GraphicsShape<?> shape : canvas.getDiagramFigures()) {
-			if (shape.getShape().containsPoint(mouseLoc, true)) {
-				figureIsHighlighted = true;
-				if (highlightedFigs.contains(shape))
-					continue;
-				
-				if (shape instanceof GraphicsTriangle) {
-					GraphicsTriangle tri = (GraphicsTriangle)shape;
-					highlightedFigs.add(tri);
-					renderAnglesInPolygon(tri);
-					System.out.println(highlightedFigs.size());
-					canvas.redraw();
+			// If GraphicsTriangle
+			if (shape instanceof GraphicsTriangle) {
+				GraphicsTriangle tri = (GraphicsTriangle)shape;
+				// If we successfully rendered the angle at the mouse point
+				if (renderAngleInPolygonAtPoint(tri, mouse)) {
+					// Our business is done here--we already rendered the angle
 					break;
+				// If we did not successfully render an angle at the mouse point
+				} else {
+					// If the mouse is not hovering over an angle in the polygon
+					if (tri.getChildAtPoint(mouse) == null) {
+						/*
+						 * We just established that the mouse no longer hovers over
+						 * a child in this polygon. We now want to erase all the
+						 * children of this polygon that may/may not be rendered, and
+						 * decide whether or not we need to redraw the canvas.
+						 * We do this by calculating how many children are rendered now.
+						 * If this number is > 0, we will need to redraw the canvas.
+						 */
+						final int numRenderedChildren = tri.getRenderedFigureCount();
+						tri.eraseAllRenderedChildren(renderList);
+						if (numRenderedChildren != 0) {
+							canvas.redraw();
+						}
+					}
 				}
 			}
-		}
-		
-		if (!figureIsHighlighted) {
-			eraseAllPolyChildren();
 		}
 	}
 	
 	/**
-	 * Erase all rendered children, then render the angle under the cursor.
-	 * (If their is an angle under the cursor)
-	 * @param graphicsPoly the polygon
+	 * Find the child of the given polygon that is located at the given point
+	 * and render it.
+	 * @param tri the polygon
+	 * @param point the point at which to search for the child
+	 * @return true if the child was found and rendered. false otherwise.
 	 */
-	private void renderAnglesInPolygon(GraphicsTriangle graphicsPoly) {
-		System.out.println("happened");
-		graphicsPoly.eraseAllRenderedChildren(renderList);
+	private boolean renderAngleInPolygonAtPoint(GraphicsTriangle tri, Vec2 point) {
 		Vec2 mouse = canvas.getMouseLocOnGrid();
-		graphicsPoly.renderChildAtPoint(renderList, mouse);
+		if (tri.renderChildAtPoint(renderList, mouse)) {
+			canvas.redraw();
+			return true;
+		}
+		return false;
+		
 	}
 	
 	/**
 	 * Erase all rendered children in all polygons.
 	 */
-	private void eraseAllPolyChildren() {
-		// If there are no highlighted figures, return
-		if (highlightedFigs.isEmpty())
-			return;
-		
-		System.out.println("hap");
-		
-		// For all highlighted figures
-		for (int i = highlightedFigs.size()-1; i >= 0; i--) {
-			// Get the shape of the figure
-			GraphicsShape<?> shape = highlightedFigs.get(i);
-			
-			// If it's a triangle
-			if (shape instanceof GraphicsTriangle) {
-				GraphicsTriangle tri = (GraphicsTriangle)shape;
-				// Remove it from the list
-				highlightedFigs.remove(tri);
-				// Erase all of its children
-				tri.eraseAllRenderedChildren(renderList);
-			}
-		}
-		// Redraw
-		canvas.redraw();
-	}
+//	private void eraseAllPolyChildren() {
+//		// If there are no highlighted figures, return
+//		if (highlightedFigs.isEmpty())
+//			return;
+//				
+//		// For all highlighted figures
+//		for (int i = highlightedFigs.size()-1; i >= 0; i--) {
+//			// Get the shape of the figure
+//			GraphicsShape<?> shape = highlightedFigs.get(i);
+//			
+//			// If it's a triangle
+//			if (shape instanceof GraphicsTriangle) {
+//				GraphicsTriangle tri = (GraphicsTriangle)shape;
+//				// Remove it from the list
+//				highlightedFigs.remove(tri);
+//				// Erase all of its children
+//				tri.eraseAllRenderedChildren(renderList);
+//			}
+//		}
+//		// Redraw
+//		canvas.redraw();
+//	}
 	
 	private boolean displayUIRelationMaker() {
 		// If no figures are selected AND the user is holding shift
