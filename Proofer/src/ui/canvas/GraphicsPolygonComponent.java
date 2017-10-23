@@ -1,7 +1,7 @@
 package ui.canvas;
 
 /**
- * Represents a {@link Segment} or {@link Amgle} in a {@link GraphicsPolygon}. 
+ * Represents a {@link Segment} or {@link Angle} in a {@link GraphicsPolygon}. 
  * Can be rendered to the screen by the {@link Drawable#draw(Canvas)} method.
  * @author David Dinkevich
  */
