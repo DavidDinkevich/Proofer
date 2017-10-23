@@ -271,6 +271,13 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 	
 	@Override
+	public void keyReleased(Canvas c, KeyEvent e) {
+		if (canvas.keyCode == PConstants.SHIFT)
+			// Erase UI relation maker
+			setDisplayUIRelationMaker(false, true);
+	}
+	
+	@Override
 	public void keyPressed(Canvas c, KeyEvent e) {		
 		if (canvas.keyCode != PConstants.CODED) {
 			if (canvas.keyCode == PConstants.BACKSPACE) { // Don't have to check if key == CODED
@@ -613,7 +620,8 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private boolean displayUIRelationMaker() {
 		// If no figures are selected AND the user is holding shift
-		return selectors.isEmpty() && canvas.keyPressed && canvas.key == PConstants.CODED && 
+		return selectors.isEmpty() && canvas.mousePressed && canvas.keyPressed && 
+				canvas.key == PConstants.CODED && 
 				canvas.keyCode == uiRelMakerKey;
 	}
 	
@@ -640,6 +648,10 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		if (render == false) {
 			// Get the end-points of the UIRelationMaker 
 			List<Vec2> endpts = Arrays.asList(relMaker.getShape().getVertexLocations());
+			// Make UIRelationMaker disappear
+			for (Vertex v : relMaker.getShape().getVertices())
+				v.setCenter(Vec2.ZERO, true);
+			
 			// Num of diagram elements
 			final int COUNT = canvas.getDiagramFigures().size();
 			
