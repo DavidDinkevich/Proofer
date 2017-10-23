@@ -1,17 +1,17 @@
 package ui.canvas;
 
 /**
- * Represents a {@link Segment} or {@link Angle} in a {@link GraphicsPolygon}. 
+ * Represents a child in a {@link GraphicsPolygon}. 
  * Can be rendered to the screen by the {@link Drawable#draw(Canvas)} method.
  * @author David Dinkevich
  */
-public class GraphicsPolygonComponent implements Drawable {
+public class GraphicsPolygonChild implements Drawable {
 	private GraphicsTriangle parentTri;
-	private String componentName;
+	private String childName;
 	
-	public GraphicsPolygonComponent(GraphicsTriangle tri, String componentName) {
+	public GraphicsPolygonChild(GraphicsTriangle tri, String childName) {
 		parentTri = tri;
-		this.componentName = componentName;
+		this.childName = childName;
 	}
 	
 	@Override
@@ -19,8 +19,8 @@ public class GraphicsPolygonComponent implements Drawable {
 		
 	}
 	
-	public String getComponentName() {
-		return componentName;
+	public String getChildName() {
+		return childName;
 	}
 	
 	public GraphicsTriangle getParentPolygon() {
