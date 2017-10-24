@@ -25,15 +25,11 @@ implements Drawable, Selectable {
 		this.shape = shape;
 		this.brush = new Brush.Builder(brush);
 	}
-	public GraphicsShape(Brush brush) {
-		this(brush, null);
-	}
+	
 	public GraphicsShape(T shape) {
 		this(new Brush.Builder(), shape);
 	}
-	public GraphicsShape() {
-		this(new Brush.Builder());
-	}
+	
 	public GraphicsShape(GraphicsShape<T> o) {
 		brush = new Brush.Builder(o.brush.buildBrush());
 		layer = o.layer;
