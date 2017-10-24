@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import geometry.Vec2;
+import geometry.shapes.Angle;
 import geometry.shapes.Arc;
 import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
@@ -62,24 +63,23 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		return childrenToRender.size();
 	}
 	
-	private boolean drawAngle(RenderList rList, Arc arc) {
-		if (childrenToRenderContains(arc.getName()))
-			return false;
-				
-		// Create graphics arc
-		GraphicsArc gArc = new GraphicsArc(
-				StyleManager.getHighlightedFigureBrush(),
-				arc
-		);
-		// Set layer of the graphics arc
-		gArc.setLayer(UIDiagramLayers.POLYGON_COMPONENT);
-							
-		// Render Child
-		childrenToRender.add(gArc);
-		// Add to render list
-		rList.addDrawable(gArc);
-		
-		return true;
+	@SuppressWarnings("unchecked")
+	public <T extends Shape> T getShapeOfChild(String name) {
+		// In the case of an angle
+		if (Angle.isValidAngleName(name)) {
+			String vertName = name.substring(1, 2);
+			// Get segments adjacent to vertex
+			Segment[] adjSegs = getShape().getAdjacentSegments(vertName);
+			// The size of the arc
+			final float distToVert = Math.min(adjSegs[0].getLength(true), 
+					adjSegs[1].getLength(true)) * 0.2f;
+			// Create the arc
+			Arc arc = Utils.getArcBetween(adjSegs[0], adjSegs[1], distToVert * 2f);
+			// Set the name of the arc to the name of the vertex
+			arc.setName(vertName);
+			return (T)arc;
+		}
+		return null;
 	}
 	
 	public Shape getChildAtPoint(Vec2 point) {
@@ -87,22 +87,14 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		for (Vertex vert : getShape().getVertices()) {
 			// Get the name of the vertex
 			String vertName = vert.getName();
-			// Get segments adjacent to vertex
-			Segment[] adjSegs = getShape().getAdjacentSegments(vertName);
-			// The distance to the vertex the mouse must be
-			// the length of the smallest segment * 0.2f
-			final float distToVert = Math.min(adjSegs[0].getLength(true), 
-					adjSegs[1].getLength(true)) * 0.2f;
-			// Get loc of vertex
-			Vec2 centVLoc = vert.getCenter(true);
+			String fullAngleName = Utils.getFullNameOfAngle(getShape().getName(), vertName);
+			Arc arc = getShapeOfChild(fullAngleName);
+			Vec2 cent = arc.getCenter(true);
+			final float distToVert = arc.getSize().getWidth()/2f;
 			// If the mouse is inside this polygon and the mouse is close enough to
 			// the vertex
 			if (getShape().containsPoint(point, true) &&
-					Vec2.dist(point, centVLoc) < distToVert) {
-				// Create the arc
-				Arc arc = Utils.getArcBetween(adjSegs[0], adjSegs[1], distToVert * 2f);
-				// Set the name of the arc to the name of the vertex
-				arc.setName(vertName);
+					Vec2.dist(point, cent) < distToVert) {
 				return arc;
 			}
 		}
@@ -113,13 +105,50 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		Shape comp = getChildAtPoint(point);
 		if (comp == null)
 			return false;
-		if (comp instanceof Arc) {
-			// Draw the Angle to the canvas
-			return drawAngle(rList, (Arc)comp);			
+		return renderChild(rList, comp.getName());
+	}
+	
+	public boolean renderChild(RenderList rList, String name) {
+		if (childrenToRenderContains(name))
+			return false;
+		Shape shape = getShapeOfChild(name);
+		if (shape instanceof Arc) {
+			// Create graphics arc
+			GraphicsArc gArc = new GraphicsArc(
+					StyleManager.getHighlightedFigureBrush(),
+					(Arc)shape
+			);
+			// Set layer of the graphics arc
+			gArc.setLayer(UIDiagramLayers.POLYGON_COMPONENT);
+								
+			// Render Child
+			childrenToRender.add(gArc);
+			// Add to render list
+			rList.addDrawable(gArc);
+			return true;
 		}
-		
 		return false;
 	}
+	
+//	private boolean drawAngle(RenderList rList, Arc arc) {
+//		if (childrenToRenderContains(arc.getName()))
+//			return false;
+//				
+//		// Create graphics arc
+//		GraphicsArc gArc = new GraphicsArc(
+//				StyleManager.getHighlightedFigureBrush(),
+//				arc
+//		);
+//		// Set layer of the graphics arc
+//		gArc.setLayer(UIDiagramLayers.POLYGON_COMPONENT);
+//							
+//		// Render Child
+//		childrenToRender.add(gArc);
+//		// Add to render list
+//		rList.addDrawable(gArc);
+//		
+//		return true;
+//	}
 	
 	public void eraseAllRenderedChildren(RenderList rList) {
 		for (int i = childrenToRender.size()-1; i >= 0; i--) {
@@ -127,6 +156,15 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 			childrenToRender.remove(i);
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }
