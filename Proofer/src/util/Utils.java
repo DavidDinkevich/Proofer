@@ -207,7 +207,7 @@ public final class Utils {
 	 * @return the full name of the angle at the given vertex
 	 */
 	public static String getFullNameOfAngle(String tri, String angleShortName) {
-		if (angleShortName.length() == 1 || !Triangle.isValidTriangleName(tri))
+		if (angleShortName.length() != 1 || !Triangle.isValidTriangleName(tri))
 			return null;
 		StringBuilder name = new StringBuilder();
 		for (char c : tri.toCharArray()) {
