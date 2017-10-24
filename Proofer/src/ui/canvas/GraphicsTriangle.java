@@ -63,6 +63,11 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		return childrenToRender.size();
 	}
 	
+	/**
+	 * Get the {@link Shape} of the child with the given name.
+	 * @param name the name of the {@link Shape}
+	 * @return the {@link Shape}
+	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Shape> T getShapeOfChild(String name) {
 		// In the case of an angle
@@ -82,6 +87,11 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		return null;
 	}
 	
+	/**
+	 * Get the {@link Shape} of the child at the given point
+	 * @param point the point where the child is
+	 * @return the {@link Shape} of the child at the given point
+	 */
 	public Shape getChildAtPoint(Vec2 point) {
 		// In the case of an Angle
 		for (Vertex vert : getShape().getVertices()) {
@@ -101,6 +111,15 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		return null;
 	}
 	
+	/**
+	 * Get the child at the given point and add it to the given
+	 * {@link RenderList}
+	 * @param rList the {@link RenderList}
+	 * @param point the point at which the child lies
+	 * @return whether or not a child exists at the given point, the
+	 * child is not already part of this {@link GraphicsTriangle}'s internal
+	 * render-list, and this process was completed without problems.
+	 */
 	public boolean renderChildAtPoint(RenderList rList, Vec2 point) {
 		Shape comp = getChildAtPoint(point);
 		if (comp == null)
@@ -129,42 +148,17 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		}
 		return false;
 	}
-	
-//	private boolean drawAngle(RenderList rList, Arc arc) {
-//		if (childrenToRenderContains(arc.getName()))
-//			return false;
-//				
-//		// Create graphics arc
-//		GraphicsArc gArc = new GraphicsArc(
-//				StyleManager.getHighlightedFigureBrush(),
-//				arc
-//		);
-//		// Set layer of the graphics arc
-//		gArc.setLayer(UIDiagramLayers.POLYGON_COMPONENT);
-//							
-//		// Render Child
-//		childrenToRender.add(gArc);
-//		// Add to render list
-//		rList.addDrawable(gArc);
-//		
-//		return true;
-//	}
-	
+
+	/**
+	 * Empty this {@link GraphicsTriangle}'s internal render-list, and
+	 * remove all of the elements in the internal render-list from the
+	 * given {@link RenderList}
+	 * @param rList the {@link RenderList}
+	 */
 	public void eraseAllRenderedChildren(RenderList rList) {
 		for (int i = childrenToRender.size()-1; i >= 0; i--) {
 			rList.removeDrawable(childrenToRender.get(i));
 			childrenToRender.remove(i);
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
