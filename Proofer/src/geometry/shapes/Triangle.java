@@ -69,6 +69,15 @@ public class Triangle extends SimplePolygon {
 		return false;
 	}
 	
+	/**
+	 * Get whether the given String is a valid name for a Triangle
+	 * @param name the name to be tested
+	 * @return the result
+	 */
+	public static boolean isValidTriangleName(String name) {
+		return name.length() == 3; // TODO: Should also not contain any duplicates
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o) && o instanceof Triangle;
