@@ -10,13 +10,9 @@ public abstract class GraphicsRectEllipse<T extends RectEllipse> extends Graphic
 	public GraphicsRectEllipse(Brush brush, T re) {
 		super(brush, re);
 	}
-	public GraphicsRectEllipse(Brush brush) {
-		super(brush);
-	}
+	
 	public GraphicsRectEllipse(T re) {
 		super(re);
-	}
-	public GraphicsRectEllipse() {
 	}
 	
 	protected GraphicsRectEllipse(GraphicsRectEllipse<T> other) {

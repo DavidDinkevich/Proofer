@@ -10,14 +10,9 @@ public class GraphicsEllipse extends GraphicsRectEllipse<Ellipse> {
 	public GraphicsEllipse(Brush brush, Ellipse re) {
 		super(brush, re);
 	}
-	public GraphicsEllipse(Brush brush) {
-		super(brush);
-	}
+
 	public GraphicsEllipse(Ellipse re) {
 		super(re);
-	}
-	public GraphicsEllipse() {
-		super();
 	}
 	
 	public GraphicsEllipse(GraphicsEllipse other) {

@@ -1,7 +1,6 @@
 package ui.canvas.selection;
 
 import geometry.Vec2;
-import geometry.shapes.Ellipse;
 import geometry.shapes.Vertex;
 
 /**
@@ -15,12 +14,6 @@ public class PolygonSelectorKnob extends Knob {
 	 */
 	private Vertex controlledVertex;
 	
-	public PolygonSelectorKnob(Ellipse shape) {
-		super(shape);
-	}
-	public PolygonSelectorKnob(float diam) {
-		super(diam);
-	}
 	public PolygonSelectorKnob() {
 	}
 	

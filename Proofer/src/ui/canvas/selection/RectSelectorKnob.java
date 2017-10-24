@@ -2,19 +2,12 @@ package ui.canvas.selection;
 
 import geometry.Dimension;
 import geometry.Vec2;
-import geometry.shapes.Ellipse;
 
 /**
  * A {@link Knob} specifically for {@link RectSelector}s.
  * @author David Dinkevich
  */
 public class RectSelectorKnob extends Knob {
-	public RectSelectorKnob(Ellipse shape) {
-		super(shape);
-	}
-	public RectSelectorKnob(float diam) {
-		super(diam);
-	}
 	public RectSelectorKnob() {
 	}
 

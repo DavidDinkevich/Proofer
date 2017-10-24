@@ -16,16 +16,6 @@ public class GraphicsVertex extends GraphicsShape<Vertex> {
 		textFont = new TextFont();
 	}
 	
-	public GraphicsVertex(Brush brush) {
-		super(brush);
-		textFont = new TextFont();
-	}
-	
-	public GraphicsVertex() {
-		super();
-		textFont = new TextFont();
-	}
-	
 	public GraphicsVertex(GraphicsVertex o) {
 		super(o);
 		textFont = o.textFont;

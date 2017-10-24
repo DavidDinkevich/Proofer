@@ -7,15 +7,8 @@ public class GraphicsSegment extends GraphicsShape<Segment> {
 		super(brush, se);
 	}
 	
-	public GraphicsSegment(Brush brush) {
-		super(brush);
-	}
-	
 	public GraphicsSegment(Segment se) {
 		super(se);
-	}
-	
-	public GraphicsSegment() {
 	}
 	
 	public GraphicsSegment(GraphicsSegment other) {

@@ -1,6 +1,5 @@
 package ui.canvas.selection;
 
-import geometry.Dimension;
 import geometry.Vec2;
 import geometry.shapes.Ellipse;
 
@@ -23,25 +22,12 @@ public abstract class Knob extends GraphicsEllipse {
 	
 	private Selector<?, ?> selector;
 	
-	// Prepare knob
-	private void init() {
-		setShape(new Ellipse(StyleManager.getKnobBody().getShape()));
-		
+	public Knob() {
+		super(new Ellipse(StyleManager.getKnobBody().getShape()));
 		setBrush(StyleManager.getKnobBody().getBrush());
 		setLayer(UIDiagramLayers.KNOB);
 		setAllowSelection(true);
 		direction = Directions.All;
-	}
-	public Knob(Ellipse shape) {
-		super(shape);
-		init();
-	}
-	public Knob(float diam) {
-		super(new Ellipse(new Dimension(diam)));
-		init();
-	}
-	public Knob() {
-		init();
 	}
 	
 	/**

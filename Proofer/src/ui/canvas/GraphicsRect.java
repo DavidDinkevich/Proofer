@@ -11,13 +11,9 @@ public class GraphicsRect extends GraphicsRectEllipse<Rect> {
 	public GraphicsRect(Brush brush, Rect re) {
 		super(brush, re);
 	}
-	public GraphicsRect(Brush brush) {
-		super(brush);
-	}
+
 	public GraphicsRect(Rect re) {
 		super(re);
-	}
-	public GraphicsRect() {
 	}
 	
 	public GraphicsRect(GraphicsRect other) {
