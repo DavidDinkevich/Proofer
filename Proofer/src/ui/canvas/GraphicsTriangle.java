@@ -1,6 +1,7 @@
 package ui.canvas;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import geometry.Vec2;
@@ -61,6 +62,31 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 	
 	public int getRenderedFigureCount() {
 		return childrenToRender.size();
+	}
+	
+	public List<Shape> getShapesOfChildren() {
+		List<Shape> shapes = null;
+		
+		for (int i = 0; i < getShape().getVertexCount(); i++) {
+			// Angles
+			String vertName = String.valueOf(getShape().getName().charAt(i));
+			// Get segments adjacent to vertex
+			Segment[] adjSegs = getShape().getAdjacentSegments(vertName);
+			// The size of the arc
+			final float distToVert = Math.min(adjSegs[0].getLength(true), 
+					adjSegs[1].getLength(true)) * 0.2f;
+			// Create the arc
+			Arc arc = Utils.getArcBetween(adjSegs[0], adjSegs[1], distToVert * 2f);
+			// Set the name of the arc to the name of the vertex
+			arc.setName(vertName);
+			
+			if (shapes == null)
+				shapes = new ArrayList<>();
+			
+			shapes.add(arc);
+		}
+		
+		return shapes == null ? Collections.emptyList() : shapes;
 	}
 	
 	/**
