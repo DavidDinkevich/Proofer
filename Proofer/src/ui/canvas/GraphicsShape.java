@@ -20,8 +20,10 @@ implements Drawable, Selectable {
 	private UIDiagramLayers layer = UIDiagramLayers.GRAPHICS_SHAPE;
 	
 	public GraphicsShape(Brush brush, T shape) {
-		this.brush = new Brush.Builder(brush);
+		if (shape == null)
+			throw new NullPointerException("A GraphicsShape's Shape may not be null!!!");
 		this.shape = shape;
+		this.brush = new Brush.Builder(brush);
 	}
 	public GraphicsShape(Brush brush) {
 		this(brush, null);
@@ -70,6 +72,8 @@ implements Drawable, Selectable {
 		return shape;
 	}
 	protected void setShape(T shape) {
+		if (shape == null)
+			throw new NullPointerException("A GraphicsShape's Shape may not be null!!!");
 		this.shape = shape;
 	}
 	
