@@ -200,6 +200,25 @@ public final class Utils {
 	}
 	
 	/**
+	 * For the given vertex, get the full name of the angle at the vertex
+	 * in the given triangle.
+	 * @param tri the triangle
+	 * @param angleShortName the vertex
+	 * @return the full name of the angle at the given vertex
+	 */
+	public static String getFullNameOfAngle(String tri, String angleShortName) {
+		if (angleShortName.length() == 1 || !Triangle.isValidTriangleName(tri))
+			return null;
+		StringBuilder name = new StringBuilder();
+		for (char c : tri.toCharArray()) {
+			if (c != angleShortName.charAt(0))
+				name.append(c);
+		}
+		name.insert(1, angleShortName);
+		return name.toString();
+	}
+	
+	/**
 	 * Get whether the given two angles are vertical angles.
 	 * @param a the first angle
 	 * @param b the second angle
