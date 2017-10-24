@@ -11,20 +11,14 @@ import geometry.shapes.Shape;
 public class GraphicsPolygonChild extends GraphicsShape<Shape> {
 	private GraphicsTriangle parentTri;
 	
-	public GraphicsPolygonChild(Brush brush, GraphicsTriangle tri) {
+	public GraphicsPolygonChild(Brush brush, GraphicsTriangle tri, String childName) {
+		// Specify that we want to use the constructor that accepts a Shape object
+		super((Shape)tri.getShapeOfChild(childName));
 		parentTri = tri;
 	}
-	
-	public GraphicsPolygonChild(GraphicsTriangle poly) {
-		this(new Brush(), poly);
-	}
-	
-	public GraphicsPolygonChild(Brush brush) {
-		this(brush, new GraphicsTriangle());
-	}
-	
-	public GraphicsPolygonChild() {
-		this(new Brush());
+
+	public GraphicsPolygonChild(GraphicsTriangle poly, String childName) {
+		this(new Brush(), poly, childName);
 	}
 	
 	@Override
