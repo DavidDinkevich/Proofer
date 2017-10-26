@@ -174,13 +174,13 @@ public class DiagramCanvas extends Canvas {
 		diagramFigures.add(shape);
 		// Add to render list
 		renderList.addDrawable(shape);
-		// Add to list of selectables
-		if (inputManager != null) {
-			inputManager.addSelectableFigure(shape);
-		}
 		// If it's a polygon, add it to PolygonBuffer
 		if (shape.getShape() instanceof Polygon) {
 			polyBuff.addPoly((Polygon)shape.getShape());
+		}
+		// Add to list of selectables
+		if (inputManager != null) {
+			inputManager.addSelectableFigure(shape);
 		}
 	}
 	
