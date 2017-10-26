@@ -3,6 +3,8 @@ package ui.canvas;
 import geometry.shapes.Arc;
 import geometry.shapes.Shape;
 
+import ui.canvas.diagram.UIDiagramLayers;
+
 /**
  * Represents a child in a {@link GraphicsPolygon}. 
  * Can be rendered to the screen by the {@link Drawable#draw(Canvas)} method.
@@ -15,6 +17,7 @@ public class GraphicsPolygonChild extends GraphicsShape<Shape> {
 		// Specify that we want to use the constructor that accepts a Shape object
 		super((Shape)tri.getShapeOfChild(childName));
 		parentTri = tri;
+		setLayer(UIDiagramLayers.POLYGON_COMPONENT);
 	}
 
 	public GraphicsPolygonChild(GraphicsTriangle poly, String childName) {
