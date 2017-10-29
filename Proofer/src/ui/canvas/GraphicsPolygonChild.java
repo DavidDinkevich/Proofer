@@ -4,6 +4,7 @@ import geometry.shapes.Arc;
 import geometry.shapes.Shape;
 
 import ui.canvas.diagram.UIDiagramLayers;
+import util.Utils;
 
 /**
  * Represents a child in a {@link GraphicsPolygon}. 
@@ -44,7 +45,8 @@ public class GraphicsPolygonChild extends GraphicsShape<Shape> {
 	@Override
 	public void draw(Canvas c) {
 		super.draw(c);
-		Shape newShape = parentTri.getShapeOfChild(getShape().getName());
+		String fullName = Utils.getFullNameOfAngle(parentTri.getShape().getName(), getShape().getName());
+		Shape newShape = parentTri.getShapeOfChild(fullName);
 		if (newShape != null) {
 			setShape(newShape);
 			if (getShape() instanceof Arc) {
