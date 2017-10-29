@@ -129,11 +129,11 @@ public abstract class AbstractShape implements Shape {
 			setName(getName());
 	}
 	
-	protected int getMinimumNameLength() {
+	public int getMinimumNameLength() {
 		return minNameLength;
 	}
 	
-	protected int getMaximumNameLength() {
+	public int getMaximumNameLength() {
 		return maxNameLength;
 	}
 
