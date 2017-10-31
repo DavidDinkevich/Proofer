@@ -38,8 +38,8 @@ public class RenderList implements Drawable {
 	/**
 	 * Add a {@link Drawable} to the list of its layer.
 	 */
-	public void addDrawable(Drawable o) {
-		getLayerList(o.getLayer()).add(o);
+	public boolean addDrawable(Drawable o) {
+		return getLayerList(o.getLayer()).add(o);
 	}
 	
 	/**
