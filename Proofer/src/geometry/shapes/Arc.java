@@ -4,6 +4,7 @@ import geometry.Dimension;
 import geometry.Vec2;
 
 import processing.core.PConstants;
+import util.Utils;
 
 public class Arc extends Vertex {
 	private Dimension.Mutable size;
@@ -59,6 +60,17 @@ public class Arc extends Vertex {
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o) && o instanceof Arc;
+		// Possibility: compare attributes of arc
+	}
+	
+	@Override
+	public boolean containsPoint(Vec2 point, boolean includeScale) {
+		Vec2 center = getCenter(includeScale);
+//		Vec2 pointFromCenter = Vec2.sub(point, center);
+//		final float pointHeadingRaw = pointFromCenter.getHeading();
+//		final float pointHeadingCorrected = pointHeadingRaw < 0f ?
+//				Utils.TWO_PI + pointHeadingRaw : pointHeadingRaw;
+		return Vec2.dist(point, center) < size.getWidth()/2;
 	}
 
 	public float getStartAngle() {
