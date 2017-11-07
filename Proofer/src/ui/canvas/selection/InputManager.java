@@ -309,6 +309,10 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				// Destroy the selector
 				destroySelector(selForFigure);
 			}
+			// If the figure is a polygon, remove its children
+			if (shape instanceof GraphicsTriangle) { // TODO: change this to polygon
+				removePolygonChildren((GraphicsTriangle) shape);
+			}
 			
 			canvas.redraw();
 			return true;
@@ -336,6 +340,21 @@ public class InputManager extends CanvasAdapter implements Drawable {
 					new GraphicsPolygonChild(gChildBrush, poly, childName);
 			// Add the GraphicsPolygonChild
 			polyChildren.add(gChild);
+		}
+	}
+	
+	private void removePolygonChildren(GraphicsTriangle poly) {
+		// For each of the polygon's children
+		for (Shape child : poly.getShapesOfChildren()) {
+			// For each element in the polygon-children list
+			for (int i = polyChildren.size()-1; i >= 0; i--) {
+				// If the current element in polygon-children list is one of
+				// the polygon's children
+				if (polyChildren.get(i).getShape().equals(child)) {
+					// Remove it from the polygon-children list
+					polyChildren.remove(i);
+				}
+			}
 		}
 	}
 	
