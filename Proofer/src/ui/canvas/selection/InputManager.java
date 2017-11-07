@@ -7,6 +7,7 @@ import processing.event.MouseEvent;
 import ui.canvas.Brush;
 import ui.canvas.Canvas;
 import ui.canvas.Drawable;
+import ui.canvas.GraphicsPolygonAngle;
 import ui.canvas.GraphicsPolygonChild;
 import ui.canvas.GraphicsRectEllipse;
 import ui.canvas.GraphicsShape;
@@ -24,6 +25,7 @@ import ui.canvas.diagram.RenderList;
 import geometry.Vec2;
 import geometry.proofs.FigureRelation;
 import geometry.proofs.FigureRelationType;
+import geometry.shapes.Arc;
 import geometry.shapes.Polygon;
 import geometry.shapes.PolygonBuffer;
 import geometry.shapes.Shape;
@@ -329,17 +331,23 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		for (Shape child : poly.getShapesOfChildren()) {
 			// Get the brush for the GraphicsPolygonChild
 			Brush gChildBrush = StyleManager.getHighlightedFigureBrush();
-			// Get the name for the GraphicsPolygonChild. child.getName() will
-			// give us an Arc, whose name is 1 letter. That letter is the
-			// short-name of the angle that the arc represents. We need to get
-			// that angle's full name
-			String childName = Utils.getFullNameOfAngle(poly.getShape().getName(),
-					child.getName());
-			// Create the GraphicsPolygonChild
-			GraphicsPolygonChild gChild =
-					new GraphicsPolygonChild(gChildBrush, poly, childName);
-			// Add the GraphicsPolygonChild
-			polyChildren.add(gChild);
+			/*
+			 * In the case of Angle-children (in the Arc shape), create
+			 * a GraphicsPolygonAngle and add it to the polygon-children list
+			 */
+			if (child instanceof Arc) {
+				// Get the name for the GraphicsPolygonChild. child.getName() will
+				// give us an Arc, whose name is 1 letter. That letter is the
+				// short-name of the angle that the arc represents. We need to get
+				// that angle's full name
+				String childName = Utils.getFullNameOfAngle(poly.getShape().getName(),
+						child.getName());
+				// Create the GraphicsPolygonAngle
+				GraphicsPolygonAngle gAngle =
+						new GraphicsPolygonAngle(gChildBrush, poly, childName);
+				// Add the GraphicsPolygonAngle
+				polyChildren.add(gAngle);
+			}			
 		}
 	}
 	
