@@ -7,6 +7,7 @@ import processing.event.MouseEvent;
 import ui.canvas.Brush;
 import ui.canvas.Canvas;
 import ui.canvas.Drawable;
+import ui.canvas.GraphicsPolygonChild;
 import ui.canvas.GraphicsRectEllipse;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsTriangle;
@@ -33,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import util.Utils;
 
 /**
  * Controls and manages selections made on a {@link DiagramCanvas}.
@@ -67,6 +70,10 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private UIRelationMaker relMaker;
 	private boolean displayRelMaker;
 	
+	// Highlighting polygon children
+	
+	private List<GraphicsPolygonChild> polyChildren;
+	
 	public InputManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
 		renderList = canvas.getRenderList();
@@ -77,6 +84,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		selectors = new ArrayList<>();
 		knobs = new ArrayList<>();
 		selectables = new ArrayList<>();
+		polyChildren = new ArrayList<>();
 	}
 	
 	public static char getUIRelationMakerKey() {
@@ -102,6 +110,28 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			if (shape.isSelected()) {
 				// Create a selector for it
 				createSelector(shape, true);
+			}
+			// If the shape is a polygon, add its children to the
+			// list of selectable figures
+			if (shape instanceof GraphicsTriangle) { // TODO: change to polygon
+				// We know it's a GraphicsTriangle
+				GraphicsTriangle gPoly = (GraphicsTriangle)shape;
+				// Create a GraphicsPolygonChild for each child and add it
+				for (Shape child : gPoly.getShapesOfChildren()) {
+					// Get the brush for the GraphicsPolygonChild
+					Brush gChildBrush = StyleManager.getHighlightedFigureBrush();
+					// Get the name for the GraphicsPolygonChild. child.getName() will
+					// give us an Arc, whose name is 1 letter. That letter is the
+					// short-name of the angle that the arc represents. We need to get
+					// that angle's full name
+					String childName = Utils.getFullNameOfAngle(shape.getShape().getName(),
+							child.getName());
+					// Create the GraphicsPolygonChild
+					GraphicsPolygonChild gChild =
+							new GraphicsPolygonChild(gChildBrush, gPoly, childName);
+					// Add the GraphicsPolygonChild
+					polyChildren.add(gChild);
+				}
 			}
 			return true;
 		}
@@ -543,80 +573,33 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		// Mouse position
 		Vec2 mouse = canvas.getMouseLocOnGrid();
 		
-		// For each diagram figure
-		for (GraphicsShape<?> shape : canvas.getDiagramFigures()) {
-			// If GraphicsTriangle
-			if (shape instanceof GraphicsTriangle) {
-				GraphicsTriangle tri = (GraphicsTriangle)shape;
-				// If we successfully rendered the angle at the mouse point
-				if (renderAngleInPolygonAtPoint(tri, mouse)) {
-					// Our business is done here--we already rendered the angle
-					break;
-				// If we did not successfully render an angle at the mouse point
-				} else {
-					// If the mouse is not hovering over an angle in the polygon
-					if (tri.getChildAtPoint(mouse) == null) {
-						/*
-						 * We just established that the mouse no longer hovers over
-						 * a child in this polygon. We now want to erase all the
-						 * children of this polygon that may/may not be rendered, and
-						 * decide whether or not we need to redraw the canvas.
-						 * We do this by calculating how many children are rendered now.
-						 * If this number is > 0, we will need to redraw the canvas.
-						 */
-						final int numRenderedChildren = tri.getRenderedFigureCount();
-						tri.eraseAllRenderedChildren(renderList);
-						if (numRenderedChildren != 0) {
-							canvas.redraw();
-						}
-					}
+		// For each graphics polygon child
+		for (GraphicsPolygonChild child : polyChildren) {
+			// If the mouse is hovering over the child
+			if (child.getShape().containsPoint(mouse, true)) {
+				// If the child hovered over is not already in the render list
+				if (!renderList.contains(child)) {
+					// Add it to the render list
+					renderList.addDrawable(child);
+					// Redraw
+					canvas.redraw();
 				}
+				// We found the child that is hovered over by the mouse.
+				// Business is done here
+				break;
 			}
+			// If the mouse is not hovering over this child
+			else {
+				// If the child is already in the render list
+				if (renderList.contains(child)) {
+					// Remove the child from the render list
+					renderList.removeDrawable(child);
+					// Redraw
+					canvas.redraw();
+				}
+			}	
 		}
 	}
-	
-	/**
-	 * Find the child of the given polygon that is located at the given point
-	 * and render it.
-	 * @param tri the polygon
-	 * @param point the point at which to search for the child
-	 * @return true if the child was found and rendered. false otherwise.
-	 */
-	private boolean renderAngleInPolygonAtPoint(GraphicsTriangle tri, Vec2 point) {
-		Vec2 mouse = canvas.getMouseLocOnGrid();
-		if (tri.renderChildAtPoint(renderList, mouse)) {
-			canvas.redraw();
-			return true;
-		}
-		return false;
-		
-	}
-	
-	/**
-	 * Erase all rendered children in all polygons.
-	 */
-//	private void eraseAllPolyChildren() {
-//		// If there are no highlighted figures, return
-//		if (highlightedFigs.isEmpty())
-//			return;
-//				
-//		// For all highlighted figures
-//		for (int i = highlightedFigs.size()-1; i >= 0; i--) {
-//			// Get the shape of the figure
-//			GraphicsShape<?> shape = highlightedFigs.get(i);
-//			
-//			// If it's a triangle
-//			if (shape instanceof GraphicsTriangle) {
-//				GraphicsTriangle tri = (GraphicsTriangle)shape;
-//				// Remove it from the list
-//				highlightedFigs.remove(tri);
-//				// Erase all of its children
-//				tri.eraseAllRenderedChildren(renderList);
-//			}
-//		}
-//		// Redraw
-//		canvas.redraw();
-//	}
 	
 	private boolean displayUIRelationMaker() {
 		// If no figures are selected AND the user is holding shift
@@ -643,7 +626,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		/*
 		 * If render = false (we want to make the UIRelationMaker disappear,
 		 * we have to actually create a figure relation between the two figures
-		 * on which the end-points of the UIRelationMaker lie.
+		 * on which the end-points of the UIRelationMaker lie).
 		 */
 		if (render == false) {
 			// Get the end-points of the UIRelationMaker 
