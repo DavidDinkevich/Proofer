@@ -635,21 +635,30 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			for (Vertex v : relMaker.getShape().getVertices())
 				v.setCenter(Vec2.ZERO, true);
 			
-			// Num of diagram elements
-			final int COUNT = canvas.getDiagramFigures().size();
+			/*
+			 * Compile a list of all of the figures in the diagram that can be
+			 * "connected"--a RelationPair can be made between them.
+			 * 
+			 * 		connectables = polygon children  +  diagram figures
+			 */
+			List<GraphicsShape<?>> connectables = new ArrayList<>(polyChildren);
+			connectables.addAll(canvas.getDiagramFigures());
+			
+			// Num of connectable figures
+			final int COUNT = connectables.size();
 			
 			// For each figure
 			for (int i = 0; i < COUNT; i++) {
 				// Get the shape of the figure
-				Shape shape0 = canvas.getDiagramFigures().get(i).getShape();
+				Shape shape0 = connectables.get(i).getShape();
 				// If the figure does NOT contain at least ONE of the UIRelationMaker's
 				// end-points
 				if (!shape0.containsAPointIn(endpts, true))
 					continue;
-				// For every figure
+				// For every other figure
 				for (int j = 0; j < COUNT; j++) {
 					// Get the shape of the second figure
-					Shape shape1 = canvas.getDiagramFigures().get(j).getShape();
+					Shape shape1 = connectables.get(j).getShape();
 					// If the second figure is the same as the first, OR if the second
 					// figure does NOT contain at least ONE of the UIRelationMaker's
 					// end-points
