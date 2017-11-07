@@ -1,17 +1,15 @@
 package ui.canvas;
 
-import geometry.shapes.Arc;
 import geometry.shapes.Shape;
 
 import ui.canvas.diagram.UIDiagramLayers;
-import util.Utils;
 
 /**
  * Represents a child in a {@link GraphicsPolygon}. 
  * Can be rendered to the screen by the {@link Drawable#draw(Canvas)} method.
  * @author David Dinkevich
  */
-public class GraphicsPolygonChild extends GraphicsShape<Shape> {
+public abstract class GraphicsPolygonChild extends GraphicsShape<Shape> {
 	private GraphicsTriangle parentTri;
 	
 	public GraphicsPolygonChild(Brush brush, GraphicsTriangle tri, String childName) {
@@ -38,19 +36,6 @@ public class GraphicsPolygonChild extends GraphicsShape<Shape> {
 		int result = super.hashCode();
 		result = 31 * result + parentTri.hashCode();
 		return result;
-	}
-	
-	@Override
-	public void draw(Canvas c) {
-		super.draw(c);
-		String fullName = Utils.getFullNameOfAngle(parentTri.getShape().getName(), getShape().getName());
-		Shape newShape = parentTri.getShapeOfChild(fullName);
-		if (newShape != null) {
-			setShape(newShape);
-			if (getShape() instanceof Arc) {
-				c.arc((Arc)getShape());
-			}
-		}
 	}
 	
 	public GraphicsTriangle getParentPolygon() {
