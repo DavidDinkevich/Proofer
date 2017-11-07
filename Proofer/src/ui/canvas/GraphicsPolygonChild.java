@@ -27,12 +27,10 @@ public class GraphicsPolygonChild extends GraphicsShape<Shape> {
 	
 	@Override
 	public boolean equals(Object o) {
-		if (super.equals(o))
-			return true;
 		if (!(o instanceof GraphicsPolygonChild))
 			return false;
 		GraphicsPolygonChild p = (GraphicsPolygonChild)o;
-		return parentTri.equals(p.parentTri);
+		return super.equals(o) && parentTri.equals(p.parentTri);
 	}
 	
 	@Override
