@@ -103,65 +103,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		multipleSelectionKey = c;
 	}
 	
-	public boolean addSelectableFigure(GraphicsShape<?> shape) {
-		// If the shape was successfully added
-		if (selectables.add(shape)) {
-			// If the shape is already selected
-			if (shape.isSelected()) {
-				// Create a selector for it
-				createSelector(shape, true);
-			}
-			// If the shape is a polygon, add its children to the
-			// list of selectable figures
-			if (shape instanceof GraphicsTriangle) { // TODO: change to polygon
-				// We know it's a GraphicsTriangle
-				GraphicsTriangle gPoly = (GraphicsTriangle)shape;
-				// Create a GraphicsPolygonChild for each child and add it
-				for (Shape child : gPoly.getShapesOfChildren()) {
-					// Get the brush for the GraphicsPolygonChild
-					Brush gChildBrush = StyleManager.getHighlightedFigureBrush();
-					// Get the name for the GraphicsPolygonChild. child.getName() will
-					// give us an Arc, whose name is 1 letter. That letter is the
-					// short-name of the angle that the arc represents. We need to get
-					// that angle's full name
-					String childName = Utils.getFullNameOfAngle(shape.getShape().getName(),
-							child.getName());
-					// Create the GraphicsPolygonChild
-					GraphicsPolygonChild gChild =
-							new GraphicsPolygonChild(gChildBrush, gPoly, childName);
-					// Add the GraphicsPolygonChild
-					polyChildren.add(gChild);
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean removeSelectableFigure(GraphicsShape<?> shape) {
-		// If successfully removed figure
-		if (selectables.remove(shape)) {
-			// If the figure is selected at the time of removal
-			if (shape.isSelected()) {
-				// Get the selector
-				Selector<?, ?> selForFigure = getSelectorForFigure(shape);
-				// Destroy the selector
-				destroySelector(selForFigure);
-			}
-			canvas.redraw();
-			return true;
-		}
-		return false;
-	}
-	
-	public List<GraphicsShape<?>> getSelectableFigures() {
-		return Collections.unmodifiableList(selectables);
-	}
-	
-	public List<Selector<?, ?>> getSelectors() {
-		return selectors;
-	}
-	
 	@Override
 	public void draw(Canvas c) {
 		// Draw the selection container onto the canvas without actually
@@ -336,6 +277,70 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				canvas.redraw();
 			}
 		}
+	}
+	
+	public boolean addSelectableFigure(GraphicsShape<?> shape) {
+		// If the shape was successfully added
+		if (selectables.add(shape)) {
+			// If the shape is already selected
+			if (shape.isSelected()) {
+				// Create a selector for it
+				createSelector(shape, true);
+			}
+			// If the shape is a polygon, add its children to the
+			// list of selectable figures
+			if (shape instanceof GraphicsTriangle) { // TODO: change to polygon
+				// We know it's a GraphicsTriangle
+				GraphicsTriangle gPoly = (GraphicsTriangle)shape;
+				addPolygonChildren(gPoly);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean removeSelectableFigure(GraphicsShape<?> shape) {
+		// If successfully removed figure
+		if (selectables.remove(shape)) {
+			// If the figure is selected at the time of removal
+			if (shape.isSelected()) {
+				// Get the selector
+				Selector<?, ?> selForFigure = getSelectorForFigure(shape);
+				// Destroy the selector
+				destroySelector(selForFigure);
+			}
+			
+			canvas.redraw();
+			return true;
+		}
+		return false;
+	}
+	
+	public List<GraphicsShape<?>> getSelectableFigures() {
+		return Collections.unmodifiableList(selectables);
+	}
+	
+	private void addPolygonChildren(GraphicsTriangle poly) {
+		// Create a GraphicsPolygonChild for each child and add it
+		for (Shape child : poly.getShapesOfChildren()) {
+			// Get the brush for the GraphicsPolygonChild
+			Brush gChildBrush = StyleManager.getHighlightedFigureBrush();
+			// Get the name for the GraphicsPolygonChild. child.getName() will
+			// give us an Arc, whose name is 1 letter. That letter is the
+			// short-name of the angle that the arc represents. We need to get
+			// that angle's full name
+			String childName = Utils.getFullNameOfAngle(poly.getShape().getName(),
+					child.getName());
+			// Create the GraphicsPolygonChild
+			GraphicsPolygonChild gChild =
+					new GraphicsPolygonChild(gChildBrush, poly, childName);
+			// Add the GraphicsPolygonChild
+			polyChildren.add(gChild);
+		}
+	}
+	
+	public List<Selector<?, ?>> getSelectors() {
+		return selectors;
 	}
 	
 	/**
