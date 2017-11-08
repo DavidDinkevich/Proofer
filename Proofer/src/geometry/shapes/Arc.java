@@ -65,12 +65,20 @@ public class Arc extends Vertex {
 	
 	@Override
 	public boolean containsPoint(Vec2 point, boolean includeScale) {
+		// Center of arc
 		Vec2 center = getCenter(includeScale);
-//		Vec2 pointFromCenter = Vec2.sub(point, center);
-//		final float pointHeadingRaw = pointFromCenter.getHeading();
-//		final float pointHeadingCorrected = pointHeadingRaw < 0f ?
-//				Utils.TWO_PI + pointHeadingRaw : pointHeadingRaw;
-		return Vec2.dist(point, center) < size.getWidth()/2;
+		// Vector FROM center of arc TO point
+		Vec2 pointFromCenter = Vec2.sub(point, center);
+		// Raw heading of pointFromCenter vector (raw = directly from getHeading() method)
+		final float pointHeadingRaw = pointFromCenter.getHeading();
+		// Convert the raw heading to angle-scale that the arc uses
+		final float pointHeadingCorrected = pointHeadingRaw < 0f ?
+				Utils.TWO_PI + pointHeadingRaw : pointHeadingRaw;
+		/*
+		 * Vector is < arc radius  AND  startAngle ≤ heading ≤ stopAngle
+		 */
+		return pointHeadingCorrected > startAngle && pointHeadingRaw <= stopAngle
+				&& Vec2.dist(point, center) <= size.getWidth()/2f;
 	}
 
 	public float getStartAngle() {
