@@ -239,8 +239,8 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	public void mouseReleased(Canvas c, MouseEvent e) {
 		// Erase the selection container (if it exists)
 		setDisplaySelectionContainer(false, true);
-		// Erase UI relation maker
-		setDisplayUIRelationMaker(false, true);
+		// Release UI relation maker
+		releaseUIRelationMaker(true); // true = redraw canvas
 	}
 	
 	@Override
@@ -655,63 +655,115 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		displayRelMaker = render;
 		if (redraw)
 			canvas.redraw();
+	}
+	
+	/**
+	 * "Release" the {@link UIRelationMaker}. This makes the {@link UIRelationMaker}
+	 * disappear, creates a {@link RelationPair} between the two figures
+	 * on which the end-points of the {@link UIRelationMaker} lie, and adds
+	 * the {@link RelationPair} to the {@link FigureRelationListPanel}.
+	 * @param redraw whether or not to redraw the canvas
+	 */
+	private void releaseUIRelationMaker(boolean redraw) {
 		/*
-		 * If render = false (we want to make the UIRelationMaker disappear,
-		 * we have to actually create a figure relation between the two figures
-		 * on which the end-points of the UIRelationMaker lie).
+		 * Because we're "releasing" the UIRelationMaker, we want to make it
+		 * disappear
 		 */
-		if (render == false) {
-			// Get the end-points of the UIRelationMaker 
-			List<Vec2> endpts = Arrays.asList(relMaker.getShape().getVertexLocations());
-			// Make UIRelationMaker disappear
-			for (Vertex v : relMaker.getShape().getVertices())
-				v.setCenter(Vec2.ZERO, true);
-			
-			/*
-			 * Compile a list of all of the figures in the diagram that can be
-			 * "connected"--a RelationPair can be made between them.
-			 * 
-			 * 		connectables = polygon children  +  diagram figures
-			 */
-			List<GraphicsShape<?>> connectables = new ArrayList<>(polyChildren);
-			connectables.addAll(canvas.getDiagramFigures());
-			
-			// Num of connectable figures
-			final int COUNT = connectables.size();
-			
-			// For each figure
-			for (int i = 0; i < COUNT; i++) {
-				// Get the shape of the figure
-				Shape shape0 = connectables.get(i).getShape();
-				// If the figure does NOT contain at least ONE of the UIRelationMaker's
+		setDisplayUIRelationMaker(false, redraw);
+		// Get the end-points of the UIRelationMaker 
+		List<Vec2> endpts = Arrays.asList(relMaker.getShape().getVertexLocations());
+		// Make UIRelationMaker disappear
+		for (Vertex v : relMaker.getShape().getVertices())
+			v.setCenter(Vec2.ZERO, true);
+		
+		/*
+		 * Compile a list of all of the figures in the diagram that can be
+		 * "connected"--a RelationPair can be made between them.
+		 * 
+		 * 		connectables = polygon children  +  diagram figures
+		 */
+		List<GraphicsShape<?>> connectables = new ArrayList<>(polyChildren);
+		connectables.addAll(canvas.getDiagramFigures());
+		
+		// Num of connectable figures
+		final int COUNT = connectables.size();
+		
+		// For each figure
+		for (int i = 0; i < COUNT; i++) {
+			// Get the the figure
+			GraphicsShape<?> shape0 = connectables.get(i);
+			// If the figure does NOT contain at least ONE of the UIRelationMaker's
+			// end-points
+			if (!shape0.getShape().containsAPointIn(endpts, true))
+				continue;
+			// For every other figure
+			for (int j = 0; j < COUNT; j++) {
+				// Get the second figure
+				GraphicsShape<?> shape1 = connectables.get(j);
+				// If the second figure is the same as the first, OR if the second
+				// figure does NOT contain at least ONE of the UIRelationMaker's
 				// end-points
-				if (!shape0.containsAPointIn(endpts, true))
+				if (i == j || !shape1.getShape().containsAPointIn(endpts, true))
 					continue;
-				// For every other figure
-				for (int j = 0; j < COUNT; j++) {
-					// Get the shape of the second figure
-					Shape shape1 = connectables.get(j).getShape();
-					// If the second figure is the same as the first, OR if the second
-					// figure does NOT contain at least ONE of the UIRelationMaker's
-					// end-points
-					if (i == j || !shape1.containsAPointIn(endpts, true))
-						continue;
-					// MAKE RELATION BETWEEN THE TWO FIGURES
-					ProofCustomizationPanel proofPanel = canvas.getProofCustomizationPanel();
-					// Get the FigureRelationListPanel
-					FigureRelationListPanel listPanel = proofPanel.getFigureRelationListPanel();
-					// Create the FigureRelation
-					FigureRelation rel = new FigureRelation(
-							FigureRelationType.CONGRUENT,
-							shape0,
-							shape1,
-							null // Null parent?
-					);
-					// Add the FigureRelation
-					listPanel.addFigureRelationPairPanel(new FigureRelationPanel(rel));
-					return; // No more work to do
-				}
+				// MAKE RELATION BETWEEN THE TWO FIGURES
+				ProofCustomizationPanel proofPanel = canvas.getProofCustomizationPanel();
+				// Get the FigureRelationListPanel
+				FigureRelationListPanel listPanel = proofPanel.getFigureRelationListPanel();
+				
+				String shape0Name = getFullNameOfFigure(shape0);
+				String shape1Name = getFullNameOfFigure(shape1);
+				
+				// Create the relation panel
+				FigureRelationPanel relPanel = new FigureRelationPanel(
+						FigureRelationType.CONGRUENT,
+						shape0Name,
+						shape1Name
+				);
+				
+				// Add the FigureRelation
+				listPanel.addFigureRelationPairPanel(relPanel);
+				return; // No more work to do
 			}
 		}
 	}
+	
+	/**
+	 * When getting the name of the angle that a {@link GraphicsPolygonAngle},
+	 * represents, we have to take some preliminary steps. This is because the
+	 * shape of a {@link GraphicsPolygonAngle} is an Arc, whose name is 1 letter.
+	 * That letter is the "short-name" of the angle that the arc represents. We
+	 * need to get that angle's full name.
+	 * <p>
+	 * This method will return the name of the given {@link GraphicsShape}, <i>and
+	 * if a {@link GraphicsPolygonAngle} is given, it will return the full name
+	 * of the angle represented by the {@link GraphicsPolygonAngle}.</i>
+	 * <p>
+	 * NOTE: If the given shape is a {@link GraphicsPolygonAngle}, the full name
+	 * returned will begin with the angle symbol.
+	 * <p>
+	 * This is primarily a convenience method for:
+	 * {@link InputManager#releaseUIRelationMaker(boolean)}
+	 * @param shape the shape whose name will be retrieved
+	 * @return the name of the given shape
+	 */
+	private String getFullNameOfFigure(GraphicsShape<?> shape) {
+		if (shape instanceof GraphicsPolygonAngle) {
+			GraphicsPolygonAngle gAngle = (GraphicsPolygonAngle) shape;
+			String parentName = gAngle.getParentPolygon().getShape().getName();
+			return Utils.ANGLE_SYMBOL + 
+					Utils.getFullNameOfAngle(parentName, gAngle.getShape().getName());
+		}
+		return shape.getShape().getName();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
