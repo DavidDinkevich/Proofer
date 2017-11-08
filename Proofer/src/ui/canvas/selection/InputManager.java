@@ -23,7 +23,6 @@ import ui.canvas.diagram.UIDiagramLayers;
 import ui.canvas.diagram.RenderList;
 
 import geometry.Vec2;
-import geometry.proofs.FigureRelation;
 import geometry.proofs.FigureRelationType;
 import geometry.shapes.Arc;
 import geometry.shapes.Polygon;
