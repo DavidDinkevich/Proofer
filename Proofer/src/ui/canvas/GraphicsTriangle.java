@@ -12,9 +12,6 @@ import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 import geometry.shapes.Shape;
 
-import ui.canvas.diagram.UIDiagramLayers;
-import ui.canvas.diagram.RenderList;
-
 import util.Utils;
 
 /**
@@ -22,11 +19,9 @@ import util.Utils;
  * @author David Dinkevich
  */
 public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
-	private List<GraphicsShape<?>> childrenToRender;
 
 	public GraphicsTriangle(Brush brush, Triangle shape) {
 		super(brush, shape);
-		childrenToRender = new ArrayList<>();
 	}
 	
 	public GraphicsTriangle(Triangle shape) {
@@ -44,24 +39,11 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 	public GraphicsTriangle(GraphicsTriangle other) {
 		super(other);
 		setShape(new Triangle(other.getShape()));
-		childrenToRender = new ArrayList<>(other.childrenToRender);
 	}
 	
 	@Override
 	public void draw(Canvas c) {
 		super.draw(c);
-	}
-	
-	private boolean childrenToRenderContains(String name) {
-		for (GraphicsShape<?> gShape : childrenToRender) {
-			if (gShape.getShape().isValidName(name))
-				return true;
-		}
-		return false;
-	}
-	
-	public int getRenderedFigureCount() {
-		return childrenToRender.size();
 	}
 	
 	public List<Shape> getShapesOfChildren() {
@@ -135,56 +117,5 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 			}
 		}
 		return null;
-	}
-	
-	/**
-	 * Get the child at the given point and add it to the given
-	 * {@link RenderList}
-	 * @param rList the {@link RenderList}
-	 * @param point the point at which the child lies
-	 * @return whether or not a child exists at the given point, the
-	 * child is not already part of this {@link GraphicsTriangle}'s internal
-	 * render-list, and this process was completed without problems.
-	 */
-	public boolean renderChildAtPoint(RenderList rList, Vec2 point) {
-		Shape comp = getChildAtPoint(point);
-		if (comp == null)
-			return false;
-		return renderChild(rList, comp.getName());
-	}
-	
-	public boolean renderChild(RenderList rList, String name) {
-		if (childrenToRenderContains(name))
-			return false;
-		Shape shape = getShapeOfChild(name);
-		if (shape instanceof Arc) {
-			// Create graphics arc
-			GraphicsArc gArc = new GraphicsArc(
-					StyleManager.getHighlightedFigureBrush(),
-					(Arc)shape
-			);
-			// Set layer of the graphics arc
-			gArc.setLayer(UIDiagramLayers.POLYGON_COMPONENT);
-								
-			// Render Child
-			childrenToRender.add(gArc);
-			// Add to render list
-			rList.addDrawable(gArc);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Empty this {@link GraphicsTriangle}'s internal render-list, and
-	 * remove all of the elements in the internal render-list from the
-	 * given {@link RenderList}
-	 * @param rList the {@link RenderList}
-	 */
-	public void eraseAllRenderedChildren(RenderList rList) {
-		for (int i = childrenToRender.size()-1; i >= 0; i--) {
-			rList.removeDrawable(childrenToRender.get(i));
-			childrenToRender.remove(i);
-		}
 	}
 }
