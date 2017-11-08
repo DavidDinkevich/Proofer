@@ -39,11 +39,16 @@ public class FigureRelationPanel extends JComponent {
 		add(getFigTextField1(), gbc);
 	}
 	
-	public FigureRelationPanel(FigureRelation relation) {
+	public FigureRelationPanel(FigureRelationType type, String fig0, String fig1) {
 		this();
-		getFigTextField0().setText(relation.getFigure0().toString());
-		getFigTextField1().setText(relation.getFigure1().toString());
-		getRelationBox().setSelectedItem(relation.getRelationType());
+		getFigTextField0().setText(fig0);
+		getFigTextField1().setText(fig1);
+		getRelationBox().setSelectedItem(type);
+	}
+	
+	public FigureRelationPanel(FigureRelation relation) {
+		this(relation.getRelationType(), relation.getFigure0().toString(),
+				relation.getFigure1().toString());
 	}
 	
 	@Override
