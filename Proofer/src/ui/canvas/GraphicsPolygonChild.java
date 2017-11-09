@@ -14,7 +14,7 @@ public abstract class GraphicsPolygonChild extends GraphicsShape<Shape> {
 	
 	public GraphicsPolygonChild(Brush brush, GraphicsTriangle tri, String childName) {
 		// Specify that we want to use the constructor that accepts a Shape object
-		super(brush, (Shape)tri.getShapeOfChild(childName));
+		super(brush, (Shape)tri.getShape().getChild(childName));
 		parentTri = tri;
 		setLayer(UIDiagramLayers.POLYGON_COMPONENT);
 	}
