@@ -15,16 +15,26 @@ import util.Utils;
 public class GraphicsPolygonAngle extends GraphicsPolygonChild {
 
 	public GraphicsPolygonAngle(Brush brush, GraphicsTriangle tri, String childName) {
-		super(brush, tri, childName);
+		super(brush, tri, validateGivenName(childName));
 	}
 
 	public GraphicsPolygonAngle(GraphicsTriangle poly, String childName) {
-		super(poly, childName);
+		super(poly, validateGivenName(childName));
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o) && o instanceof GraphicsPolygonAngle;
+	}
+	
+	/**
+	 * Make sure that given name is a valid name for an angle. If it isn't,
+	 * throw an IllegalArgumentException.
+	 */
+	private static String validateGivenName(String name) {
+		if (!Angle.isValidAngleName(name))
+			throw new IllegalArgumentException("Name is not valid for an Angle.");
+		return name;
 	}
 	
 	/**
