@@ -9,11 +9,11 @@ import geometry.proofs.Figure;
 
 import util.Utils;
 
-public final class Angle implements Figure {
+public final class Angle extends AbstractShape {
 	private Vertex[] vertices;
-	private String name = "";
 	
 	public Angle(List<Vertex> vertices) {
+		init();
 		this.vertices = new Vertex[3];
 		for (int i = 0; i < vertices.size() || i < 3; i++) {
 			if (i >= vertices.size())
@@ -21,10 +21,12 @@ public final class Angle implements Figure {
 			else
 				this.vertices[i] = vertices.get(i);
 		}
+		setCenter(vertices.get(1).getCenter(false), false);
 		syncNameWithVertexNames();
 	}
 	
 	public Angle(Vertex[] vertices) {
+		init();
 		this.vertices = new Vertex[3];
 		for (int i = 0; i < vertices.length || i < 3; i++) {
 			if (i >= vertices.length)
@@ -32,6 +34,7 @@ public final class Angle implements Figure {
 			else
 				this.vertices[i] = vertices[i];
 		}
+		setCenter(vertices[1].getCenter(false), false);
 		syncNameWithVertexNames();
 	}
 	
@@ -40,11 +43,13 @@ public final class Angle implements Figure {
 	}
 	
 	public Angle(String name) {
-		this.name = Utils.mergeStringsAndEnsureCapacity(3, 3, this.name, name);
+		init();
 		vertices = new Vertex[3];
 		for (int i = 0; i < vertices.length; i++) {
 			vertices[i] = new Vertex();
 		}
+		setCenter(vertices[1].getCenter(false), false);
+		setName(Utils.mergeStringsAndEnsureCapacity(3, 3, getName(), name));
 	}
 	
 	public Angle(Segment a, Segment b) {
@@ -56,8 +61,9 @@ public final class Angle implements Figure {
 	}
 	
 	public Angle(Angle other) {
-		name = other.getName();
 		vertices = Arrays.copyOf(other.vertices, other.vertices.length);
+		setName(other.getName());
+		setCenter(other.vertices[1].getCenter(false), false);
 	}
 	
 	private void syncNameWithVertexNames() {
@@ -65,7 +71,11 @@ public final class Angle implements Figure {
 		for (int i = 0; i < vertices.length; i++) {
 			b.append(vertices[i].getNameChar());
 		}
-		name = b.toString();
+		setName(b.toString());
+	}
+	
+	private void init() {
+		setNameLengthRange(3, 3, false);
 	}
 	
 	/**
@@ -87,12 +97,19 @@ public final class Angle implements Figure {
 		return isValidName(a.getName());
 	}
 	
-	@Override
-	public int hashCode() {
-		int result = 17;
-		result = 31 * result + name.hashCode();
+//	@Override
+//	public int hashCode() {
+//		int result = 17;
 //		result = 31 * result + vertices.hashCode();
-		return result;
+//		return result;
+//	}
+	
+	@Override
+	public boolean containsPoint(Vec2 point, boolean includeScale) {
+		// Center of arc
+		Vec2 center = getCenter(includeScale);
+		// TODO: finalize this
+		return Vec2.dist(point, center) <= 100f;
 	}
 	
 	/**
@@ -119,16 +136,11 @@ public final class Angle implements Figure {
 	
 	@Override
 	public void setName(String name) {
-		this.name = Utils.mergeStringsAndEnsureCapacity(3, 3, this.name, name);
+		super.setName(Utils.mergeStringsAndEnsureCapacity(3, 3, getName(), name));
 		// Name will definitely be 3 chars long because we ensured that capacity above
 		for (int i = 0; i < vertices.length; i++) {
 			vertices[i].setName(getName().charAt(i));
 		}
-	}
-	
-	@Override
-	public String getName() {
-		return name;
 	}
 	
 	@Override
@@ -138,7 +150,7 @@ public final class Angle implements Figure {
 	
 	@Override
 	public boolean isValidName(String name) {
-		return Figure.super.isValidName(name) && 
+		return super.isValidName(name) && 
 				getNameShort().charAt(0) == name.charAt(1);
 	}
 	
