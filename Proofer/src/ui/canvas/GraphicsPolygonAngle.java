@@ -1,6 +1,10 @@
 package ui.canvas;
 
+import geometry.shapes.Angle;
 import geometry.shapes.Arc;
+import geometry.shapes.Segment;
+import geometry.shapes.Shape;
+
 import util.Utils;
 
 /**
@@ -23,25 +27,31 @@ public class GraphicsPolygonAngle extends GraphicsPolygonChild {
 		return super.equals(o) && o instanceof GraphicsPolygonAngle;
 	}
 	
+	/**
+	 * The {@link Shape} of this {@link GraphicsPolygonAngle} is an {@link Angle}.
+	 * However, when we draw this object to a {@link Canvas}, we want to draw an
+	 * {@link Arc}, not an angle. This method derives an arc from the angle shape.
+	 * @return the arc
+	 */
+	private Arc getArcShape() {
+		// Get the name of the center vertex (it's in sync with the poly's name)
+		String vertName = getShape().getChildren().get(1).getName();
+		// Get segments adjacent to vertex
+		Segment[] adjSegs = getParentPolygon().getShape().getAdjacentSegments(vertName);
+		// The size of the arc
+		final float distToVert = Math.min(adjSegs[0].getLength(true), 
+				adjSegs[1].getLength(true)) * 0.2f;
+		// Create the arc
+		Arc arc = Utils.getArcBetween(adjSegs[0], adjSegs[1], distToVert * 2f);
+		// Set the name of the arc to the name of the vertex
+		arc.setName(vertName);
+		return arc;
+	}
+	
 	@Override
 	public void draw(Canvas c) {
 		super.draw(c);
-		// Get the name of the parent polygon
-		String parentPolyName = getParentPolygon().getShape().getName();
-		/*
-		 * Get the full name of this angle in the parent polygon.
-		 * This is necessary because we can't just use the name of
-		 * the shape (it's an arc, whose name is one char long). Therefore,
-		 * we must use a utility method to get the full name of the angle.
-		 */
-		String fullName = Utils.getFullNameOfAngle(parentPolyName, getShape().getName());
-		// Using the full name of the angle, get the child in the parent polygon
-		Arc newShape = getParentPolygon().getShapeOfChild(fullName);
-		if (newShape != null) {
-			// Update the shape (why not?)
-			setShape(newShape);
-			// Draw the arc
-			c.arc((Arc)getShape());
-		}
+		// Draw the arc
+		c.arc(getArcShape());
 	}
 }
