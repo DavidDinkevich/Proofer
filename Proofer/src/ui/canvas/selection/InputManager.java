@@ -23,11 +23,10 @@ import ui.canvas.diagram.UIDiagramLayers;
 import ui.canvas.diagram.RenderList;
 
 import geometry.Vec2;
+import geometry.proofs.Figure;
 import geometry.proofs.FigureRelationType;
-import geometry.shapes.Arc;
 import geometry.shapes.Polygon;
 import geometry.shapes.PolygonBuffer;
-import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
@@ -327,32 +326,24 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private void addPolygonChildren(GraphicsTriangle poly) {
 		// Create a GraphicsPolygonChild for each child and add it
-		for (Shape child : poly.getShapesOfChildren()) {
+		for (Figure child : poly.getShape().getChildren()) {
 			// Get the brush for the GraphicsPolygonChild
 			Brush gChildBrush = StyleManager.getHighlightedFigureBrush();
-			/*
-			 * In the case of Angle-children (in the Arc shape), create
-			 * a GraphicsPolygonAngle and add it to the polygon-children list
-			 */
-			if (child instanceof Arc) {
-				// Get the name for the GraphicsPolygonChild. child.getName() will
-				// give us an Arc, whose name is 1 letter. That letter is the
-				// short-name of the angle that the arc represents. We need to get
-				// that angle's full name
-				String childName = Utils.getFullNameOfAngle(poly.getShape().getName(),
-						child.getName());
-				// Create the GraphicsPolygonAngle
-				GraphicsPolygonAngle gAngle =
-						new GraphicsPolygonAngle(gChildBrush, poly, childName);
-				// Add the GraphicsPolygonAngle
-				polyChildren.add(gAngle);
-			}			
+			// Ask the graphics polygon for the graphics child for the child's name
+			GraphicsPolygonChild gChild = poly.getGraphicsChild(child.getName());
+			// Safety
+			if (gChild == null)
+				continue;
+			// Set brush
+			gChild.setBrush(gChildBrush);
+			// Add the graphics child
+			polyChildren.add(gChild);
 		}
 	}
 	
 	private void removePolygonChildren(GraphicsTriangle poly) {
 		// For each of the polygon's children
-		for (Shape child : poly.getShapesOfChildren()) {
+		for (Figure child : poly.getShape().getChildren()) {
 			// For each element in the polygon-children list
 			for (int i = polyChildren.size()-1; i >= 0; i--) {
 				// If the current element in polygon-children list is one of
