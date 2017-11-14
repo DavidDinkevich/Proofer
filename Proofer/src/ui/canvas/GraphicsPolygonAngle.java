@@ -52,7 +52,7 @@ public class GraphicsPolygonAngle extends GraphicsPolygonChild {
 		final float distToVert = Math.min(adjSegs[0].getLength(true), 
 				adjSegs[1].getLength(true)) * 0.2f;
 		// Create the arc
-		Arc arc = Utils.getArcBetween(adjSegs[0], adjSegs[1], distToVert * 2f);
+		Arc arc = Utils.getArc(adjSegs[0], adjSegs[1], distToVert * 2f);
 		// Set the name of the arc to the name of the vertex
 		arc.setName(vertName);
 		return arc;

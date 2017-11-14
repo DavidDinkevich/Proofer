@@ -326,7 +326,7 @@ public final class Utils {
 	 * @param arcSize the size of the arc (the width and height)
 	 * @return the {@link Arc}
 	 */
-	public static Arc getArcBetween(Segment a, Segment b, float arcSize) {
+	public static Arc getArc(Segment a, Segment b, float arcSize) {
 		List<Vertex> angle = getAngleBetween(a, b);
 		Vec2 otherVert0 = angle.get(0).getCenter(true);
 		Vec2 otherVert1 = angle.get(2).getCenter(true);
