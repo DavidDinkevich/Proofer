@@ -37,6 +37,29 @@ public abstract class GraphicsPolygonChild extends GraphicsShape<Shape> {
 		result = 31 * result + parentTri.hashCode();
 		return result;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see ui.canvas.GraphicsShape#getShape()
+	 * 
+	 * We're overriding this method because this class uses the
+	 * Figure.getChild() method. We cannot guarantee that the
+	 * getChild() method will return a child that updates its
+	 * location and size in relation to the figure. As a result,
+	 * we have to make sure that when accessing the shape of this
+	 * GraphicsPolygonChild, the shape returned is the most updated
+	 * version of the child.
+	 */
+	private Shape updateShape(String shapeName) {
+		setShape((Shape)parentTri.getShape().getChild(shapeName));
+		return super.getShape();
+	}
+	
+	@Override
+	public Shape getShape() {
+		String shapeName = super.getShape().getName();
+		return updateShape(shapeName);
+	}
 	
 	public GraphicsTriangle getParentPolygon() {
 		return parentTri;
