@@ -7,7 +7,6 @@ import processing.event.MouseEvent;
 import ui.canvas.Brush;
 import ui.canvas.Canvas;
 import ui.canvas.Drawable;
-import ui.canvas.GraphicsPolygonAngle;
 import ui.canvas.GraphicsPolygonChild;
 import ui.canvas.GraphicsRectEllipse;
 import ui.canvas.GraphicsShape;
@@ -34,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import util.Utils;
 
 /**
  * Controls and manages selections made on a {@link DiagramCanvas}.
@@ -594,7 +591,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private void highlightFigures() {
 		// Mouse position
 		Vec2 mouse = canvas.getMouseLocOnGrid();
-		
+				
 		// For each graphics polygon child
 		for (GraphicsPolygonChild child : polyChildren) {
 			// If the mouse is hovering over the child
@@ -700,14 +697,11 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				// Get the FigureRelationListPanel
 				FigureRelationListPanel listPanel = proofPanel.getFigureRelationListPanel();
 				
-				String shape0Name = getFullNameOfFigure(shape0);
-				String shape1Name = getFullNameOfFigure(shape1);
-				
 				// Create the relation panel
 				FigureRelationPanel relPanel = new FigureRelationPanel(
 						FigureRelationType.CONGRUENT,
-						shape0Name,
-						shape1Name
+						shape0.toString(),
+						shape1.toString()
 				);
 				
 				// Add the FigureRelation
@@ -716,44 +710,4 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			}
 		}
 	}
-	
-	/**
-	 * When getting the name of the angle that a {@link GraphicsPolygonAngle},
-	 * represents, we have to take some preliminary steps. This is because the
-	 * shape of a {@link GraphicsPolygonAngle} is an Arc, whose name is 1 letter.
-	 * That letter is the "short-name" of the angle that the arc represents. We
-	 * need to get that angle's full name.
-	 * <p>
-	 * This method will return the name of the given {@link GraphicsShape}, <i>and
-	 * if a {@link GraphicsPolygonAngle} is given, it will return the full name
-	 * of the angle represented by the {@link GraphicsPolygonAngle}.</i>
-	 * <p>
-	 * NOTE: If the given shape is a {@link GraphicsPolygonAngle}, the full name
-	 * returned will begin with the angle symbol.
-	 * <p>
-	 * This is primarily a convenience method for:
-	 * {@link InputManager#releaseUIRelationMaker(boolean)}
-	 * @param shape the shape whose name will be retrieved
-	 * @return the name of the given shape
-	 */
-	private String getFullNameOfFigure(GraphicsShape<?> shape) {
-		if (shape instanceof GraphicsPolygonAngle) {
-			GraphicsPolygonAngle gAngle = (GraphicsPolygonAngle) shape;
-			String parentName = gAngle.getParentPolygon().getShape().getName();
-			return Utils.ANGLE_SYMBOL + 
-					Utils.getFullNameOfAngle(parentName, gAngle.getShape().getName());
-		}
-		return shape.getShape().getName();
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
