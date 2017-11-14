@@ -14,12 +14,12 @@ import util.Utils;
  */
 public class GraphicsPolygonAngle extends GraphicsPolygonChild {
 
-	public GraphicsPolygonAngle(Brush brush, GraphicsTriangle tri, String childName) {
-		super(brush, tri, validateGivenName(childName));
+	public GraphicsPolygonAngle(Brush brush, GraphicsTriangle tri, String angleName) {
+		super(brush, tri, validateGivenName(angleName));
 	}
 
-	public GraphicsPolygonAngle(GraphicsTriangle poly, String childName) {
-		super(poly, validateGivenName(childName));
+	public GraphicsPolygonAngle(GraphicsTriangle poly, String angleName) {
+		super(poly, validateGivenName(angleName));
 	}
 
 	@Override
