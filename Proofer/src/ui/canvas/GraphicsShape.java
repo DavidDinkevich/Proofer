@@ -48,7 +48,7 @@ implements Drawable, Selectable {
 		if (!(o instanceof GraphicsShape))
 			return false;
 		GraphicsShape<?> other = (GraphicsShape<?>)o;
-		return brush.equals(other.brush) && shape.equals(other.shape);
+		return getBrush().equals(other.getBrush()) && getShape().equals(other.getShape());
 	}
 	
 	@Override
