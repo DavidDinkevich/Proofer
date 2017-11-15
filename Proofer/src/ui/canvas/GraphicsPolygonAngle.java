@@ -1,5 +1,6 @@
 package ui.canvas;
 
+import geometry.Dimension;
 import geometry.shapes.Angle;
 import geometry.shapes.Arc;
 import geometry.shapes.Segment;
@@ -12,7 +13,7 @@ import util.Utils;
  * Can be rendered to the screen by the {@link Drawable#draw(Canvas)} method.
  * @author David Dinkevich
  */
-public class GraphicsPolygonAngle extends GraphicsPolygonChild {
+public class GraphicsPolygonAngle extends GraphicsPolygonChild<Angle> {
 
 	public GraphicsPolygonAngle(Brush brush, GraphicsTriangle tri, String angleName) {
 		super(brush, tri, validateGivenName(angleName));
@@ -48,14 +49,15 @@ public class GraphicsPolygonAngle extends GraphicsPolygonChild {
 		String vertName = getShape().getChildren().get(1).getName();
 		// Get segments adjacent to vertex
 		Segment[] adjSegs = getParentPolygon().getShape().getAdjacentSegments(vertName);
-		// The size of the arc
-		final float distToVert = Math.min(adjSegs[0].getLength(true), 
-				adjSegs[1].getLength(true)) * 0.2f;
-		// Create the arc
-		Arc arc = Utils.getArc(adjSegs[0], adjSegs[1], distToVert * 2f);
-		// Set the name of the arc to the name of the vertex
-		arc.setName(vertName);
-		return arc;
+		// Lengths of segments
+		final float s0Len = adjSegs[0].getLength(true);
+		final float s1Len = adjSegs[1].getLength(true);
+		// Fraction of shorter segment that will be arc size
+		final float fraction = 0.4f;
+		// The size of the arc: shorter segment * 0.2
+		final float arcSize = Math.min(s0Len, s1Len) * fraction;
+		// Derive arc
+		return Utils.getArc(getShape(), new Dimension(arcSize));
 	}
 	
 	@Override

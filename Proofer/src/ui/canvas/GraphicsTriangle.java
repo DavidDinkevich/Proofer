@@ -35,9 +35,9 @@ public class GraphicsTriangle extends GraphicsPolygon<Triangle> {
 		super.draw(c);
 	}
 	
-	public GraphicsPolygonChild getGraphicsChild(String name) {
+	public GraphicsPolygonChild<?> getGraphicsChild(String name) {
 		if (Angle.isValidAngleName(name)) {
-			GraphicsPolygonChild child = new GraphicsPolygonAngle(this, name);
+			GraphicsPolygonChild<?> child = new GraphicsPolygonAngle(this, name);
 			return child;
 		}
 		return null;

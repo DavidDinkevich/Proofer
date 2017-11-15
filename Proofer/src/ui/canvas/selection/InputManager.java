@@ -69,7 +69,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	// Highlighting polygon children
 	
-	private List<GraphicsPolygonChild> polyChildren;
+	private List<GraphicsPolygonChild<?>> polyChildren;
 	
 	public InputManager(DiagramCanvas canvas) {
 		this.canvas = canvas;
@@ -327,7 +327,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			// Get the brush for the GraphicsPolygonChild
 			Brush gChildBrush = StyleManager.getHighlightedFigureBrush();
 			// Ask the graphics polygon for the graphics child for the child's name
-			GraphicsPolygonChild gChild = poly.getGraphicsChild(child.getName());
+			GraphicsPolygonChild<?> gChild = poly.getGraphicsChild(child.getName());
 			// Safety
 			if (gChild == null)
 				continue;
@@ -593,7 +593,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		Vec2 mouse = canvas.getMouseLocOnGrid();
 				
 		// For each graphics polygon child
-		for (GraphicsPolygonChild child : polyChildren) {
+		for (GraphicsPolygonChild<?> child : polyChildren) {
 			// If the mouse is hovering over the child
 			if (child.getShape().containsPoint(mouse, true)) {
 				// If the child hovered over is not already in the render list
