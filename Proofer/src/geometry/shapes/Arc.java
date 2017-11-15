@@ -75,9 +75,9 @@ public class Arc extends Vertex {
 		final float pointHeadingCorrected = pointHeadingRaw < 0f ?
 				Utils.TWO_PI + pointHeadingRaw : pointHeadingRaw;
 		/*
-		 * Vector is < arc radius  AND  startAngle ≤ heading ≤ stopAngle
+		 * Vector is <= arc radius  AND  startAngle <= heading <= stopAngle
 		 */
-		return pointHeadingCorrected > startAngle && pointHeadingRaw <= stopAngle
+		return pointHeadingCorrected >= startAngle && pointHeadingCorrected <= stopAngle
 				&& Vec2.dist(point, center) <= size.getWidth()/2f;
 	}
 
