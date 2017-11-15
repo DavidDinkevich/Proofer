@@ -320,17 +320,20 @@ public final class Utils {
 	}
 	
 	/**
-	 * Get the {@link Arc} formed between two intersecting {@link Segment}s.
-	 * @param a the first segment
-	 * @param b the second segment
-	 * @param arcSize the size of the arc (the width and height)
+	 * Get the {@link Arc} formed in the given list of {@link Vertex}es.
+	 * @param verts the list of vertices from which the {@link Arc} will
+	 * be derived.
+	 * @param arcSize the size of the {@link Arc}
 	 * @return the {@link Arc}
 	 */
-	public static Arc getArc(Segment a, Segment b, float arcSize) {
-		List<Vertex> angle = getAngleBetween(a, b);
-		Vec2 otherVert0 = angle.get(0).getCenter(true);
-		Vec2 otherVert1 = angle.get(2).getCenter(true);
-		Vec2 vertex = angle.get(1).getCenter(true);
+	public static Arc getArc(List<Vertex> verts, Dimension arcSize) {
+		// Ensure size of array is 3
+		if (verts.size() != 3) {
+			throw new IllegalArgumentException("Length of list of vertices must = 3!!!");
+		}
+		Vec2 otherVert0 = verts.get(0).getCenter(true);
+		Vec2 otherVert1 = verts.get(2).getCenter(true);
+		Vec2 vertex = verts.get(1).getCenter(true);
 		
 		// Get the headings of both of the segments
 		final float arcVert0Heading = Vec2.sub(otherVert0, vertex).getHeading();
@@ -349,7 +352,7 @@ public final class Utils {
 		 * We can't just use the startHeading as it is for the start angle of the arc.
 		 * This is because Vec2.getHeading() returns an angle on the following scale:
 		 * 			 -PI/2
-		 * 		2PI		     0
+		 * 		 PI		     0
 		 * 			  PI/2
 		 * However, the Arc class uses a different scale:
 		 * 			 1.5 PI
@@ -366,6 +369,67 @@ public final class Utils {
 		final float endAngle = startAngle + angleBetween;
 		
 		// Create the arc
-		return new Arc(vertex, new Dimension(arcSize), startAngle, endAngle);
+		return new Arc(vertex, arcSize, startAngle, endAngle);
+	}
+	
+	/**
+	 * Get the {@link Arc} formed in the given {@link Angle}.
+	 * <p>
+	 * The size of the arc is the length of the shorter side of the
+	 * given {@link Angle}
+	 * @param angle the {@link Angle} from which the {@link Arc}
+	 * will be derived.
+	 * @return the {@link Arc}
+	 */
+	public static Arc getArc(List<Vertex> verts) {
+		// Middle vertex
+		Vertex middle = verts.get(1);
+		// A side of the angle
+		Segment s0 = new Segment(middle, verts.get(0));
+		// A side of the angle
+		Segment s1 = new Segment(middle, verts.get(2));
+		// Get lengths of sides
+		final float s0Len = s0.getLength(true);
+		final float s1Len = s1.getLength(true);
+		// Arc size is length of shorter side of angle
+		Dimension arcSize = new Dimension(Math.min(s0Len, s1Len));
+		return getArc(verts, arcSize);
+	}
+	
+	/**
+	 * Get the {@link Arc} formed in the given {@link Angle}.
+	 * @param angle the {@link Angle} from which the {@link Arc}
+	 * will be derived.
+	 * @param arcSize the size of the {@link Arc}
+	 * @return the {@link Arc}
+	 */
+	public static Arc getArc(Angle angle, Dimension arcSize) {
+		return getArc(angle.getVertices(), arcSize);
+	}
+	
+	/**
+	 * Get the {@link Arc} formed in the given {@link Angle}.
+	 * <p>
+	 * The size of the arc is the length of the shorter side of the
+	 * given {@link Angle}
+	 * @param angle the {@link Angle} from which the {@link Arc}
+	 * will be derived.
+	 * @return the {@link Arc}
+	 */
+	public static Arc getArc(Angle angle) {
+		// Vertices of angles
+		return getArc(angle.getVertices());
+	}
+	
+	/**
+	 * Get the {@link Arc} formed between two intersecting {@link Segment}s.
+	 * @param a the first segment
+	 * @param b the second segment
+	 * @param arcSize the size of the arc (the width and height)
+	 * @return the {@link Arc}
+	 */
+	public static Arc getArc(Segment a, Segment b, Dimension arcSize) {
+		List<Vertex> verts = getAngleBetween(a, b);
+		return getArc(verts, arcSize);
 	}
 }
