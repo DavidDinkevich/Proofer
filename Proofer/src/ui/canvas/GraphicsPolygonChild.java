@@ -9,12 +9,13 @@ import ui.canvas.diagram.UIDiagramLayers;
  * Can be rendered to the screen by the {@link Drawable#draw(Canvas)} method.
  * @author David Dinkevich
  */
-public abstract class GraphicsPolygonChild extends GraphicsShape<Shape> {
+public abstract class GraphicsPolygonChild<T extends Shape> extends GraphicsShape<T> {
 	private GraphicsTriangle parentTri;
 	
+	@SuppressWarnings("unchecked")
 	public GraphicsPolygonChild(Brush brush, GraphicsTriangle tri, String childName) {
 		// Specify that we want to use the constructor that accepts a Shape object
-		super(brush, (Shape)tri.getShape().getChild(childName));
+		super(brush, (T)tri.getShape().getChild(childName));
 		parentTri = tri;
 		setLayer(UIDiagramLayers.POLYGON_COMPONENT);
 	}
@@ -27,7 +28,7 @@ public abstract class GraphicsPolygonChild extends GraphicsShape<Shape> {
 	public boolean equals(Object o) {
 		if (!(o instanceof GraphicsPolygonChild))
 			return false;
-		GraphicsPolygonChild p = (GraphicsPolygonChild)o;
+		GraphicsPolygonChild<?> p = (GraphicsPolygonChild<?>)o;
 		return super.equals(o) && parentTri.equals(p.parentTri);
 	}
 	
@@ -50,13 +51,14 @@ public abstract class GraphicsPolygonChild extends GraphicsShape<Shape> {
 	 * GraphicsPolygonChild, the shape returned is the most updated
 	 * version of the child.
 	 */
-	private Shape updateShape(String shapeName) {
-		setShape((Shape)parentTri.getShape().getChild(shapeName));
+	@SuppressWarnings("unchecked")
+	private T updateShape(String shapeName) {
+		setShape((T)parentTri.getShape().getChild(shapeName));
 		return super.getShape();
 	}
 	
 	@Override
-	public Shape getShape() {
+	public T getShape() {
 		String shapeName = super.getShape().getName();
 		return updateShape(shapeName);
 	}
