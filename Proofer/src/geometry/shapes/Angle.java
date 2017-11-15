@@ -105,11 +105,9 @@ public final class Angle extends AbstractShape {
 //	}
 	
 	@Override
-	public boolean containsPoint(Vec2 point, boolean includeScale) {
-		// Center of arc
-		Vec2 center = getCenter(includeScale);
-		// TODO: finalize this
-		return Vec2.dist(point, center) <= 100f;
+	public boolean containsPoint(Vec2 point, boolean toScale) {
+		// Derive an Arc from this Angle and use its containsPoint()
+		return Utils.getArc(this).containsPoint(point, toScale);
 	}
 	
 	/**
@@ -158,6 +156,14 @@ public final class Angle extends AbstractShape {
 		return String.valueOf(getName().charAt(1));
 	}
 
+	/**
+	 * Convenient way of getting the vertices of this {@link Angle}.
+	 * @return the vertices of this {@link Angle}
+	 */
+	public List<Vertex> getVertices() {
+		return Arrays.asList(vertices);
+	}
+	
 	public List<Figure> getChildren() {
 		return Arrays.asList(vertices);
 	}
