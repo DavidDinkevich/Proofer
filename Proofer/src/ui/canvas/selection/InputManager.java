@@ -653,6 +653,14 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	 */
 	private void releaseUIRelationMaker(boolean redraw) {
 		/*
+		 * After the UIRelationMaker is released, we set both end-points to [0, 0]
+		 * (this will make the length of the UIRelationMaker = 0).
+		 * Therefore, if the length of the UIRelationMaker is 0, then we can tell
+		 * that the UIRelationMaker has NOT been dragged and cannot be released.
+		 */
+		if (relMaker.getShape().getLength(false) == 0f)
+			return;
+		/*
 		 * Because we're "releasing" the UIRelationMaker, we want to make it
 		 * disappear
 		 */
