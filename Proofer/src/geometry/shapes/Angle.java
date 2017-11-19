@@ -157,6 +157,16 @@ public final class Angle extends AbstractShape {
 	}
 
 	/**
+	 * Get the 2 sides of this {@link Angle}.
+	 */
+	public Segment[] getSides() {
+		return new Segment[] {
+				new Segment(vertices[1], vertices[0]),
+				new Segment(vertices[1], vertices[2])
+		};
+	}
+	
+	/**
 	 * Convenient way of getting the vertices of this {@link Angle}.
 	 * @return the vertices of this {@link Angle}
 	 */
