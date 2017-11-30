@@ -61,9 +61,14 @@ public final class Angle extends AbstractShape {
 	}
 	
 	public Angle(Angle other) {
-		vertices = Arrays.copyOf(other.vertices, other.vertices.length);
-		setName(other.getName());
-		setCenter(other.vertices[1].getCenter(false), false);
+		// Copy vertices
+		vertices = new Vertex[3];
+		for (int i = 0; i < vertices.length; i++) {
+			vertices[i] = new Vertex(other.vertices[i]);
+		}
+		
+		super.setName(other.getName());
+		super.setCenter(other.vertices[1].getCenter(false), false);
 	}
 	
 	private void syncNameWithVertexNames() {
