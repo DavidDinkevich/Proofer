@@ -339,7 +339,7 @@ public final class Utils {
 		final float arcVert0Heading = Vec2.sub(otherVert0, vertex).getHeading();
 		final float arcVert1Heading = Vec2.sub(otherVert1, vertex).getHeading();
 		// Determine which segment's heading will be used for the arc's start angle
-		float startHeading;
+		final float startHeading;
 		if (arcVert0Heading > 0f) {
 			startHeading = Math.abs(arcVert0Heading) < Math.abs(arcVert1Heading)
 					? arcVert0Heading : arcVert1Heading;
