@@ -21,7 +21,7 @@ public final class Angle extends AbstractShape {
 			else
 				this.vertices[i] = vertices.get(i);
 		}
-		setCenter(vertices.get(1).getCenter(false), false);
+		super.setCenter(vertices.get(1).getCenter(false), false);
 		syncNameWithVertexNames();
 	}
 	
@@ -34,7 +34,7 @@ public final class Angle extends AbstractShape {
 			else
 				this.vertices[i] = vertices[i];
 		}
-		setCenter(vertices[1].getCenter(false), false);
+		super.setCenter(vertices[1].getCenter(false), false);
 		syncNameWithVertexNames();
 	}
 	
@@ -48,7 +48,7 @@ public final class Angle extends AbstractShape {
 		for (int i = 0; i < vertices.length; i++) {
 			vertices[i] = new Vertex();
 		}
-		setCenter(vertices[1].getCenter(false), false);
+		super.setCenter(vertices[1].getCenter(false), false);
 		setName(Utils.mergeStringsAndEnsureCapacity(3, 3, getName(), name));
 	}
 	
@@ -59,7 +59,7 @@ public final class Angle extends AbstractShape {
 	public Angle() {
 		this("\0\0\0");
 	}
-	
+
 	public Angle(Angle other) {
 		// Copy vertices
 		vertices = new Vertex[3];
@@ -102,12 +102,42 @@ public final class Angle extends AbstractShape {
 		return isValidName(a.getName());
 	}
 	
-//	@Override
-//	public int hashCode() {
-//		int result = 17;
-//		result = 31 * result + vertices.hashCode();
-//		return result;
-//	}
+	@Override
+	public void setCenter(Vec2 loc, boolean includeScale) {
+		// Check to avoid unnecessary work
+		if (loc.equals(getCenter(includeScale)))
+			return;
+		// Store old location
+		Vec2 old = super.getCenter(includeScale);
+		// Update the locations of the vertices
+		Vec2 diff = Vec2.sub(loc, old);
+		for (Vertex v : getVertices()) {
+			v.setCenter(Vec2.add(v.getCenter(includeScale), diff), includeScale);
+		}
+		// The center of an Angle is the middle vertex, so update it
+		vertices[1].setCenter(loc, includeScale);
+		// Update internal center variable
+		super.setCenter(loc, includeScale);
+	}
+	
+	@Override
+	public Vec2 getCenter(boolean includeScale) {
+		// Update the internal center variable
+		super.setCenter(vertices[1].getCenter(includeScale), includeScale);
+		return super.getCenter(includeScale);
+	}
+	
+	@Override
+	public void setScale(Vec2 scale, Vec2 dilationPoint) {
+//		if (scale.equals(getScale()) || dilationPoint.equals(getDilationPoint())) {
+//			return;
+//		}
+		super.setScale(scale, dilationPoint);
+		
+		for (Vertex v : getVertices()) {
+			v.setScale(getScale(), getDilationPoint());
+		}
+	}
 	
 	@Override
 	public boolean containsPoint(Vec2 point, boolean toScale) {
