@@ -1,6 +1,5 @@
 package ui.canvas;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import geometry.Dimension;
@@ -43,13 +42,34 @@ public class GraphicsPolygonAngle extends GraphicsPolygonChild<Angle> {
 		return name;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * The goal of overriding this method is to provide a <i>smaller</i>
+	 * version of this Angle. We do this by shrinking the "sides" of the Angle.
+	 * @see ui.canvas.GraphicsPolygonChild#getShape()
+	 */
 	@Override
 	public Angle getShape() {
+		// Make a copy of this Angle
 		Angle copy = new Angle(super.getShape());
-		Vec2 loc0 = copy.getVertices().get(0).getCenter(true);
-		copy.getVertices().get(0).setCenter(loc0.valueAtMag(0.4f), true);
-		Vec2 loc1 = copy.getVertices().get(2).getCenter(true);
-		copy.getVertices().get(2).setCenter(loc1.valueAtMag(0.4f), true);
+		// Get the center (middle vertex) of this Angle
+		Vec2 center = copy.getCenter(true);
+		// Get the vertices
+		List<Vertex> verts = copy.getVertices();
+		// Get a vector from the center of this Angle to one of the outer vertices
+		Vec2.Mutable seg0 = 
+				new Vec2.Mutable(Vec2.sub(verts.get(0).getCenter(true), center));
+		Vec2.Mutable seg1 = 
+				new Vec2.Mutable(Vec2.sub(verts.get(2).getCenter(true), center));
+		// Fraction of the segment to preserve after we shrink it
+		final float fraction = 0.4f;
+		// Shrink the vectors that we just got
+		seg0.setMag(seg0.getMag() * fraction);
+		seg1.setMag(seg1.getMag() * fraction);
+		// Update the locations of the copy's vertices
+		copy.getVertices().get(0).setCenter(Vec2.add(center, seg0), true);
+		copy.getVertices().get(2).setCenter(Vec2.add(center, seg1), true);
+		// Return the copy
 		return copy;
 	}
 	
@@ -60,7 +80,7 @@ public class GraphicsPolygonAngle extends GraphicsPolygonChild<Angle> {
 	 * @return the arc
 	 */
 	private Arc getArcShape() {
-		// Get the name of the center vertex (it's in sync with the poly's name)
+		// Get the name of this Angle's center vertex (it's in sync with the poly's vertices)
 		String vertName = super.getShape().getChildren().get(1).getName();
 		// Get segments adjacent to vertex
 		Segment[] adjSegs = getParentPolygon().getShape().getAdjacentSegments(vertName);
