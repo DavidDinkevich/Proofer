@@ -336,18 +336,10 @@ public final class Utils {
 		Vec2 vertex = verts.get(1).getCenter(true);
 		
 		// Get the headings of both of the segments
-		final float arcVert0Heading = Vec2.sub(otherVert0, vertex).getHeading();
-		final float arcVert1Heading = Vec2.sub(otherVert1, vertex).getHeading();
-		// Determine which segment's heading will be used for the arc's start angle
-		final float startHeading;
-		if (arcVert0Heading > 0f) {
-			startHeading = Math.abs(arcVert0Heading) < Math.abs(arcVert1Heading)
-					? arcVert0Heading : arcVert1Heading;
-		} else {
-			startHeading = Math.abs(arcVert0Heading) > Math.abs(arcVert1Heading)
-					? arcVert0Heading : arcVert1Heading;
-		}
+		float arcVert0Heading = Vec2.sub(otherVert0, vertex).getHeading();
+		float arcVert1Heading = Vec2.sub(otherVert1, vertex).getHeading();
 		
+		System.out.println(radiansToDegrees(arcVert0Heading) + ", " + radiansToDegrees(arcVert1Heading));
 		/*
 		 * We can't just use the startHeading as it is for the start angle of the arc.
 		 * This is because Vec2.getHeading() returns an angle on the following scale:
@@ -360,13 +352,26 @@ public final class Utils {
 		 * 			  PI/2
 		 * We have to account for this.
 		 */
-		final float startAngle = startHeading < 0f ? Utils.TWO_PI + startHeading 
-				: startHeading;
+		arcVert0Heading = arcVert0Heading < 0f ? Utils.TWO_PI + arcVert0Heading 
+				: arcVert0Heading;
+		arcVert1Heading = arcVert1Heading < 0f ? Utils.TWO_PI + arcVert1Heading 
+				: arcVert1Heading;
+
+		final float startAngle = Math.min(arcVert0Heading, arcVert1Heading);
+		
+		
+//		System.err.println(radiansToDegrees(arcVert0Heading) + ", " + radiansToDegrees(arcVert1Heading));
+		
 		// Get the angle between the two segments
-		final float angleBetween = Vec2.angleBetween(
+		float angleBetween = Vec2.angleBetween(
 				Vec2.sub(otherVert0, vertex), Vec2.sub(otherVert1, vertex));
+		
 		// The end angle
-		final float endAngle = startAngle + angleBetween;
+		float endAngle = startAngle + angleBetween;
+		
+		if (angleBetween > degreesToRadians(90)) {
+			System.out.println(radiansToDegrees(startAngle) + ", " + radiansToDegrees(endAngle));
+		}
 		
 		// Create the arc
 		return new Arc(vertex, arcSize, startAngle, endAngle);
