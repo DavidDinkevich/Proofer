@@ -357,23 +357,22 @@ public final class Utils {
 		arcVert1Heading = arcVert1Heading < 0f ? Utils.TWO_PI + arcVert1Heading 
 				: arcVert1Heading;
 		
-		final float startAngle = Math.min(arcVert0Heading, arcVert1Heading);
-
-		// Get the angle between the two segments
-		float angleBetween = Vec2.angleBetween(
-				Vec2.sub(otherVert0, vertex), Vec2.sub(otherVert1, vertex));
+		/*
+		 * Decide which segment heading will be the starting angle
+		 */
 		
-		// The end angle
-		float endAngle = startAngle + angleBetween;
+		float startAngle = Math.min(arcVert0Heading, arcVert1Heading);
+		float endAngle = Math.max(arcVert0Heading, arcVert1Heading);
 				
-//		float angleBetween1 = arcVert1Heading - arcVert0Heading;
-		
-//		if (angleBetween1 > angleBetween) {
-//			return new Arc(vertex, arcSize, -(TWO_PI-arcVert1Heading), arcVert0Heading);
-//		}
-		
+		if (endAngle - startAngle > PI) {
+			final float temp = startAngle;
+			startAngle = endAngle;
+			endAngle = temp == 0f ? TWO_PI : temp; // Replace angle 0 with angle 360
+		}
+				
 		// Create the arc
-		return new Arc(vertex, arcSize, startAngle, endAngle);
+		Arc arc = new Arc(vertex, arcSize, startAngle, endAngle);
+		return arc;
 	}
 	
 	/**
