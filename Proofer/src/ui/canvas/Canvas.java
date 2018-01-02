@@ -249,6 +249,10 @@ public class Canvas extends PApplet {
 				start, stop, mode);
 	}
 	
+	public void arc(Vec2 loc, Dimension size, float start, float stop) {
+		arc(loc, size, start, stop, PConstants.PIE);
+	}
+	
 	public void arc(Arc arc) {
 		arc(arc.getCenter(true), arc.getSize(), arc.getStartAngle(), arc.getStopAngle(),
 				arc.getMode());
