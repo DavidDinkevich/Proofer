@@ -11,7 +11,7 @@ public class Arc extends Vertex {
 	private float startAngle;
 	private float stopAngle;
 	private int mode;
-		
+			
 	public Arc(Vec2 loc, Dimension size, float startAngle, float stopAngle, int mode) {
 		super(loc);
 		this.size = new Dimension.Mutable(size);
@@ -69,16 +69,31 @@ public class Arc extends Vertex {
 		Vec2 center = getCenter(includeScale);
 		// Vector FROM center of arc TO point
 		Vec2 pointFromCenter = Vec2.sub(point, center);
+		
+		// DETERMINE THE HEADING OF THE MOUSE
 		// Raw heading of pointFromCenter vector (raw = directly from getHeading() method)
 		final float pointHeadingRaw = pointFromCenter.getHeading();
 		// Convert the raw heading to angle-scale that the arc uses
 		final float pointHeadingCorrected = pointHeadingRaw < 0f ?
 				Utils.TWO_PI + pointHeadingRaw : pointHeadingRaw;
+		
+		// Minimum and maximum boundaries of the arc, within which the mouse must be
+	
+		// If the start angle is greater than the stop angle, we need to convert
+		// the start angle to its raw value (a negative value)
+		final float min = startAngle >= stopAngle ? startAngle-Utils.TWO_PI : startAngle;
+		final float max = stopAngle;
+		
+		// Choose which heading to use--the corrected version or the raw version
+		final float finalHeading = startAngle >= stopAngle ? pointHeadingRaw : pointHeadingCorrected;
+		
+		// Get if point is within radius of arc
+		final boolean pointCloseEnough = pointFromCenter.getMag() <= size.getHeight()/2f;
+	
 		/*
 		 * Vector is <= arc radius  AND  startAngle <= heading <= stopAngle
 		 */
-		return pointHeadingCorrected >= startAngle && pointHeadingCorrected <= stopAngle
-				&& Vec2.dist(point, center) <= size.getWidth()/2f;
+		return pointCloseEnough && finalHeading >= min && finalHeading <= max;
 	}
 
 	public float getStartAngle() {
