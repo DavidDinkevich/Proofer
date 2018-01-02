@@ -18,6 +18,9 @@ import util.Utils;
  * @author David Dinkevich
  */
 public class GraphicsPolygonAngle extends GraphicsPolygonChild<Angle> {
+	
+	// How much smaller this GraphicsPolygonAngle will be in comparison to the parent triangle
+	private static final float SCALE_DOWN_FRACTION = 0.4f;
 
 	public GraphicsPolygonAngle(Brush brush, GraphicsTriangle tri, String angleName) {
 		super(brush, tri, validateGivenName(angleName));
@@ -61,11 +64,9 @@ public class GraphicsPolygonAngle extends GraphicsPolygonChild<Angle> {
 				new Vec2.Mutable(Vec2.sub(verts.get(0).getCenter(true), center));
 		Vec2.Mutable seg1 = 
 				new Vec2.Mutable(Vec2.sub(verts.get(2).getCenter(true), center));
-		// Fraction of the segment to preserve after we shrink it
-		final float fraction = 0.4f;
 		// Shrink the vectors that we just got
-		seg0.setMag(seg0.getMag() * fraction);
-		seg1.setMag(seg1.getMag() * fraction);
+		seg0.setMag(seg0.getMag() * SCALE_DOWN_FRACTION);
+		seg1.setMag(seg1.getMag() * SCALE_DOWN_FRACTION);
 		// Update the locations of the copy's vertices
 		copy.getVertices().get(0).setCenter(Vec2.add(center, seg0), true);
 		copy.getVertices().get(2).setCenter(Vec2.add(center, seg1), true);
@@ -87,10 +88,8 @@ public class GraphicsPolygonAngle extends GraphicsPolygonChild<Angle> {
 		// Lengths of segments
 		final float s0Len = adjSegs[0].getLength(true);
 		final float s1Len = adjSegs[1].getLength(true);
-		// Fraction of shorter segment that will be arc size
-		final float fraction = 0.4f;
 		// The size of the arc: shorter segment * 0.2
-		final float arcSize = Math.min(s0Len, s1Len) * fraction;
+		final float arcSize = Math.min(s0Len, s1Len) * SCALE_DOWN_FRACTION;
 		// Derive arc
 		return Utils.getArc(super.getShape(), new Dimension(arcSize));
 	}
@@ -99,6 +98,8 @@ public class GraphicsPolygonAngle extends GraphicsPolygonChild<Angle> {
 	public void draw(Canvas c) {
 		super.draw(c);
 		// Draw the arc
-		c.arc(getArcShape());
+		GraphicsArc arc = new GraphicsArc(getBrush(), getArcShape());
+		arc.draw(c);
+//		c.arc(getArcShape());
 	}
 }
