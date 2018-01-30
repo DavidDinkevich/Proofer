@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import geometry.Dimension;
 import geometry.Vec2;
 import geometry.shapes.Polygon;
-import geometry.shapes.PolygonBuffer;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
+import geometry.shapes.VertexBuffer;
 
 import ui.canvas.Brush;
 import ui.canvas.Canvas;
@@ -26,7 +26,7 @@ public class DiagramCanvas extends Canvas {
 	private ProofCustomizationPanel parentPanel;
 	private InputManager inputManager;
 	private DiagramCanvasGrid canvasGrid;
-	private PolygonBuffer polyBuff;
+	private VertexBuffer vertexBuff;
 	private RenderList renderList;
 	
 	private List<GraphicsShape<?>> diagramFigures;
@@ -53,7 +53,7 @@ public class DiagramCanvas extends Canvas {
 	private void _init() { // Underscore bc init() already exists in PApplet
 		renderList = new RenderList();
 		diagramFigures = new ArrayList<>();
-		polyBuff = new PolygonBuffer();
+		vertexBuff = new VertexBuffer();
 		// Add layers to render list
 		for (UIDiagramLayers lay : UIDiagramLayers.values()) {
 			renderList.addLayer(lay);
@@ -174,9 +174,11 @@ public class DiagramCanvas extends Canvas {
 		diagramFigures.add(shape);
 		// Add to render list
 		renderList.addDrawable(shape);
-		// If it's a polygon, add it to PolygonBuffer
+		// If it's a polygon, add it to VertexBuffer
 		if (shape.getShape() instanceof Polygon) {
-			polyBuff.addPoly((Polygon)shape.getShape());
+			Polygon poly = (Polygon)shape.getShape();
+			vertexBuff.addVertices(poly.getVertices());
+			poly.syncNameWithVertexNames();
 		}
 		// Add to list of selectables
 		if (inputManager != null) {
@@ -199,9 +201,11 @@ public class DiagramCanvas extends Canvas {
 			if (inputManager != null) {
 				inputManager.removeSelectableFigure(shape);
 			}
-			// If it's a polygon, remove from polygon buffer
+			// If it's a polygon, remove from Vertex
 			if (shape.getShape() instanceof Polygon) {
-				polyBuff.removePoly((Polygon)shape.getShape());
+				Polygon poly = (Polygon)shape.getShape();
+				vertexBuff.removeVertices(poly.getVertices());
+				poly.syncNameWithVertexNames();
 			}
 			return true;
 		}
@@ -218,8 +222,8 @@ public class DiagramCanvas extends Canvas {
 		return diagramFigures;
 	}
 
-	public PolygonBuffer getPolygonBuffer() {
-		return polyBuff;
+	public VertexBuffer getVertexBuffer() {
+		return vertexBuff;
 	}
 	
 	public ProofCustomizationPanel getProofCustomizationPanel() {
