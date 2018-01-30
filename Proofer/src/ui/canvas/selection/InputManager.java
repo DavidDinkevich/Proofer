@@ -25,9 +25,9 @@ import geometry.Vec2;
 import geometry.proofs.Figure;
 import geometry.proofs.FigureRelationType;
 import geometry.shapes.Polygon;
-import geometry.shapes.PolygonBuffer;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
+import geometry.shapes.VertexBuffer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +48,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private DiagramCanvas canvas;
 	private DiagramCanvasGrid canvasGrid;
 	private RenderList renderList;
-	private PolygonBuffer polyBuff;
+	private VertexBuffer vertexBuff;
 	
 	// Selection
 	
@@ -75,7 +75,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		this.canvas = canvas;
 		renderList = canvas.getRenderList();
 		canvasGrid = canvas.getCanvasGrid();
-		polyBuff = canvas.getPolygonBuffer();
+		vertexBuff = canvas.getVertexBuffer();
 		selectionContainer = new SelectionBox();
 		relMaker = new UIRelationMaker();
 		selectors = new ArrayList<>();
@@ -488,19 +488,19 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 	
 	/**
-	 * A helper method for {@link PolygonBuffer#updateVertexName(Polygon, char, boolean)}.
-	 * @param p the polygon
+	 * A helper method for {@link VertexBuffer#updateVertexName(Vertex, boolean)}.
 	 * @param vert the vertex to be updated
 	 */
 	private void updateVertexName(Polygon p, Vertex vert) {
-		// Get the name of the vertex that the knob moves		
-		final char vertexName = vert.getNameChar();					
-		final Vec2 vertLoc =vert.getCenter(true);
+		// Location of the vertex to be updated
+		Vec2 vertLoc = vert.getCenter(true);
 		
 		// Whether to merge the vertex with another, or demerge it from another
 		final boolean mergeVert = canvasGrid.pointIsSnapped(vertLoc);
 		
-		polyBuff.updateVertexName(p, vertexName, mergeVert);		
+		// Update the vertex in the VertexBuffer
+		vertexBuff.updateVertexName(vert, mergeVert);
+		p.syncNameWithVertexNames();
 	}
 	
 	private void updateVertexNames(Polygon p) {
@@ -536,6 +536,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 			}
 			// Update the name of the target polygon figure
 			updateVertexNames(polySel.getTargetObject().getShape());
+			
 			// Update the name of the selector
 			polySel.getShape().setName(polySel.getTargetObject().getShape().getName());
 		}
