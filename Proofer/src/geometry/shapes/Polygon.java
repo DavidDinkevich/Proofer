@@ -137,14 +137,3 @@ public interface Polygon extends Shape2D {
 		setName(b.toString());
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
