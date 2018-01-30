@@ -78,8 +78,10 @@ public interface Polygon extends Shape2D {
 	 */
 	public Vec2[] getVertexLocations();
 	
-	public String getName();
-	
+	/**
+	 * Get a list of this {@link Polygon}'s vertices
+	 * @return the list of vertices
+	 */
 	public Vertex[] getVertices();
 	
 	/**
@@ -107,7 +109,42 @@ public interface Polygon extends Shape2D {
 	 */
 	public Segment[] getSides();
 	
+	/**
+	 * Get the {@link Angle} with the given name.
+	 * @param name the name of the angle to be retrieved
+	 * @return the {@link Angle}
+	 */
 	public Angle getAngle(String name);
 	
+	/**
+	 * Get a list of the {@link Angle}s of this {@link Polygon}
+	 * @return the list of {@link Angle}s
+	 */
 	public Angle[] getAngles();
+	
+	/**
+	 * Set the name of this {@link Polygon} to match its vertices. This
+	 * is essential after changing the name of a vertex in this {@link Polygon}
+	 * by using the vertex's own setName() method as opposed to using this
+	 * {@link Polygon}'s setVertexName() methods.
+	 */
+	default public void syncNameWithVertexNames() {
+		Vertex[] vertices = getVertices();
+		StringBuilder b = new StringBuilder(vertices.length);
+		for (int i = 0; i < vertices.length; i++) {
+			b.append(vertices[i].getNameChar());
+		}
+		setName(b.toString());
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
