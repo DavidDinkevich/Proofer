@@ -16,10 +16,17 @@ import geometry.Vec2;
 public class VertexBuffer implements Iterable<Vertex> {
 	private List<Vertex> vertices;
 	private VertexNameBuffer charList;
+	/**
+	 * List of Polygons whose vertices are stored in this
+	 * {@link VertexBuffer}. When we modify their vertices,
+	 * we have to "let the polygons know" and update them.
+	 */
+	private List<Polygon> polygons;
 		
 	public VertexBuffer() {
 		vertices = new ArrayList<>();
 		charList = new VertexNameBuffer();
+		polygons = new ArrayList<>();
 	}
 	
 	private void removeChar(Vertex vert) {
@@ -31,6 +38,16 @@ public class VertexBuffer implements Iterable<Vertex> {
 		for (int i = 0; i < vertices.size(); i++) {
 			vertices.get(i).setName(charList.getChars().get(i));
 		}
+	}
+	
+	/**
+	 * Ensure that the given vertex is contained in this list. If
+	 * it's not, throw an {@link IllegalArgumentException}.
+	 * @param v the vertex
+	 */
+	private void validateVertexParameter(Vertex v) {
+		if (v == null || !vertices.contains(v))
+			throw new IllegalArgumentException("Vertex not contained in buffer.");
 	}
 	
 	/**
@@ -118,9 +135,43 @@ public class VertexBuffer implements Iterable<Vertex> {
 		return vertices.get(index);
 	}
 	
-	private void validateVertexParameter(Vertex v) {
-		if (v == null || !vertices.contains(v))
-			throw new IllegalArgumentException("Vertex not contained in buffer.");
+	/**
+	 * Add the {@link Polygon} to this {@link VertexBuffer}. The
+	 * Polygon's vertices will be added to this {@link VertexBuffer},
+	 * and when they are modified, the Polygon will be updated via the
+	 * {@link Polygon#syncNameWithVertexNames()} method.
+	 * @param poly the {@link Polygon}
+	 */
+	public void addPolygon(Polygon poly) {
+		// Add the polygon to the list
+		polygons.add(poly);
+		// Add the polygon's vertices to the list
+		addVertices(poly.getVertices());
+		// Update all of the polygons' names
+		updatePolygons();
+	}
+	
+	/**
+	 * Remove the {@link Polygon} from this {@link VertexBuffer}
+	 * @param poly the {@link Polygon}
+	 */
+	public void removePolygon(Polygon poly) {
+		// Remove the polygon from the list
+		polygons.remove(poly);
+		// Remove the polygon's vertices
+		removeVertices(poly.getVertices());
+		// Update all of the polygons' names
+		updatePolygons();
+	}
+	
+	/**
+	 * For each {@link Polygon}, call the Polygon's
+	 * {@link Polygon#syncNameWithVertexNames()} method
+	 */
+	private void updatePolygons() {
+		for (Polygon poly : polygons) {
+			poly.syncNameWithVertexNames();
+		}
 	}
 	
 	/**
@@ -200,10 +251,12 @@ public class VertexBuffer implements Iterable<Vertex> {
 					// We found another vertex with the same loc as the given vertex
 					// and with a different name
 					setVertexName(vertex, OTHER_VERT_NAME);
+					updatePolygons();
 				}
 			}
 		} else {
 			demergeVertices(vertex);
+			updatePolygons();
 		}
 	}
 	
