@@ -55,10 +55,6 @@ public class Rect extends RectEllipse implements Polygon {
 		setNameLengthRange(4, 4, true);
 	}
 	
-	public static void main(String[] args) {
-		
-	}
-	
 	private Vec2 calculateVertexLocation(int vertIndex, boolean includeScale) {
 		Dimension s = getSize(includeScale);
 		Vec2 center = getCenter(includeScale);
@@ -365,3 +361,4 @@ public class Rect extends RectEllipse implements Polygon {
 		return null;
 	}
 }
+
