@@ -177,8 +177,7 @@ public class DiagramCanvas extends Canvas {
 		// If it's a polygon, add it to VertexBuffer
 		if (shape.getShape() instanceof Polygon) {
 			Polygon poly = (Polygon)shape.getShape();
-			vertexBuff.addVertices(poly.getVertices());
-			poly.syncNameWithVertexNames();
+			vertexBuff.addPolygon(poly);
 		}
 		// Add to list of selectables
 		if (inputManager != null) {
@@ -204,8 +203,7 @@ public class DiagramCanvas extends Canvas {
 			// If it's a polygon, remove from Vertex
 			if (shape.getShape() instanceof Polygon) {
 				Polygon poly = (Polygon)shape.getShape();
-				vertexBuff.removeVertices(poly.getVertices());
-				poly.syncNameWithVertexNames();
+				vertexBuff.removePolygon(poly);
 			}
 			return true;
 		}

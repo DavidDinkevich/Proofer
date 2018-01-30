@@ -217,8 +217,10 @@ public class InputManager extends CanvasAdapter implements Drawable {
 					sel.moveSelector(newSelLoc); // Don't snap to grid
 					// If the shape of the selector's target object is a polygon,
 					// fix its vertex names (we moved it)
-					if (sel.getTargetObject().getShape() instanceof Polygon)
-						updateVertexNames((Polygon)sel.getTargetObject().getShape());
+					if (sel.getTargetObject().getShape() instanceof Polygon) {
+						Polygon poly = (Polygon)sel.getTargetObject().getShape();
+						updateVertexNamesInPolygon(poly);
+					}
 				}
 				canvas.redraw();
 			}
@@ -482,35 +484,9 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		
 		// Get the knob as a polygon knob
 		PolygonSelectorKnob polyKnob = ((PolygonSelectorKnob) selectedKnob);
-		Polygon targetFigure = (Polygon)polyKnob.getSelector().getTargetObject().getShape();
 		Vertex controlledVert = polyKnob.getControlledVertex();
-		updateVertexName(targetFigure, controlledVert);
+		updateVertexName(controlledVert);
 	}
-	
-	/**
-	 * A helper method for {@link VertexBuffer#updateVertexName(Vertex, boolean)}.
-	 * @param vert the vertex to be updated
-	 */
-	private void updateVertexName(Polygon p, Vertex vert) {
-		// Location of the vertex to be updated
-		Vec2 vertLoc = vert.getCenter(true);
-		
-		// Whether to merge the vertex with another, or demerge it from another
-		final boolean mergeVert = canvasGrid.pointIsSnapped(vertLoc);
-		
-		// Update the vertex in the VertexBuffer
-		vertexBuff.updateVertexName(vert, mergeVert);
-		p.syncNameWithVertexNames();
-	}
-	
-	private void updateVertexNames(Polygon p) {
-		Vertex[] vertices = p.getVertices();
-		
-		for (int i = 0; i < p.getVertexCount(); i++) {
-			updateVertexName(p, vertices[i]);
-		}
-	}
-	
 	
 	/**
 	 * Snap the given {@link Selector} and its target object
@@ -535,7 +511,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 				knob.moveKnob(nearestSnap);
 			}
 			// Update the name of the target polygon figure
-			updateVertexNames(polySel.getTargetObject().getShape());
+			updateVertexNamesInPolygon(polySel.getTargetObject().getShape());
 			
 			// Update the name of the selector
 			polySel.getShape().setName(polySel.getTargetObject().getShape().getName());
@@ -543,6 +519,29 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		// Redraw if instructed to
 		if (redraw)
 			canvas.redraw();
+	}
+	
+	/**
+	 * A helper method for {@link VertexBuffer#updateVertexName(Vertex, boolean)}.
+	 * @param vert the vertex to be updated
+	 */
+	private void updateVertexName(Vertex vert) {
+		// Location of the vertex to be updated
+		Vec2 vertLoc = vert.getCenter(true);
+		
+		// Whether to merge the vertex with another, or demerge it from another
+		final boolean mergeVert = canvasGrid.pointIsSnapped(vertLoc);
+		
+		// Update the vertex in the VertexBuffer
+		vertexBuff.updateVertexName(vert, mergeVert);
+	}
+	
+	private void updateVertexNamesInPolygon(Polygon p) {
+		Vertex[] vertices = p.getVertices();
+		
+		for (int i = 0; i < p.getVertexCount(); i++) {
+			updateVertexName(vertices[i]);
+		}
 	}
 	
 	/**
