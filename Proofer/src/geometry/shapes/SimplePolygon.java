@@ -108,14 +108,6 @@ public class SimplePolygon extends AbstractShape implements Polygon, Iterable<Ve
 		return b.toString();
 	}
 	
-	private void syncNameWithVertexNames() {
-		StringBuilder b = new StringBuilder(vertices.size());
-		for (int i = 0; i < vertices.size(); i++) {
-			b.append(vertices.get(i).getNameChar());
-		}
-		setName(b.toString());
-	}
-	
 	@Override
 	public void setName(String name) {
 		super.setName(name);
