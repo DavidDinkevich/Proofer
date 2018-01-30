@@ -9,7 +9,8 @@ import java.util.List;
 import geometry.Vec2;
 
 /**
- * TODO: write description
+ * A container that stores {@link Vertex}es and manages/modifies their
+ * names based on their position.
  * @author David Dinkevich
  */
 public class VertexBuffer implements Iterable<Vertex> {
@@ -26,18 +27,16 @@ public class VertexBuffer implements Iterable<Vertex> {
 		updateVertexNames();
 	}
 	
-	private void removeChars(List<Vertex> vertices) {
-		for (int i = 0; i < vertices.size(); i++) {
-			removeChar(vertices.get(i));
-		}
-	}
-	
 	private void updateVertexNames() {
 		for (int i = 0; i < vertices.size(); i++) {
 			vertices.get(i).setName(charList.getChars().get(i));
 		}
 	}
 	
+	/**
+	 * Add a {@link Vertex} to this {@link VertexBuffer}
+	 * @param vertex the new vertex
+	 */
 	public void addVertex(Vertex vertex) {
 		vertices.add(vertex);
 		// Assign a name to the new vertex
@@ -46,24 +45,42 @@ public class VertexBuffer implements Iterable<Vertex> {
 		vertex.setName(newName);
 	}
 	
+	/**
+	 * Add multiple {@link Vertex}es to this {@link VertexBuffer}
+	 * @param verts the list of vertices
+	 */
 	public void addVertices(Collection<Vertex> verts) {
 		for (Vertex vert : verts) {
 			addVertex(vert);
 		}
 	}
 	
+	/**
+	 * Add multiple {@link Vertex}es to this {@link VertexBuffer}
+	 * @param verts the list of vertices
+	 */
 	public void addVertices(Vertex[] verts) {
 		for (Vertex vert : verts) {
 			addVertex(vert);
 		}
 	}
 	
+	/**
+	 * Remove the {@link Vertex} at the given index
+	 * @param index the index at which the {@link Vertex} will be removed
+	 * @return the {@link Vertex} that was removed
+	 */
 	public Vertex removeVertex(int index) {
 		Vertex vert = vertices.remove(index);
 		removeChar(vert);
 		return vert;
 	}
 	
+	/**
+	 * Remove the given {@link Vertex}
+	 * @param vert the {@link Vertex} that will be removed
+	 * @return whether or not the {@link Vertex} was successfully removed
+	 */
 	public boolean removeVertex(Vertex vert) {
 		if (vertices.remove(vert)) {
 			removeChar(vert);
@@ -72,36 +89,58 @@ public class VertexBuffer implements Iterable<Vertex> {
 		return false;
 	}
 	
+	/**
+	 * Remove each {@link Vertex} in the given list
+	 * @param vertices the list of {@link Vertex}es
+	 */
 	public void removeVertices(Collection<Vertex> vertices) {
 		for (Vertex vert : vertices) {
 			removeVertex(vert);
 		}
 	}
 	
+	/**
+	 * Remove each {@link Vertex} in the given array
+	 * @param vertices the list of {@link Vertex}es
+	 */
 	public void removeVertices(Vertex[] vertices) {
 		for (Vertex vert : vertices) {
 			removeVertex(vert);
 		}
 	}
 	
+	/**
+	 * Get the {@link Vertex} at the given index
+	 * @param index the index at which the {@link Vertex}
+	 * will be retrieved
+	 */
 	public Vertex getVertex(int index) {
 		return vertices.get(index);
 	}
 	
+	private void validateVertexParameter(Vertex v) {
+		if (v == null || !vertices.contains(v))
+			throw new IllegalArgumentException("Vertex not contained in buffer.");
+	}
+	
 	/**
-	 * Merge two vertices. This will change the name of the vertex with name "currName"
-	 * to the given "newName".
-	 * @param poly the {@link Polygon} that contains the vertex with name "currName".
-	 * @param currName the current name of the vertex (before merging)
-	 * @param newName the name of the vertex that the vertex with name "currName"
-	 * will be merged with. The "currName" vertex's name after the merge will be the "newName"
-	 * @return true if the operation was successful--if the given {@link Polygon} contains
-	 * the "currName", false otherwise.
+	 * Sets the name of the given {@link Vertex} to the given new name, and
+	 * updates the internal {@link VertexNameBuffer}.
+	 * @param vertex the vertex whose name will be updated
+	 * @param newName the new name of the vertex
+	 * @return whether or not the operation was successful
 	 */
-	public boolean mergeVertices(Vertex vertex, char newName) {
+	private boolean setVertexName(Vertex vertex, char newName) {
 		final char CURR_NAME = vertex.getNameChar();
 		final int CURR_NAME_INDEX = charList.indexOf(CURR_NAME);
 		
+		// If the given vertex is not contained
+		if (CURR_NAME_INDEX < 0) {
+			// Crash the program
+			validateVertexParameter(null); // null --> guaranteed to fail
+		}
+		
+		// Update the VertexNameBuffer
 		if (charList.set(CURR_NAME_INDEX, newName)) {
 			vertex.setName(newName);
 			return true;
@@ -110,41 +149,42 @@ public class VertexBuffer implements Iterable<Vertex> {
 	}
 	
 	/**
-	 * Demerge two vertices.
-	 * @param p the polygon that the vertex to demerge is in
-	 * @param vertexName the name of the vertex to be demerged
+	 * Demerge two vertices
+	 * @param vertex the vertex to be demerged
 	 * @return true if the operation was successful--if the given {@link Polygon} contains
 	 * the vertexName, false otherwise.
 	 */
 	public boolean demergeVertices(Vertex vertex) {
-		if (!vertices.contains(vertex)) {
-			throw new IllegalArgumentException("Vertex not contained in buffer.");
-		}
+		// Make sure that given vertex is in list
+		validateVertexParameter(vertex);
 		
 		// If there is more than one vertex with the given name
 		if (charList.getInstanceCount(vertex.getNameChar()) > 1) {
-			final char newName = charList.getUnusedChar(); // Generate new name
+			// Generate new name
+			final char newName = charList.getUnusedChar();
+			// Get the index of the vertex's current name
 			final int INDEX = charList.indexOf(vertex.getNameChar());
-			charList.set(INDEX, newName); // Update char list
-			vertex.setName(newName); // Update vertex
+			// Change the vertex's name in the VertexNameBuffer
+			charList.set(INDEX, newName);
+			// Change the vertex's name
+			vertex.setName(newName);
 			return true;			
 		}
 		return false;
 	}
 	
 	/**
-	 * Update the name of the vertex in the given polygon. This is necessary
-	 * when the vertex's location is changed: you might want to merge the vertex
-	 * with another if it shares the other's location, or demerge it if it no longer
-	 * shares the other's location.
-	 * @param poly the polygon whose vertex will be updated
-	 * @param vertexName the name of the vertex to be updated
-	 * @param mergeIfNecessary whether or not to merge the given vertex with
-	 * another IF it shares the location of another vertex.
-	 * @return false if the given vertex name is not contained within the given
-	 * polygon. true otherwise. 
+	 * Update the name of the given vertex. If there is another vertex
+	 * in this {@link VertexBuffer} that shares the same location as the given
+	 * vertex but does not have the same name, their names will be set to the
+	 * same character. If they share the same name but are not on top of each
+	 * other, they will be given separate names.
+	 * @param vertex the vertex to be updated.
+	 * @param mergeIfNecessary whether or not to merge the vertices if they
+	 * are on top of each other
+	 * @return
 	 */
-	public boolean updateVertexName(Vertex vertex, boolean mergeIfNecessary) {
+	public void updateVertexName(Vertex vertex, boolean mergeIfNecessary) {
 		if (mergeIfNecessary) {			
 			for (Vertex vert : vertices) {
 				// Don't want to analyze same vertex
@@ -159,13 +199,12 @@ public class VertexBuffer implements Iterable<Vertex> {
 				if (OTHER_VERT_NAME != VERTEX_NAME && otherVertLoc.equals(vertexLoc)) {
 					// We found another vertex with the same loc as the given vertex
 					// and with a different name
-					mergeVertices(vertex, OTHER_VERT_NAME);
+					setVertexName(vertex, OTHER_VERT_NAME);
 				}
 			}
 		} else {
 			demergeVertices(vertex);
 		}
-		return true;
 	}
 	
 	@Override
@@ -174,8 +213,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 	}
 
 	/**
-	 * Get the total count of all of the vertices belonging to all of the {@link Polygon}
-	 * in this {@link PolygonBuffer}.
+	 * Get the number of vertices stored in this {@link VertexBuffer}
 	 * @return the count
 	 */
 	public int getVertexCount() {
