@@ -24,7 +24,6 @@ import ui.canvas.diagram.RenderList;
 import geometry.Vec2;
 import geometry.proofs.Figure;
 import geometry.proofs.FigureRelationType;
-import geometry.shapes.Angle;
 import geometry.shapes.Polygon;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
@@ -346,11 +345,15 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		for (Figure child : poly.getShape().getChildren()) {
 			// For each element in the polygon-children list
 			for (int i = polyChildren.size()-1; i >= 0; i--) {
+				GraphicsPolygonChild<?> polyChild = polyChildren.get(i);
 				// If the current element in polygon-children list is one of
 				// the polygon's children
-				if (polyChildren.get(i).getShape().equals(child)) {
+				if (polyChild.getShape().equals(child)) {
 					// Remove it from the polygon-children list
 					polyChildren.remove(i);
+					// Remove it from the RenderList (it may not currently, be in the
+					// RenderList, but this is just to make sure
+					renderList.removeDrawable(polyChild);
 				}
 			}
 		}
@@ -361,9 +364,11 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	 * {@link GraphicsPolygon}.
 	 */
 	private void reloadPolygonChildren() {
+		// Clear the whole list in the RenderList
+		renderList.clearLayerList(UIDiagramLayers.POLYGON_COMPONENT);
 		// Delete the currently existing polygon children
 		polyChildren.clear();
-		
+
 		// For each GraphicsPolygon
 		for (GraphicsShape<?> gShape : selectables) {
 			if (gShape instanceof GraphicsTriangle) {
@@ -496,6 +501,14 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	private void dragKnob(Knob knob) {		
 		// Drag knob
 		knob.moveKnob(dragSceneObject(knob.getShape().getCenter(true), true));
+		
+		// If the knob is snapped to the grid, we have to refresh the polygon children
+		// (because there is a possibility that a polygon's name was modified)
+		Vec2 knobLoc = knob.getShape().getCenter(true);
+		if (canvasGrid.pointIsSnapped(knobLoc)) {
+			// Reload the polygon children
+			reloadPolygonChildren();
+		}
 		
 		// If the knob is not a PolygonSelectorKnob, we have no more business in this method.
 		if (!(knob.getSelector().getTargetObject().getShape() instanceof Polygon))
