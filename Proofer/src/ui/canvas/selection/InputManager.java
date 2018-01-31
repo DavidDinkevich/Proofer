@@ -24,6 +24,7 @@ import ui.canvas.diagram.RenderList;
 import geometry.Vec2;
 import geometry.proofs.Figure;
 import geometry.proofs.FigureRelationType;
+import geometry.shapes.Angle;
 import geometry.shapes.Polygon;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
@@ -324,7 +325,6 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 	
 	private void addPolygonChildren(GraphicsTriangle poly) {
-		System.out.println(poly.getShape().getChildren());
 		// Create a GraphicsPolygonChild for each child and add it
 		for (Figure child : poly.getShape().getChildren()) {
 			// Get the brush for the GraphicsPolygonChild
@@ -356,26 +356,22 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		}
 	}
 	
+	/**
+	 * It is essential to use this after modifying the name of a
+	 * {@link GraphicsPolygon}.
+	 */
 	private void reloadPolygonChildren() {
+		// Delete the currently existing polygon children
 		polyChildren.clear();
-		List<GraphicsShape<?>> selectables2 = new ArrayList<>(selectables);
-		final int COUNT = selectables.size();
-		for (int i = 0; i < COUNT; i++) {
-			GraphicsShape<?> selectable = selectables2.get(i);
-			this.removeSelectableFigure(selectable);
-		}
 		
-		for (int i = 0; i < COUNT; i++) {
-			GraphicsShape<?> selectable = selectables2.get(i);
-			this.addSelectableFigure(selectable);
+		// For each GraphicsPolygon
+		for (GraphicsShape<?> gShape : selectables) {
+			if (gShape instanceof GraphicsTriangle) {
+				GraphicsTriangle gPoly = (GraphicsTriangle)gShape;
+				// Add its new polygon children
+				addPolygonChildren(gPoly);
+			}
 		}
-		
-//		for (GraphicsShape<?> gShape : selectables) {
-//			if (gShape instanceof GraphicsTriangle) {
-//				GraphicsTriangle gPoly = (GraphicsTriangle)gShape;
-//				addPolygonChildren(gPoly);
-//			}
-//		}
 	}
 	
 	public List<Selector<?, ?>> getSelectors() {
