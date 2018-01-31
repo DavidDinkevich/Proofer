@@ -21,10 +21,6 @@ import geometry.proofs.Figure;
 public class SimplePolygon extends AbstractShape implements Polygon, Iterable<Vertex> {
 	protected List<Vertex> vertices;
 	
-	private List<Figure> children;
-	private List<Segment> segments;
-	private List<Angle> angles;
-	
 	private static int MIN_VERT_COUNT = 3;
 	
 	public SimplePolygon(String name) {
@@ -265,21 +261,19 @@ public class SimplePolygon extends AbstractShape implements Polygon, Iterable<Ve
 	
 	@Override
 	public Segment[] getSides() {
-		if (segments == null) {
-			segments = new ArrayList<>();
-			final int NUM_SEGS = getVertexCount();
-			// First three segs
-			for (int i = 0; i < NUM_SEGS-1; i++) {
-				final char c0 = getName().charAt(i);
-				final char c1 = getName().charAt(i+1);
-				segments.add(new Segment(getVertex(c0), getVertex(c1)));
-			}
-			// Last seg (the seg that seals the shape)
-			segments.add(new Segment(
-					getVertex(getName().charAt(0)),
-					getVertex(getName().charAt(getName().length()-1)))
-			);
+		List<Segment> segments = new ArrayList<>();
+		final int NUM_SEGS = getVertexCount();
+		// First three segs
+		for (int i = 0; i < NUM_SEGS-1; i++) {
+			final char c0 = getName().charAt(i);
+			final char c1 = getName().charAt(i+1);
+			segments.add(new Segment(getVertex(c0), getVertex(c1)));
 		}
+		// Last seg (the seg that seals the shape)
+		segments.add(new Segment(
+				getVertex(getName().charAt(0)),
+				getVertex(getName().charAt(getName().length()-1)))
+		);
 		return segments.toArray(new Segment[segments.size()]);
 	}
 	
@@ -302,17 +296,16 @@ public class SimplePolygon extends AbstractShape implements Polygon, Iterable<Ve
 	
 	@Override
 	public Angle[] getAngles() {
-		if (angles == null) {
-			final int NUM_ANGLES = getVertexCount();
-			angles = new ArrayList<>();
-			for (int i = 0; i < NUM_ANGLES-2; i++) {
-				angles.add(new Angle(vertices.get(i), vertices.get(i+1), vertices.get(i+2)));
-			}
-			angles.add(new Angle(
-					vertices.get(NUM_ANGLES-2), vertices.get(NUM_ANGLES-1), vertices.get(0)));
-			angles.add(new Angle(
-					vertices.get(NUM_ANGLES-1), vertices.get(0), vertices.get(1)));
+		final int NUM_ANGLES = getVertexCount();
+		List<Angle> angles = new ArrayList<>();
+		for (int i = 0; i < NUM_ANGLES-2; i++) {
+			angles.add(new Angle(vertices.get(i), vertices.get(i+1), vertices.get(i+2)));
 		}
+		angles.add(new Angle(
+				vertices.get(NUM_ANGLES-2), vertices.get(NUM_ANGLES-1), vertices.get(0)));
+		angles.add(new Angle(
+				vertices.get(NUM_ANGLES-1), vertices.get(0), vertices.get(1)));
+		
 		return angles.toArray(new Angle[angles.size()]);
 	}
 	
@@ -366,12 +359,11 @@ public class SimplePolygon extends AbstractShape implements Polygon, Iterable<Ve
 
 	@Override
 	public List<Figure> getChildren() {
-		if (children == null) {
-			children = new ArrayList<>();
-			children.addAll(Arrays.asList(getVertices()));
-			children.addAll(Arrays.asList(getAngles()));
-			children.addAll(Arrays.asList(getSides()));
-		}
+		List<Figure> children = new ArrayList<>();
+		children.addAll(Arrays.asList(getVertices()));
+		children.addAll(Arrays.asList(getAngles()));
+		children.addAll(Arrays.asList(getSides()));
+		
 		return children;
 	}
 	
