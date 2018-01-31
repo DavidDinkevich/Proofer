@@ -83,6 +83,20 @@ public class RenderList implements Drawable {
 		return list.get(layer);
 	}
 	
+	/**
+	 * Clear the list that corresponds to the given {@link UIDiagramLayers}.
+	 * @param layer the layer to be cleared
+	 */
+	public void clearLayerList(UIDiagramLayers layer) {
+		List<Drawable> layerList = getLayerList(layer);
+		
+		if (layerList == null)
+			throw new IllegalArgumentException("Their is no corresponding "
+					+ "list for the given UIDiagramLayer.");
+		
+		layerList.clear();
+	}
+	
 	public int getLayerCount() {
 		return list.size();
 	}
