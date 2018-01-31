@@ -355,6 +355,16 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		}
 	}
 	
+	private void reloadPolygonChildren() {
+		polyChildren.clear();
+		for (GraphicsShape<?> gShape : selectables) {
+			if (gShape instanceof GraphicsTriangle) {
+				GraphicsTriangle gPoly = (GraphicsTriangle)gShape;
+				addPolygonChildren(gPoly);
+			}
+		}
+	}
+	
 	public List<Selector<?, ?>> getSelectors() {
 		return selectors;
 	}
@@ -485,7 +495,7 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		// Get the knob as a polygon knob
 		PolygonSelectorKnob polyKnob = ((PolygonSelectorKnob) selectedKnob);
 		Vertex controlledVert = polyKnob.getControlledVertex();
-		updateVertexName(controlledVert);
+		updateVertexName(controlledVert, true);
 	}
 	
 	/**
@@ -524,8 +534,9 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	/**
 	 * A helper method for {@link VertexBuffer#updateVertexName(Vertex, boolean)}.
 	 * @param vert the vertex to be updated
+	 * @param whether or not to regenerate the polygon-children
 	 */
-	private void updateVertexName(Vertex vert) {
+	private void updateVertexName(Vertex vert, boolean reloadPolyChildren) {
 		// Location of the vertex to be updated
 		Vec2 vertLoc = vert.getCenter(true);
 		
@@ -533,15 +544,21 @@ public class InputManager extends CanvasAdapter implements Drawable {
 		final boolean mergeVert = canvasGrid.pointIsSnapped(vertLoc);
 		
 		// Update the vertex in the VertexBuffer
-		vertexBuff.updateVertexName(vert, mergeVert);
+		final boolean vertexModified = vertexBuff.updateVertexName(vert, mergeVert);
+		
+		if (vertexModified) {
+			reloadPolygonChildren();
+		}
 	}
 	
 	private void updateVertexNamesInPolygon(Polygon p) {
 		Vertex[] vertices = p.getVertices();
 		
 		for (int i = 0; i < p.getVertexCount(); i++) {
-			updateVertexName(vertices[i]);
+			updateVertexName(vertices[i], false);
 		}
+		// Update polygons
+		reloadPolygonChildren();
 	}
 	
 	/**
