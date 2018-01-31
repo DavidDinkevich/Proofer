@@ -324,10 +324,11 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	}
 	
 	private void addPolygonChildren(GraphicsTriangle poly) {
+		System.out.println(poly.getShape().getChildren());
 		// Create a GraphicsPolygonChild for each child and add it
 		for (Figure child : poly.getShape().getChildren()) {
 			// Get the brush for the GraphicsPolygonChild
-			Brush gChildBrush = StyleManager.getHighlightedFigureBrush();
+			Brush gChildBrush = StyleManager.getHighlightedFigureBrush();			
 			// Ask the graphics polygon for the graphics child for the child's name
 			GraphicsPolygonChild<?> gChild = poly.getGraphicsChild(child.getName());
 			// Safety
@@ -357,12 +358,24 @@ public class InputManager extends CanvasAdapter implements Drawable {
 	
 	private void reloadPolygonChildren() {
 		polyChildren.clear();
-		for (GraphicsShape<?> gShape : selectables) {
-			if (gShape instanceof GraphicsTriangle) {
-				GraphicsTriangle gPoly = (GraphicsTriangle)gShape;
-				addPolygonChildren(gPoly);
-			}
+		List<GraphicsShape<?>> selectables2 = new ArrayList<>(selectables);
+		final int COUNT = selectables.size();
+		for (int i = 0; i < COUNT; i++) {
+			GraphicsShape<?> selectable = selectables2.get(i);
+			this.removeSelectableFigure(selectable);
 		}
+		
+		for (int i = 0; i < COUNT; i++) {
+			GraphicsShape<?> selectable = selectables2.get(i);
+			this.addSelectableFigure(selectable);
+		}
+		
+//		for (GraphicsShape<?> gShape : selectables) {
+//			if (gShape instanceof GraphicsTriangle) {
+//				GraphicsTriangle gPoly = (GraphicsTriangle)gShape;
+//				addPolygonChildren(gPoly);
+//			}
+//		}
 	}
 	
 	public List<Selector<?, ?>> getSelectors() {
