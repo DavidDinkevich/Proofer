@@ -233,9 +233,12 @@ public class VertexBuffer implements Iterable<Vertex> {
 	 * @param vertex the vertex to be updated.
 	 * @param mergeIfNecessary whether or not to merge the vertices if they
 	 * are on top of each other
-	 * @return true if the name of the given vertex changed
+	 * @return true if the name of the given vertex changed, false otherwise
 	 */
 	public boolean updateVertexName(Vertex vertex, boolean mergeIfNecessary) {
+		// Whether or not a vertex's name was modified
+		boolean modified = false;
+		
 		if (mergeIfNecessary) {			
 			for (Vertex vert : vertices) {
 				// Don't want to analyze same vertex
@@ -250,17 +253,17 @@ public class VertexBuffer implements Iterable<Vertex> {
 				if (OTHER_VERT_NAME != VERTEX_NAME && otherVertLoc.equals(vertexLoc)) {
 					// We found another vertex with the same loc as the given vertex
 					// and with a different name
-					final boolean modified = setVertexName(vertex, OTHER_VERT_NAME);
+					modified = setVertexName(vertex, OTHER_VERT_NAME);
 					updatePolygons();
-					return modified;
 				}
 			}
 			return false; // No vertices were modified
 		} else {
-			final boolean modified = demergeVertices(vertex);
+			modified = demergeVertices(vertex);
 			updatePolygons();
-			return modified;
 		}
+		
+		return modified;
 	}
 	
 	@Override
