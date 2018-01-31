@@ -205,7 +205,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 	 * @return true if the operation was successful--if the given {@link Polygon} contains
 	 * the vertexName, false otherwise.
 	 */
-	public boolean demergeVertices(Vertex vertex) {
+	private boolean demergeVertices(Vertex vertex) {
 		// Make sure that given vertex is in list
 		validateVertexParameter(vertex);
 		
@@ -257,7 +257,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 					updatePolygons();
 				}
 			}
-			return false; // No vertices were modified
+			modified = false; // No vertices were modified
 		} else {
 			modified = demergeVertices(vertex);
 			updatePolygons();
