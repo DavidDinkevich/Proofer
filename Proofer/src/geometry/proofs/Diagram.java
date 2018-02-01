@@ -184,7 +184,7 @@ public class Diagram {
 						null // Null parent
 				);
 				// Add the new relation
-				if (!containsFigureRelationPair(newRel))
+				if (!containsFigureRelation(newRel))
 					relations.add(newRel);
 			}
 		}
@@ -214,7 +214,7 @@ public class Diagram {
 		
 		// If there is already a figure relation pair that makes the given
 		// Angle a right angle, our job is already done, we can exit.
-		if (containsFigureRelationPair(rel)) {
+		if (containsFigureRelation(rel)) {
 			return false;
 		}
 		
@@ -239,7 +239,7 @@ public class Diagram {
 					);
 				
 				// Ensure that we're not adding a duplicate
-				if (!containsFigureRelationPair(newPair)) {
+				if (!containsFigureRelation(newPair)) {
 					relations.add(newPair);
 				}
 			}
@@ -309,7 +309,7 @@ public class Diagram {
 	}
 		
 	public boolean addFigureRelationPair(FigureRelation pair) {
-		if (containsFigureRelationPair(pair))
+		if (containsFigureRelation(pair))
 			return false;
 		if (relations.add(pair)) {
 			// If the relation declares that an angle is a right angle,
@@ -377,20 +377,20 @@ public class Diagram {
 		return relations.removeAll(figs);
 	}
 	
-	public boolean containsFigureRelationPair(FigureRelation rel) {
+	public boolean containsFigureRelation(FigureRelation rel) {
 		return relations.contains(rel);
 	}
 	
-	public boolean containsFigureRelationPair(FigureRelationType type, String fig0,
+	public boolean containsFigureRelation(FigureRelationType type, String fig0,
 			String fig1, FigureRelation parent) {
 		return relations.contains(valueOf(type, fig0, fig1, parent));
 	}
 	
-	public boolean containsFigureRelationPairs(Collection<FigureRelation> figs) {
+	public boolean containsFigureRelations(Collection<FigureRelation> figs) {
 		return relations.containsAll(figs);
 	}
 	
-	public FigureRelation getFirstRelationPairWithType(FigureRelationType type) {
+	public FigureRelation getFirstRelationOfType(FigureRelationType type) {
 		for (FigureRelation pair : relations) {
 			if (pair.getRelationType() == type) {
 				return pair;
@@ -399,7 +399,7 @@ public class Diagram {
 		return null;
 	}
 	
-	public List<FigureRelation> getAllRelationPairsWithType(FigureRelationType type) {
+	public List<FigureRelation> getAllFigureRelationsOfType(FigureRelationType type) {
 		List<FigureRelation> rels = null;
 		for (FigureRelation pair : relations) {
 			if (pair.getRelationType() == type) {
