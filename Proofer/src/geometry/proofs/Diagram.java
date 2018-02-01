@@ -195,7 +195,9 @@ public class Diagram {
 	 * other right angles in the given list of {@link FigureRelation}s.
 	 * @param a the angle
 	 * @param parent the parent relation
-	 * @return returns success
+	 * @return returns false if the given Angle name does not belong to an
+	 * Angle in this Diagram, or if the given angle is already a right angle
+	 * in this Diagram, true otherwise
 	 */
 	public boolean makeRightAngle(String angle, FigureRelation parent) {
 		Angle a = getFigure(angle, Angle.class);
@@ -209,11 +211,24 @@ public class Diagram {
 				null,
 				parent // Parent
 			);
+		
+		// If there is already a figure relation pair that makes the given
+		// Angle a right angle, our job is already done, we can exit.
+		if (containsFigureRelationPair(rel)) {
+			return false;
+		}
+		
+		// Add the new pair that makes the angle a right angle
 		relations.add(rel);
+		
 		// Make new right angle congruent to all other right angles in collection
-		for (int i = 0; i < relations.size(); i++) {
-			if (i == angleIndex)
-				continue;
+		for (int i = 0; i < relations.size() - 1; i++) {
+			// (Above): we say "i < relations() '-1' " bc we don't want to compare
+			// the relation pair to itself. Therefore, we must exclude it from the list.
+			// Since we just added it to the list, we know that it is at the very end
+			// of the list. The "-1" excludes the relation pair and makes sure that
+			// we don't compare it to itself.
+
 			FigureRelation pair = relations.get(i);
 			if (pair.getRelationType() == FigureRelationType.RIGHT) {
 				FigureRelation newPair = new FigureRelation(
@@ -222,7 +237,11 @@ public class Diagram {
 						pair.getFigure0(),
 						parent // Parent
 					);
-				relations.add(newPair);
+				
+				// Ensure that we're not adding a duplicate
+				if (!containsFigureRelationPair(newPair)) {
+					relations.add(newPair);
+				}
 			}
 		}
 		return true;
@@ -288,7 +307,7 @@ public class Diagram {
 		FigureRelation pair = valueOf(type, fig0, fig1, parent);
 		return addFigureRelationPair(pair);
 	}
-	
+		
 	public boolean addFigureRelationPair(FigureRelation pair) {
 		if (containsFigureRelationPair(pair))
 			return false;
