@@ -161,7 +161,7 @@ public class ProofSolver {
 				newSeg1,
 				pair // Parent
 		);
-		diagram.addFigureRelationPair(rel);
+		diagram.addFigureRelation(rel);
 	}
 	
 	private void handleSimilarTriangles(FigureRelation pair) {
@@ -179,7 +179,7 @@ public class ProofSolver {
 					corrAngles.get(i)[1],
 					pair // Parent
 			);
-			diagram.addFigureRelationPair(rel);
+			diagram.addFigureRelation(rel);
 		}
 	}
 	
@@ -223,7 +223,7 @@ public class ProofSolver {
 					) {
 					
 					// Make triangles congruent
-					diagram.addFigureRelationPair(
+					diagram.addFigureRelation(
 						FigureRelationType.CONGRUENT,
 						tri0.getName(),
 						tri1.getName(),

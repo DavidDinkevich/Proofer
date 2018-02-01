@@ -68,7 +68,7 @@ public class Preprocessor {
 					null // Null parent?
 			);
 			// Add the given
-			diagram.addFigureRelationPair(rel);
+			diagram.addFigureRelation(rel);
 		}
 		
 		preprocessGivenInfo(diagram);
@@ -387,12 +387,12 @@ public class Preprocessor {
 		 * (all bisecting pairs are replaced with more specific midpoint
 		 * pairs).
 		 */
-		diagram.removeFigureRelationPair(pair);
+		diagram.removeFigureRelation(pair);
 		
 		Segment bisectedSeg = pair.getFigure1();
 		
 		// Construct/add new midpoint pair
-		diagram.addFigureRelationPair(
+		diagram.addFigureRelation(
 				FigureRelationType.MIDPOINT,
 				midpt.getName(),
 				bisectedSeg.getName(),
@@ -430,7 +430,7 @@ public class Preprocessor {
 		
 		// Remove the original figure relation pair, replace it with more specific ones
 		// that the proof solver can process
-		diagram.removeFigureRelationPair(pair);
+		diagram.removeFigureRelation(pair);
 		
 		// Replace given, original figure relation pair with more specific
 		// ones
@@ -450,7 +450,7 @@ public class Preprocessor {
 			
 			// Add more specific figure relation pairs to replace the given one
 			for (int i = 0; i < 2; i++) {
-				diagram.addFigureRelationPair(
+				diagram.addFigureRelation(
 						FigureRelationType.PERPENDICULAR,
 						smallIntersectingSeg.getName(),
 						(i == 0 ? baseSeg0 : baseSeg1).getName(),
@@ -498,7 +498,7 @@ public class Preprocessor {
 							a1,
 							null // Null parent?
 					);
-					diagram.addFigureRelationPair(rel);
+					diagram.addFigureRelation(rel);
 				}
 			}
 		}
