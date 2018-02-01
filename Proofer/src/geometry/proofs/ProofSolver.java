@@ -216,8 +216,12 @@ public class ProofSolver {
 				// Remember this pair of triangles--don't want to use again
 				checkedTriPairs.add(new int[] { i, j });
 				
-				// SSS
-				if (getRecordedCorrespondingSegs(tri0, tri1).size() == 3) {
+				// Check if triangles are congruent (SSS, SAS, ASA)
+				if (
+						congruentBySSS(tri0, tri1) // SSS
+					 || congruentBySAS(tri0, tri1) // SAS
+					) {
+					
 					// Make triangles congruent
 					diagram.addFigureRelationPair(
 						FigureRelationType.CONGRUENT,
@@ -225,13 +229,82 @@ public class ProofSolver {
 						tri1.getName(),
 						null // TODO: make this SSS
 					);
-					continue;
 				}
-				
-				// SAS
-				
 			}
 		}
+	}
+	
+	private boolean congruentBySSS(Triangle tri0, Triangle tri1) {
+		// Three congruent segments
+		return getRecordedCorrespondingSegs(tri0, tri1).size() == 3;
+	}
+	
+	private boolean congruentBySAS(Triangle tri0, Triangle tri1) {		
+		// Get the angles of each triangle
+		Angle[] tri0Angles = tri0.getAngles();
+		Angle[] tri1Angles = tri1.getAngles();
+		
+		// We don't want to check the same PAIR of angles more than once,
+		// so we'll create a list to store the pairs we've checked already
+		List<int[]> checkedAnglePairs = new ArrayList<>();
+		
+		// For each angle in the first triangle
+		for (int i = 0; i < tri0Angles.length; i++) {
+			Angle a0 = tri0Angles[i]; // Get the angle
+			
+			// For each angle in the second triangle
+			j_loop:
+			for (int j = 0; j < tri1Angles.length; j++) {
+				// Don't want to compare pairs of angles that have
+				// already been compared
+				for (int[] checkedPair : checkedAnglePairs) {
+					if ((checkedPair[0] == i && checkedPair[1] == j) ||
+							(checkedPair[0] == j && checkedPair[1] == i))
+						continue j_loop;
+				}
+				
+				// Remember this pair of angles--don't want to use again
+				checkedAnglePairs.add(new int[] { i, j } );
+				
+				Angle a1 = tri1Angles[j]; // Get the angle
+				
+				// If the two angles are congruent (if the Diagram contains a
+				// FigureRelation that says so)
+				if (diagram.containsFigureRelation(
+						new FigureRelation(FigureRelationType.CONGRUENT, a0, a1, null))) {
+					
+					// Get the adjacent segments of each angle
+					Segment[] segs0 = tri0.getAdjacentSegments(a0.getNameShort());
+					Segment[] segs1 = tri1.getAdjacentSegments(a1.getNameShort());
+					
+					// Keep track of the number of congruent, adjacent segments
+					// for each angle (2 are needed to make the two triangles
+					// congruent)
+					int congruentSegmentPairs = 0;
+					
+					// Check for congruent adjacent segments
+					for (Segment s0 : segs0) {
+						for (Segment s1 : segs1) {
+							// Check if congruent
+							if (diagram.containsFigureRelation(
+									FigureRelationType.CONGRUENT, s0.getName(), s1.getName(), null
+							)) {
+								// If the adjacent segments are congruent, update variable
+								++congruentSegmentPairs;
+							}
+						}
+					}
+					
+					// 2 congruent adjacent segments are needed for the triangles
+					// to be congruent by SAS
+					if (congruentSegmentPairs >= 2) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
