@@ -133,7 +133,7 @@ public class Diagram {
 				fig,
 				null // Null parent
 		);
-		return addFigureRelationPair(rel);
+		return addFigureRelation(rel);
 	}
 	
 	/**
@@ -302,13 +302,13 @@ public class Diagram {
 		return new FigureRelation(type, figure0, figure1, parent);
 	}
 	
-	public boolean addFigureRelationPair(FigureRelationType type, String fig0, String fig1,
+	public boolean addFigureRelation(FigureRelationType type, String fig0, String fig1,
 			FigureRelation parent) {
 		FigureRelation pair = valueOf(type, fig0, fig1, parent);
-		return addFigureRelationPair(pair);
+		return addFigureRelation(pair);
 	}
 		
-	public boolean addFigureRelationPair(FigureRelation pair) {
+	public boolean addFigureRelation(FigureRelation pair) {
 		if (containsFigureRelation(pair))
 			return false;
 		if (relations.add(pair)) {
@@ -339,7 +339,7 @@ public class Diagram {
 								anglePair[1],
 								pair // TODO: change this to "corresponding angles"
 						);
-						addFigureRelationPair(newPair);
+						addFigureRelation(newPair);
 					}
 					// For all corresponding segments
 					for (Segment[] segPair : Utils.getCorrespondingSegments(tri0, tri1)) {
@@ -350,7 +350,7 @@ public class Diagram {
 								segPair[1],
 								pair // TODO: change this to "corresponding segments"
 						);
-						addFigureRelationPair(newPair);
+						addFigureRelation(newPair);
 					}
 				}
 			}
@@ -359,21 +359,21 @@ public class Diagram {
 		return false; // Unsuccessful
 	}
 	
-	public void addFigureRelationPairs(Collection<FigureRelation> figs) {
+	public void addFigureRelation(Collection<FigureRelation> figs) {
 		for (FigureRelation fig : figs) {
-			addFigureRelationPair(fig);
+			addFigureRelation(fig);
 		}
 	}
 	
-	public boolean removeFigureRelationPair(FigureRelationType type, String fig0,
+	public boolean removeFigureRelation(FigureRelationType type, String fig0,
 			String fig1, FigureRelation parent) {
 		return relations.remove(valueOf(type, fig0, fig1, parent));
 	}
-	public boolean removeFigureRelationPair(FigureRelation pair) {
+	public boolean removeFigureRelation(FigureRelation pair) {
 		return relations.remove(pair);
 	}
 	
-	public boolean removeFigureRelationPairs(Collection<FigureRelation> figs) {
+	public boolean removeFigureRelation(Collection<FigureRelation> figs) {
 		return relations.removeAll(figs);
 	}
 	
