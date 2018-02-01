@@ -289,6 +289,10 @@ public class Diagram {
 	
 	/////////////////////////////
 	
+	/**
+	 * Use the given information to create a {@link FigureRelation}.
+	 * @return the {@link FigureRelation}
+	 */
 	private FigureRelation valueOf(FigureRelationType type, String fig0, String fig1,
 			FigureRelation parent) {
 		final boolean RIGHT_ANGLE = type == FigureRelationType.RIGHT;
@@ -302,12 +306,34 @@ public class Diagram {
 		return new FigureRelation(type, figure0, figure1, parent);
 	}
 	
+	/**
+	 * Use the given information to create a {@link FigureRelation}
+	 * and add the given {@link FigureRelation} to this {@link Diagram}.
+	 * <p>
+	 * NOTE: DO NOT USE THIS METHOD WITH TRIANGLES OR ANGLES. This is because
+	 * with the given string names, it is impossible to know the difference
+	 * between an {@link Angle} or a {@link Triangle}. 
+	 * @param type the {@link FigureRelationType} of the {@link FigureRelation}
+	 * @param fig0 the first {@link Figure}
+	 * @param fig1 the second {@link Figure}
+	 * @param parent the parent of the {@link FigureRelation}
+	 * @return false if the given {@link FigureRelation} is already
+	 * contained in this {@link Diagram}, true if the operation
+	 * was successful
+	 */
 	public boolean addFigureRelation(FigureRelationType type, String fig0, String fig1,
 			FigureRelation parent) {
 		FigureRelation pair = valueOf(type, fig0, fig1, parent);
 		return addFigureRelation(pair);
 	}
-		
+	
+	/**
+	 * Add the given {@link FigureRelation} to this {@link Diagram}.
+	 * @param pair the {@link FigureRelation}
+	 * @return false if the given {@link FigureRelation} is already
+	 * contained in this {@link Diagram}, true if the operation
+	 * was successful
+	 */
 	public boolean addFigureRelation(FigureRelation pair) {
 		if (containsFigureRelation(pair))
 			return false;
