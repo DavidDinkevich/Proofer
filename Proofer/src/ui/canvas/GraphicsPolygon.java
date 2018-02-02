@@ -7,8 +7,8 @@ import geometry.shapes.Polygon;
 public class GraphicsPolygon<T extends Polygon> extends GraphicsShape<T> {
 	private TextFont vertexTextFont;
 	private GraphicsVertex[] vertices;
-	private boolean drawVertices = true;
-	private boolean drawName = true;
+	private boolean drawVertices = false;
+	private boolean drawName = false;
 		
 	public GraphicsPolygon(Brush brush, T shape) {
 		super(brush, shape);
