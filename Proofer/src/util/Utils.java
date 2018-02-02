@@ -100,6 +100,42 @@ public final class Utils {
 		}
 		return containsAllChars;
 	}
+		
+	/**
+	 * Get whether the given array contains the given element
+	 * @param array the array
+	 * @param element the element
+	 * @return whether or not the array contains the element
+	 */
+	public static <T> boolean arrayContains(T[] array, T element) {
+		for (T el : array) {
+			if (el.equals(element))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Get whether the given array contains all of the elements in the second
+	 * array
+	 * @param array the first array
+	 * @param array2 the second array
+	 * @return whether the given array contains all of the elements in the second
+	 * array
+	 */
+	public static <T> boolean arrayContainsAll(T[] array, T[] array2) {
+		int count = 0;
+		outer:
+		for (T el : array2) {
+			for (T el2 : array) {
+				if (el.equals(el2)) {
+					++count;
+					continue outer;
+				}
+			}
+		}
+		return count == array2.length;
+	}
 	
 	public static String mergeStringsAndEnsureCapacity(
 			int minLength, int maxLength, String original, String newStr) {
@@ -200,7 +236,26 @@ public final class Utils {
 	}
 	
 	/**
-	 * For the given vertex, get the full name of the angle at the vertex
+	 * Get the angles in the given triangle adjacent to the
+	 * given segment. 
+	 * @param tri the triangle
+	 * @param seg the segment
+	 * @return the surrounding angles
+	 */
+	public static String[] getSurroundingAngles(String tri, String seg) {			
+		return new String[] {
+				getFullNameOfAngle(tri, seg.substring(0, 1)),
+				getFullNameOfAngle(tri, seg.substring(1))
+		};
+		
+//		if (arrayContainsAll(triChars, segChars)) {
+//				throw new IllegalArgumentException("The given Segment is "
+//						+ "not a part of the given Triangle");
+//		}	
+	}
+	
+	/**
+	 * For the given vertex, get the full name   of the angle at the vertex
 	 * in the given triangle.
 	 * @param tri the triangle
 	 * @param angleShortName the vertex
