@@ -220,6 +220,7 @@ public class ProofSolver {
 				if (
 						congruentBySSS(tri0, tri1) // SSS
 					 || congruentBySAS(tri0, tri1) // SAS
+					 || congruentByASA(tri0, tri1) // ASA
 					) {
 					
 					// Make triangles congruent
@@ -261,7 +262,7 @@ public class ProofSolver {
 					Segment[] segs0 = tri0.getAdjacentSegments(a0.getNameShort());
 					Segment[] segs1 = tri1.getAdjacentSegments(a1.getNameShort());
 					
-					// Keep track of the number of congruent, adjacent segments
+					// Keep track of the number of congruent, adjacent pairs of segments
 					// for each angle (2 are needed to make the two triangles
 					// congruent)
 					int congruentSegmentPairs = 0;
@@ -288,6 +289,64 @@ public class ProofSolver {
 			}
 		}
 		
+		return false;
+	}
+	
+	private boolean congruentByASA(Triangle tri0, Triangle tri1) {
+		// Get the sides of each triangle
+		Segment[] segs0 = tri0.getSides();
+		Segment[] segs1 = tri1.getSides();
+		
+		// For each side in the first triangle
+		for (int i = 0; i < segs0.length; i++) {
+			Segment s0 = segs0[i]; // Get the side
+			// For each side in the second triangle
+			for (int j = 0; j < segs1.length; j++) {
+				Segment s1 = segs1[j]; // Get the side
+				
+				// IF THESE SIDES ARE CONGRUENT (if the Diagram contains a
+				// FigureRelation that says so)
+				if (diagram.containsFigureRelation(
+						FigureRelationType.CONGRUENT, s0.getName(), s1.getName(), null)) {
+					// Get the adjacent angles around the first segment
+					String[] adjacentAngles0 = 
+							Utils.getSurroundingAngles(tri0.getName(), s0.getName());
+					// Get the adjacent angles around the second segment
+					String[] adjacentAngles1 =
+							Utils.getSurroundingAngles(tri1.getName(), s1.getName());
+					
+					// Keep track of the number of congruent, adjacent pairs of angles
+					// for each segment (2 are needed to make the two triangles
+					// congruent)
+					int congruentAnglePairs = 0;
+					
+					// Check for congruent adjacent pairs of angles
+					
+					// For each adjacent angle of the first segment
+					for (int a = 0; a < adjacentAngles0.length; a++) {
+						Angle a0 = tri0.getAngle(adjacentAngles0[a]); // Get the angle
+						// For each adjacent angle of the second segment
+						for (int b = 0; b < adjacentAngles1.length; b++) {
+							// Get the angle
+							Angle a1 = tri1.getAngle(adjacentAngles1[b]);
+
+							// IF THE TWO ANGLES ARE CONGRUENT
+							if (diagram.containsFigureRelation(new FigureRelation(
+									FigureRelationType.CONGRUENT, a0, a1, null))) {
+								// If the adjacent angles are congruent, update variable
+								++congruentAnglePairs;
+							}
+						}
+					}
+					
+					// 2 congruent adjacent angles are needed for the triangles
+					// to be congruent by SAS
+					if (congruentAnglePairs >= 2) {
+						return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
 	
