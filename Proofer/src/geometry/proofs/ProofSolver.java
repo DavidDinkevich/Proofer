@@ -243,29 +243,13 @@ public class ProofSolver {
 		// Get the angles of each triangle
 		Angle[] tri0Angles = tri0.getAngles();
 		Angle[] tri1Angles = tri1.getAngles();
-		
-		// We don't want to check the same PAIR of angles more than once,
-		// so we'll create a list to store the pairs we've checked already
-		List<int[]> checkedAnglePairs = new ArrayList<>();
-		
+
 		// For each angle in the first triangle
 		for (int i = 0; i < tri0Angles.length; i++) {
 			Angle a0 = tri0Angles[i]; // Get the angle
 			
 			// For each angle in the second triangle
-			j_loop:
 			for (int j = 0; j < tri1Angles.length; j++) {
-				// Don't want to compare pairs of angles that have
-				// already been compared
-				for (int[] checkedPair : checkedAnglePairs) {
-					if ((checkedPair[0] == i && checkedPair[1] == j) ||
-							(checkedPair[0] == j && checkedPair[1] == i))
-						continue j_loop;
-				}
-				
-				// Remember this pair of angles--don't want to use again
-				checkedAnglePairs.add(new int[] { i, j } );
-				
 				Angle a1 = tri1Angles[j]; // Get the angle
 				
 				// If the two angles are congruent (if the Diagram contains a
