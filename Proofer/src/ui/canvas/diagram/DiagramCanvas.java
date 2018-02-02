@@ -16,6 +16,7 @@ import ui.canvas.Brush;
 import ui.canvas.Canvas;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsTriangle;
+import ui.canvas.GraphicsVertexBuffer;
 import ui.canvas.StyleManager;
 import ui.canvas.selection.InputManager;
 import ui.swing.ProofCustomizationPanel;
@@ -54,10 +55,15 @@ public class DiagramCanvas extends Canvas {
 		renderList = new RenderList();
 		diagramFigures = new ArrayList<>();
 		vertexBuff = new VertexBuffer();
+		
 		// Add layers to render list
 		for (UIDiagramLayers lay : UIDiagramLayers.values()) {
 			renderList.addLayer(lay);
 		}
+		
+		// Add a GraphicsVertexBuffer to render the VertexBuffer
+		renderList.addDrawable(new GraphicsVertexBuffer(vertexBuff));
+		
 		setCanvasGrid(canvasGrid = new DiagramCanvasGrid(this, new Dimension(50f)));
 		setInputManager(inputManager = new InputManager(this));
 	}
