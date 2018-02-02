@@ -279,6 +279,14 @@ public class VertexBuffer implements Iterable<Vertex> {
 		return vertices.size();
 	}
 	
+	/**
+	 * Get how many times the given char is contained in this
+	 * {@link VertexBuffer}.
+	 */
+	public int getInstanceCount(char ch) {
+		return charList.getInstanceCount(ch);
+	}
+	
 	private static class VertexNameBuffer implements Iterable<Character> {
 //		private static final Comparator<Character> ALPHABET_COMPARATOR = new Comparator<Character>() {
 //			@Override
