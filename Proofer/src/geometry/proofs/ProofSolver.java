@@ -115,6 +115,21 @@ public class ProofSolver {
 		diagram.getFigureRelations().forEach(System.out::println);
 	}
 	
+	/**
+	 * Convenience method to check if two figures are congruent
+	 */
+	private boolean isCongruent(String f0, String f1) {
+		return diagram.containsFigureRelation(FigureRelationType.CONGRUENT, f0, f1, null);
+	}
+	
+	/**
+	 * Convenience method to check if two figures are congruent
+	 */
+	private boolean isCongruent(Figure f0, Figure f1) {
+		return diagram.containsFigureRelation(
+				new FigureRelation(FigureRelationType.CONGRUENT, f0, f1, null));
+	}
+	
 	private void handlePerpendicularPair(FigureRelation pair) {
 		// Make sure the given FigureRelation is of type PERPENDICULAR
 		if (pair.getRelationType() != FigureRelationType.PERPENDICULAR) {
@@ -207,7 +222,7 @@ public class ProofSolver {
 			diagram.addFigureRelation(rel);
 		}
 	}
-
+	
 	private void findAndAddCongruentTriangles() {
 		// We don't want to check the same PAIR of triangles more than once,
 		// so we'll create a list to store the pairs we've checked already
@@ -280,8 +295,7 @@ public class ProofSolver {
 				
 				// If the two angles are congruent (if the Diagram contains a
 				// FigureRelation that says so)
-				if (diagram.containsFigureRelation(
-						new FigureRelation(FigureRelationType.CONGRUENT, a0, a1, null))) {
+				if (isCongruent(a0, a1)) {
 					
 					// Get the adjacent segments of each angle
 					Segment[] segs0 = tri0.getAdjacentSegments(a0.getNameShort());
@@ -296,9 +310,7 @@ public class ProofSolver {
 					for (Segment s0 : segs0) {
 						for (Segment s1 : segs1) {
 							// Check if congruent
-							if (diagram.containsFigureRelation(
-									FigureRelationType.CONGRUENT, s0.getName(), s1.getName(), null
-							)) {
+							if (isCongruent(s0.getName(), s1.getName())) {
 								// If the adjacent segments are congruent, update variable
 								++congruentSegmentPairs;
 							}
@@ -331,8 +343,7 @@ public class ProofSolver {
 				
 				// IF THESE SIDES ARE CONGRUENT (if the Diagram contains a
 				// FigureRelation that says so)
-				if (diagram.containsFigureRelation(
-						FigureRelationType.CONGRUENT, s0.getName(), s1.getName(), null)) {
+				if (isCongruent(s0.getName(), s1.getName())) {
 					// Get the adjacent angles around the first segment
 					String[] adjacentAngles0 = 
 							Utils.getSurroundingAngles(tri0.getName(), s0.getName());
@@ -356,8 +367,7 @@ public class ProofSolver {
 							Angle a1 = tri1.getAngle(adjacentAngles1[b]);
 
 							// IF THE TWO ANGLES ARE CONGRUENT
-							if (diagram.containsFigureRelation(new FigureRelation(
-									FigureRelationType.CONGRUENT, a0, a1, null))) {
+							if (isCongruent(a0, a1)) {
 								// If the adjacent angles are congruent, update variable
 								++congruentAnglePairs;
 							}
