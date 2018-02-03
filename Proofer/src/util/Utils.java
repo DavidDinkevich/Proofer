@@ -376,6 +376,25 @@ public final class Utils {
 	}
 	
 	/**
+	 * Get the name of the vertex opposite to the given segment.
+	 * For instance, in triangle "ABC", the vertex opposite of the
+	 * segment "AB" will be "C".
+	 * @param tri the triangle
+	 * @param seg the segment
+	 * @return the vertex opposite to the given segment in the given
+	 * triangle
+	 */
+	public static String getOppositeVertex(String tri, String seg) {
+		for (char c : tri.toCharArray()) {
+			String vertex = String.valueOf(c);
+			if (!seg.contains(vertex)) {
+				return vertex;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Get the {@link Arc} formed in the given list of {@link Vertex}es.
 	 * @param verts the list of vertices from which the {@link Arc} will
 	 * be derived.
