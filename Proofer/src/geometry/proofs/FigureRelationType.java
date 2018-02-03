@@ -6,7 +6,7 @@ public enum FigureRelationType {
 	// Segments
 	PARALLEL, PERPENDICULAR, BISECTS,
 	// Triangles
-	SIMILAR,
+	SIMILAR, SAS, ASA, SSS,
 	// Angles
 	SUPPLEMENTARY, COMPLEMENTARY, RIGHT,
 	// Vertices
