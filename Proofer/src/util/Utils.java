@@ -179,8 +179,9 @@ public final class Utils {
 			final int sharedCharIndex = seg1.indexOf(shared);
 			// If there is no shared vertex
 			if (sharedCharIndex < 0) {
-				// Return null
-				return null;
+				// Throw exception
+				throw new IllegalArgumentException("The given 2 Segments do not share"
+						+ " a common vertex.");
 			}
 			unshared1 = seg1.charAt(sharedCharIndex == 0 ? 1 : 0);
 		}
