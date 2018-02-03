@@ -116,12 +116,24 @@ public class ProofSolver {
 	}
 	
 	private void handlePerpendicularPair(FigureRelation pair) {
+		// Make sure the given FigureRelation is of type PERPENDICULAR
+		if (pair.getRelationType() != FigureRelationType.PERPENDICULAR) {
+			throw new IllegalArgumentException("Given FigureRelation"
+					+ " must be of type PERPENDICULAR");
+		}
+				
 		String angleName = Utils.getAngleBetween(
 				pair.getFigure0().getName(), pair.getFigure1().getName());
 		diagram.makeRightAngle(angleName, pair);
 	}
 	
 	private void handleBisectPair(FigureRelation pair) {
+		// Make sure the given FigureRelation is of type BISECTS
+		if (pair.getRelationType() != FigureRelationType.BISECTS) {
+			throw new IllegalArgumentException("Given FigureRelation"
+					+ " must be of type BISECTS");
+		}
+		
 		Segment seg0 = pair.getFigure0();
 		Segment seg1 = pair.getFigure1();
 		
@@ -147,6 +159,13 @@ public class ProofSolver {
 	}
 	
 	private void handleMidpoint(FigureRelation pair) {
+		// Make sure the given FigureRelation is of type MIDPOINT
+		if (pair.getRelationType() != FigureRelationType.MIDPOINT) {
+			throw new IllegalArgumentException("Given FigureRelation"
+					+ " must be of type MIDPOINT");
+
+		}
+		
 		Vertex vert = pair.getFigure0();
 		Segment seg = pair.getFigure1();
 		
@@ -165,6 +184,12 @@ public class ProofSolver {
 	}
 	
 	private void handleSimilarTriangles(FigureRelation pair) {
+		// Make sure the given FigureRelation is of type SIMILAR
+		if (pair.getRelationType() != FigureRelationType.SIMILAR) {
+			throw new IllegalArgumentException("Given FigureRelation"
+					+ " must be of type SIMILAR");
+		}
+		
 		Triangle tri0 = pair.getFigure0();
 		Triangle tri1 = pair.getFigure1();
 		
@@ -182,7 +207,7 @@ public class ProofSolver {
 			diagram.addFigureRelation(rel);
 		}
 	}
-	
+
 	private void findAndAddCongruentTriangles() {
 		// We don't want to check the same PAIR of triangles more than once,
 		// so we'll create a list to store the pairs we've checked already
@@ -215,7 +240,7 @@ public class ProofSolver {
 				
 				// Remember this pair of triangles--don't want to use again
 				checkedTriPairs.add(new int[] { i, j });
-				
+								
 				// Check if triangles are congruent (SSS, SAS, ASA)
 				if (
 						congruentBySSS(tri0, tri1) // SSS
