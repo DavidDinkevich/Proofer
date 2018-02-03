@@ -102,8 +102,10 @@ public class ProofSolver {
 				}
 			}
 			
+			// Discover isosceles triangles
+			findIsoscelesTriangles();
 			// Discover congruent triangles
-			findAndAddCongruentTriangles();
+			findCongruentTriangles();			
 			
 			// Update
 			totalRelsAdded = diagram.getFigureRelations().size() - relCountBefore;
@@ -223,7 +225,32 @@ public class ProofSolver {
 		}
 	}
 	
-	private void findAndAddCongruentTriangles() {
+	private void findIsoscelesTriangles() {
+		for (Figure fig : diagram.getFigures()) {
+			if (!(fig instanceof Triangle))
+				continue;
+			
+			Triangle tri = (Triangle)fig;
+			String triName = tri.getName();
+			Segment[] segs = tri.getSides();
+			
+			for (int i = 1; i < 3; i++) {
+				if (isCongruent(segs[0], segs[i])) {
+					String oppVert0 = Utils.getOppositeVertex(triName, segs[0].getName());
+					String oppVert1 = Utils.getOppositeVertex(triName, segs[i].getName());
+					Angle a0 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert0));
+					Angle a1 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert1));
+					
+					FigureRelation rel = new FigureRelation(
+						FigureRelationType.CONGRUENT, a0, a1, null	
+					);
+					diagram.addFigureRelation(rel);
+				}
+			}
+		}
+	}
+	
+	private void findCongruentTriangles() {
 		// We don't want to check the same PAIR of triangles more than once,
 		// so we'll create a list to store the pairs we've checked already
 		List<int[]> checkedTriPairs = new ArrayList<>();
