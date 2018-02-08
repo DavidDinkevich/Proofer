@@ -226,24 +226,36 @@ public class ProofSolver {
 	}
 	
 	private void findIsoscelesTriangles() {
+		// For each figure in the Diagram
 		for (Figure fig : diagram.getFigures()) {
+			// If the figure is not a Triangle, leave the function
 			if (!(fig instanceof Triangle))
 				continue;
 			
+			// Get the triangle
 			Triangle tri = (Triangle)fig;
+			// Get the name of the triangle
 			String triName = tri.getName();
+			// Get the triangle's segments
 			Segment[] segs = tri.getSides();
 			
+			// For each of the SECOND TWO segments of the triangle (first seg skipped)
 			for (int i = 1; i < 3; i++) {
+				// If the segments are congruent
 				if (isCongruent(segs[0], segs[i])) {
+					// Get the opposite vertex from the FIRST segment
 					String oppVert0 = Utils.getOppositeVertex(triName, segs[0].getName());
+					// Get the opposite vertex from the CURRENT segment
 					String oppVert1 = Utils.getOppositeVertex(triName, segs[i].getName());
+					// Get the angles at each of the vertices
 					Angle a0 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert0));
 					Angle a1 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert1));
 					
+					// Make the two angles congruent
 					FigureRelation rel = new FigureRelation(
 						FigureRelationType.CONGRUENT, a0, a1, null	
 					);
+					// Update Diagram
 					diagram.addFigureRelation(rel);
 				}
 			}
