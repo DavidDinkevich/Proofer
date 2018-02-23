@@ -267,38 +267,21 @@ public class ProofSolver {
 	}
 	
 	private void findCongruentTriangles() {
-		// We don't want to check the same PAIR of triangles more than once,
-		// so we'll create a list to store the pairs we've checked already
-		List<int[]> checkedTriPairs = new ArrayList<>();
-		
 		// For each figure
 		for (int i = 0; i < diagram.getFigures().size(); i++) {
 			// Make sure figure is a triangle
 			if (!(diagram.getFigures().get(i) instanceof Triangle))
 				continue;
 			// For each other figure
-			j_loop:
-			for (int j = 0; j < diagram.getFigures().size(); j++) {
-				// Make sure we're not comparing the same two figures AND
-				// the second figure must be a triangle
-				if (i == j || !(diagram.getFigures().get(j) instanceof Triangle))
+			for (int j = i + 1; j < diagram.getFigures().size(); j++) {
+				// The second figure must be a triangle
+				if (!(diagram.getFigures().get(j) instanceof Triangle))
 					continue;
 				
-				// Don't want to compare pairs of triangles that have
-				// already been compared
-				for (int[] triPair : checkedTriPairs) {
-					if ((triPair[0] == i && triPair[1] == j) ||
-							(triPair[0] == j && triPair[1] == i))
-						continue j_loop;
-				}
-				
-				// Convenience
+				// Get the triangles
 				Triangle tri0 = (Triangle)diagram.getFigures().get(i);
 				Triangle tri1 = (Triangle)diagram.getFigures().get(j);
 				
-				// Remember this pair of triangles--don't want to use again
-				checkedTriPairs.add(new int[] { i, j });
-								
 				// Check if triangles are congruent (SSS, SAS, ASA)
 				if (
 						congruentBySSS(tri0, tri1) // SSS
