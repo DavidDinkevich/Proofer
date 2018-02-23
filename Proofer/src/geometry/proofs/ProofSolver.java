@@ -239,24 +239,28 @@ public class ProofSolver {
 			// Get the triangle's segments
 			Segment[] segs = tri.getSides();
 			
-			// For each of the SECOND TWO segments of the triangle (first seg skipped)
-			for (int i = 1; i < 3; i++) {
-				// If the segments are congruent
-				if (isCongruent(segs[0], segs[i])) {
-					// Get the opposite vertex from the FIRST segment
-					String oppVert0 = Utils.getOppositeVertex(triName, segs[0].getName());
-					// Get the opposite vertex from the CURRENT segment
-					String oppVert1 = Utils.getOppositeVertex(triName, segs[i].getName());
-					// Get the angles at each of the vertices
-					Angle a0 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert0));
-					Angle a1 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert1));
-					
-					// Make the two angles congruent
-					FigureRelation rel = new FigureRelation(
-						FigureRelationType.CONGRUENT, a0, a1, null	
-					);
-					// Update Diagram
-					diagram.addFigureRelation(rel);
+			// For each segment
+			for (int i = 0; i < 3; i++) {
+				// For each segment located AFTER the above segment in the list of segments
+				// (this prevents us from comparing a pair of segments twice. We don't
+				// want to compare A to B and then B to A
+				for (int j = i + 1; j < 3; j++) {
+					if (isCongruent(segs[i], segs[j])) {
+						// Get the opposite vertex from the FIRST segment
+						String oppVert0 = Utils.getOppositeVertex(triName, segs[i].getName());
+						// Get the opposite vertex from the CURRENT segment
+						String oppVert1 = Utils.getOppositeVertex(triName, segs[j].getName());
+						// Get the angles at each of the vertices
+						Angle a0 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert0));
+						Angle a1 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert1));
+						
+						// Make the two angles congruent
+						FigureRelation rel = new FigureRelation(
+							FigureRelationType.CONGRUENT, a0, a1, null	
+						);
+						// Update Diagram
+						diagram.addFigureRelation(rel);
+					}
 				}
 			}
 		}
