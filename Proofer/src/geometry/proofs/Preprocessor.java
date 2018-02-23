@@ -152,10 +152,6 @@ public class Preprocessor {
 		do {
 			final int COUNT = diagram.getFigures().size();
 			figuresWereAdded = false;
-		
-			// We don't want to check the same PAIR of segments more than once,
-			// so we'll create a list to store the pairs we've checked already
-			List<int[]> checkedSegPairs = new ArrayList<>();
 			
 			// Loop through segments
 			for (int i = 0; i < COUNT; i++) {
@@ -164,29 +160,15 @@ public class Preprocessor {
 					// Capture the segment
 					Segment seg0 = (Segment)diagram.getFigures().get(i);
 					
-					j_loop: // Loop through figures again
-					for (int j = 0; j < COUNT; j++) {
-						// Don't want to compare the same segment
-						if (i == j)
-							continue;
+					// Loop through figures again
+					for (int j = i + 1; j < COUNT; j++) {
 						if (diagram.getFigures().get(j) instanceof Segment) {
-							// Don't want to compare pairs of segments that have
-							// already been compared
-							for (int[] segPair : checkedSegPairs) {
-								if ((segPair[0] == i && segPair[1] == j) ||
-										(segPair[0] == j && segPair[1] == i))
-									continue j_loop;
-							}
-														
-							// Remember this pair of segments--don't want to use again
-							checkedSegPairs.add(new int[] {i, j});
-							
 							Segment seg1 = (Segment)diagram.getFigures().get(j);
-							
+			
 							// Add hidden figures
 							Figure hiddenFig = identifyHiddenSegOrAngle(seg0, seg1);
 							// If we've found a hidden figure
-							if (hiddenFig != null)
+							if (hiddenFig != null) {
 								// If the figure was added to the diagram (it was not contained before)
 								if (diagram.addFigure(hiddenFig)) {
 									figuresWereAdded = true; // Update variable
@@ -194,10 +176,12 @@ public class Preprocessor {
 									if (hiddenFig instanceof Angle)
 										hiddenAngles.add((Angle)hiddenFig);
 								}
+							}
 						}
 					}
 				}
 			}
+						
 			// Add hidden triangles
 			List<Triangle> hiddenTris = identifyHiddenTriangles(diagram, hiddenAngles);
 			// If hidden triangles were added to the diagram
