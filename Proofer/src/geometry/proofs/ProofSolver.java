@@ -238,13 +238,16 @@ public class ProofSolver {
 			String triName = tri.getName();
 			// Get the triangle's segments
 			Segment[] segs = tri.getSides();
+			// Get the triangle's angles
+			Angle[] angles = tri.getAngles();
 			
 			// For each segment
 			for (int i = 0; i < 3; i++) {
 				// For each segment located AFTER the above segment in the list of segments
 				// (this prevents us from comparing a pair of segments twice. We don't
-				// want to compare A to B and then B to A
+				// want to compare A to B and then B to A)
 				for (int j = i + 1; j < 3; j++) {
+					// Find congruent segments, make opposite angles congruent
 					if (isCongruent(segs[i], segs[j])) {
 						// Get the opposite vertex from the FIRST segment
 						String oppVert0 = Utils.getOppositeVertex(triName, segs[i].getName());
@@ -260,6 +263,25 @@ public class ProofSolver {
 						);
 						// Update Diagram
 						diagram.addFigureRelation(rel);
+					}
+					// Find congruent angles, make opposite segments congruent
+					if (isCongruent(angles[i], angles[j])) {
+						// Get the middle vertex of the first angle
+						String midVertex0 = angles[i].getNameShort();
+						// Get the middle vertex of the second segment
+						String midVertex1 = angles[j].getNameShort();
+						// Get the segment in between of the two angles
+						String middleSegment = midVertex0 + midVertex1;
+						// Get the vertex opposite to the middle segment
+						String oppVertex = Utils.getOppositeVertex(triName, middleSegment);
+						// Make the first segment
+						String seg0 = oppVertex + midVertex0;
+						// Make the second segment
+						String seg1 = oppVertex + midVertex1;
+						// Make the segs congruent
+						diagram.addFigureRelation(
+							FigureRelationType.CONGRUENT, seg0, seg1, null
+						);
 					}
 				}
 			}
