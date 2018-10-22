@@ -31,8 +31,9 @@ public class MainWindow extends JFrame {
 		
 		// SYNTHETICA
 		try {
-			UIManager.setLookAndFeel(new SyntheticaAluOxideLookAndFeel());
-		} catch (UnsupportedLookAndFeelException | ParseException e) {
+//			UIManager.setLookAndFeel(new SyntheticaAluOxideLookAndFeel());
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		
