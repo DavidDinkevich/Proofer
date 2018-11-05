@@ -6,10 +6,10 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="F:/Users/david/Google Drive/Code/libraries/processing/core.jar"/>
-	<classpathentry kind="lib" path="F:/Users/david/Google Drive/Code/libraries/MigLayout/miglayout-core-5.0.jar"/>
-	<classpathentry kind="lib" path="F:/Users/david/Google Drive/Code/libraries/MigLayout/miglayout-swing-5.0.jar"/>
-	<classpathentry kind="lib" path="F:/Users/david/Google Drive/Code/libraries/Synthetica/syntheticaAluOxide.jar"/>
-	<classpathentry kind="lib" path="F:/Users/david/Google Drive/Code/libraries/Synthetica/synthetica.jar"/>
+	<classpathentry kind="lib" path="C:/Users/david/Documents/GitHub/Proofer/Proofer/lib/core.jar"/>
+	<classpathentry kind="lib" path="C:/Users/david/Documents/GitHub/Proofer/Proofer/lib/miglayout-core-5.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/david/Documents/GitHub/Proofer/Proofer/lib/miglayout-swing-5.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/david/Documents/GitHub/Proofer/Proofer/lib/syntheticaAluOxide.jar"/>
+	<classpathentry kind="lib" path="C:/Users/david/Documents/GitHub/Proofer/Proofer/lib/synthetica.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
