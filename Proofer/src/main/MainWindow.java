@@ -1,91 +1,50 @@
 package main;
 
-import java.awt.BorderLayout;
+import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.paint.Paint;
+import javafx.stage.Stage;
 
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
-import java.text.ParseException;
-
-import de.javasoft.plaf.synthetica.SyntheticaAluOxideLookAndFeel;
-
-import ui.swing.ProofCustomizationPanel;
-
-/**
- * Main class for the program.
- * @author David Dinkevich
- */
-public class MainWindow extends JFrame {
-	private static final long serialVersionUID = -2549207704173465317L;
-	
-	public static final String APP_NAME;
-	
-	static {
-		APP_NAME = "Proofer";
-		
-		/*
-		 * Set look and feel
-		 */
-		
-		// SYNTHETICA
-		try {
-//			UIManager.setLookAndFeel(new SyntheticaAluOxideLookAndFeel());
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		
-		// NIMBUS
-//		try {
-//			for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-//		        if ("Nimbus".equals(info.getName())) {
-//		            UIManager.setLookAndFeel(info.getClassName());
-//		            break;
-//		        }
-//		    }
-//		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-//				| UnsupportedLookAndFeelException e) {
-//			e.printStackTrace();
-//		}
-	}
-	
-	// Screen components
-	private ProofCustomizationPanel proofPanel;
-	
-	private boolean windowCreated = false;
-	
-	public MainWindow() {
-		super(APP_NAME);
-	}
-	
-	private void createWindow() {
-		if (windowCreated)
-			return;
-		
-		windowCreated = true;
-		setSize(1200, 800);
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLayout(new BorderLayout());
-		
-		proofPanel = new ProofCustomizationPanel();
-		add(proofPanel, BorderLayout.CENTER);
-		
-		setVisible(true);
-	}
-	
-	public ProofCustomizationPanel getProofCustomizationPanel() {
-		return proofPanel;
-	}
+public class MainWindow extends Application {
 	
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				new MainWindow().createWindow();
-			}
-		});
+		launch(args);
+	}
+	
+	@Override
+	public void stop() {
+		System.exit(0);
+	}
+	
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+
+		//Setting the title to Stage. 
+		primaryStage.setTitle("Sample application");
+		
+		Canvas canvas = new Canvas(1000, 600);
+		canvas.getGraphicsContext2D().setFill(Paint.valueOf("red"));
+		canvas.getGraphicsContext2D().fillRect(0, 0, 1000, 600);
+		
+		Group group = new Group();
+		group.getChildren().add(canvas);
+		
+		Scene scene = new Scene(group, 1000, 600);
+		
+		//Setting the scene to Stage 
+		primaryStage.setScene(scene);
+		       
+		//Displaying the stage 
+		primaryStage.show();
+
+		       
 	}
 }
+
+
+
+
+
+
