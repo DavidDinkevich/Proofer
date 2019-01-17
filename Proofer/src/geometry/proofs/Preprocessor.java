@@ -212,6 +212,7 @@ public class Preprocessor {
 		Slope seg0Slope = seg0.getSlope();
 		// Get slope of segment 1
 		Slope seg1Slope = seg1.getSlope();
+				
 		/*
 		 * Compare slopes: if the slopes are the same, add a new hidden segment.
 		 * Otherwise, add the hidden angle.z
@@ -376,12 +377,12 @@ public class Preprocessor {
 		Segment bisectedSeg = pair.getFigure1();
 		
 		// Construct/add new midpoint pair
-		diagram.addFigureRelation(
+		diagram.addFigureRelation(new FigureRelation(
 				FigureRelationType.MIDPOINT,
-				midpt.getName(),
-				bisectedSeg.getName(),
+				midpt,
+				bisectedSeg,
 				pair
-		);
+		));
 	}
 	
 	/**
@@ -433,12 +434,12 @@ public class Preprocessor {
 			
 			// Add more specific figure relation pairs to replace the given one
 			for (int i = 0; i < 2; i++) {
-				diagram.addFigureRelation(
+				diagram.addFigureRelation(new FigureRelation(
 						FigureRelationType.PERPENDICULAR,
-						smallIntersectingSeg.getName(),
-						(i == 0 ? baseSeg0 : baseSeg1).getName(),
+						smallIntersectingSeg,
+						(i == 0 ? baseSeg0 : baseSeg1),
 						pair // Parent
-				);
+				));
 			}
 		}		
 	}
@@ -456,6 +457,7 @@ public class Preprocessor {
 					return vert;
 			}
 		}
+		System.out.println("I returned null");
 		return null;
 	}
 	

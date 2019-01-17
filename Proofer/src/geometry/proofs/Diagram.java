@@ -24,17 +24,7 @@ public class Diagram {
 	public FigureRelation getProofGoal() {
 		return proofGoal;
 	}
-	
-	/**
-	 * Set the goal of this proof
-	 * @return the old goal, or null if there was no previous
-	 */
-	public FigureRelation setProofGoal(FigureRelationType rel, String fig0, String fig1,
-			FigureRelation parent) {
-		FigureRelation newGoal = valueOf(rel, fig0, fig1, parent);
-		return newGoal == null ? null : setProofGoal(newGoal);
-	}
-	
+		
 	/**
 	 * Set the goal of this proof
 	 * @param newGoal the new goal
@@ -145,9 +135,10 @@ public class Diagram {
 		// Conditions
 		if (
 				// Figure relation type is not "congruent"
-				rel.getRelationType() != FigureRelationType.CONGRUENT
+//				rel.getRelationType() != FigureRelationType.CONGRUENT
 				// FigureRelation must not be reflexive
-				|| rel.isCongruentAndReflexive()
+//				|| rel.isCongruentAndReflexive()
+				rel.isCongruentAndReflexive()
 			)
 			return;
 		
@@ -289,43 +280,50 @@ public class Diagram {
 	
 	/////////////////////////////
 	
-	/**
-	 * Use the given information to create a {@link FigureRelation}.
-	 * @return the {@link FigureRelation}
-	 */
-	private FigureRelation valueOf(FigureRelationType type, String fig0, String fig1,
-			FigureRelation parent) {
-		final boolean RIGHT_ANGLE = type == FigureRelationType.RIGHT;
-		// Special search for right angles
-		Figure figure0 = !RIGHT_ANGLE ? getFigure(fig0) : getFigure(fig0, Angle.class);
-		Figure figure1 = null;
-		if (!RIGHT_ANGLE)
-			figure1 = getFigure(fig1);
-		if (figure0 == null || (!RIGHT_ANGLE && figure1 == null))
-			return null;
-		return new FigureRelation(type, figure0, figure1, parent);
-	}
+//	/**
+//	 * Use the given information to create a {@link FigureRelation}.
+//	 * @return the {@link FigureRelation}
+//	 */
+//	private FigureRelation valueOf(FigureRelationType type, String fig0, String fig1,
+//			FigureRelation parent) {
+//		final boolean RIGHT_ANGLE = type == FigureRelationType.RIGHT;
+//		// Special search for right angles
+//		Figure figure0 = !RIGHT_ANGLE ? getFigure(fig0) : getFigure(fig0, Angle.class);
+//		Figure figure1 = null;
+//		if (!RIGHT_ANGLE)
+//			figure1 = getFigure(fig1);
+//		if (figure0 == null || (!RIGHT_ANGLE && figure1 == null))
+//			return null;
+//		
+//		FigureRelation rel = new FigureRelation(type, figure0, figure1, parent);
+//		
+//		if (!FigureRelation.isLegalRelation(rel)) {
+//			System.out.println("This is a dark day...");
+//		}
+//		
+//		return rel;
+//	}
 	
-	/**
-	 * Use the given information to create a {@link FigureRelation}
-	 * and add the given {@link FigureRelation} to this {@link Diagram}.
-	 * <p>
-	 * NOTE: DO NOT USE THIS METHOD WITH TRIANGLES OR ANGLES. This is because
-	 * with the given string names, it is impossible to know the difference
-	 * between an {@link Angle} or a {@link Triangle}. 
-	 * @param type the {@link FigureRelationType} of the {@link FigureRelation}
-	 * @param fig0 the first {@link Figure}
-	 * @param fig1 the second {@link Figure}
-	 * @param parent the parent of the {@link FigureRelation}
-	 * @return false if the given {@link FigureRelation} is already
-	 * contained in this {@link Diagram}, true if the operation
-	 * was successful
-	 */
-	public boolean addFigureRelation(FigureRelationType type, String fig0, String fig1,
-			FigureRelation parent) {
-		FigureRelation pair = valueOf(type, fig0, fig1, parent);
-		return addFigureRelation(pair);
-	}
+//	/**
+//	 * Use the given information to create a {@link FigureRelation}
+//	 * and add the given {@link FigureRelation} to this {@link Diagram}.
+//	 * <p>
+//	 * NOTE: DO NOT USE THIS METHOD WITH TRIANGLES OR ANGLES. This is because
+//	 * with the given string names, it is impossible to know the difference
+//	 * between an {@link Angle} or a {@link Triangle}. 
+//	 * @param type the {@link FigureRelationType} of the {@link FigureRelation}
+//	 * @param fig0 the first {@link Figure}
+//	 * @param fig1 the second {@link Figure}
+//	 * @param parent the parent of the {@link FigureRelation}
+//	 * @return false if the given {@link FigureRelation} is already
+//	 * contained in this {@link Diagram}, true if the operation
+//	 * was successful
+//	 */
+//	public boolean addFigureRelation(FigureRelationType type, String fig0, String fig1,
+//			FigureRelation parent) {
+//		FigureRelation pair = valueOf(type, fig0, fig1, parent);
+//		return addFigureRelation(pair);
+//	}
 	
 	/**
 	 * Add the given {@link FigureRelation} to this {@link Diagram}.
@@ -391,10 +389,10 @@ public class Diagram {
 		}
 	}
 	
-	public boolean removeFigureRelation(FigureRelationType type, String fig0,
-			String fig1, FigureRelation parent) {
-		return relations.remove(valueOf(type, fig0, fig1, parent));
-	}
+//	public boolean removeFigureRelation(FigureRelationType type, String fig0,
+//			String fig1, FigureRelation parent) {
+//		return relations.remove(valueOf(type, fig0, fig1, parent));
+//	}
 	public boolean removeFigureRelation(FigureRelation pair) {
 		return relations.remove(pair);
 	}
@@ -407,10 +405,10 @@ public class Diagram {
 		return relations.contains(rel);
 	}
 	
-	public boolean containsFigureRelation(FigureRelationType type, String fig0,
-			String fig1, FigureRelation parent) {
-		return relations.contains(valueOf(type, fig0, fig1, parent));
-	}
+//	public boolean containsFigureRelation(FigureRelationType type, String fig0,
+//			String fig1, FigureRelation parent) {
+//		return relations.contains(valueOf(type, fig0, fig1, parent));
+//	}
 	
 	public boolean containsFigureRelations(Collection<FigureRelation> figs) {
 		return relations.containsAll(figs);
