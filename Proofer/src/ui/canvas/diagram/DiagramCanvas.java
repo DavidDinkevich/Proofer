@@ -1,25 +1,19 @@
 package ui.canvas.diagram;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import geometry.Dimension;
 import geometry.Vec2;
 import geometry.shapes.Polygon;
-import geometry.shapes.Triangle;
-import geometry.shapes.Vertex;
 import geometry.shapes.VertexBuffer;
 
 import javafx.scene.paint.Color;
 
 import ui.canvas.AdvancedCanvas;
-import ui.canvas.Brush;
 import ui.canvas.GraphicsShape;
-import ui.canvas.GraphicsTriangle;
 import ui.canvas.GraphicsVertexBuffer;
-import ui.canvas.StyleManager;
 import ui.canvas.selection.InputManager;
 
 public class DiagramCanvas extends AdvancedCanvas {
