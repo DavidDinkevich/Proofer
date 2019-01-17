@@ -31,7 +31,7 @@ public class FigureRelation {
 		}
 		
 		if (!isLegalRelation()) {
-			throw new IllegalRelationException();
+			throw new IllegalRelationException(this);
 		}
 		
 		isCongruentAndReflexive = relType == FigureRelationType.CONGRUENT
