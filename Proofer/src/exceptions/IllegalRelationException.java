@@ -1,7 +1,14 @@
 package exceptions;
 
+import geometry.proofs.FigureRelation;
+
 @SuppressWarnings("serial")
 public class IllegalRelationException extends RuntimeException {
+	
+	public IllegalRelationException(FigureRelation rel) {
+		this("Illegal relation type between: " + rel.getFigure0() + 
+				", " + rel.getFigure1());
+	}
 
 	public IllegalRelationException() {
 		this("Illegal relation type between figures.");
