@@ -98,17 +98,6 @@ public class Segment extends AbstractShape {
 		return new Vec2(x, y);
 	}
 	
-//	public static void main(String[] args) {
-//		Vec2 scale = new Vec2(2, 2);
-//		Segment seg0 = new Segment(new Vertex(new Vec2(-3, 2)), new Vertex(new Vec2(7, 2)));
-//		seg0.setScale(scale);
-//		Segment seg1 = new Segment(new Vertex(), new Vertex(new Vec2(3, 3)));
-////		Segment seg1 = new Segment(new Vertex(new Vec2(4, 5)), new Vertex(new Vec2(4, -2)));
-//		seg1.setScale(scale);
-//		
-//		System.out.println(Segment.getPointOfIntersection(seg0, seg1, true));
-//	}
-	
 	@Override
 	public void setName(String name) {
 		super.setName(name);
