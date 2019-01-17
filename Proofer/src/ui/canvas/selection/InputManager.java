@@ -298,17 +298,38 @@ public class InputManager implements Drawable {
 		}
 
 		else if (e.getCode().equals(KeyCode.N)) {
+			/*
+			 * EVERYTHING BELLOW IS TEMPORARY, FOR TESTING PURPOSES.
+			 * WILL BE DELETED
+			 */
+			
 			Brush brush = StyleManager.getDefaultFigureBrush();
+			
+			final int SIDE = 100;
 
 			Vertex[] tpoints = new Vertex[] {
-					new Vertex(new Vec2(0f, -200.0f)),
-					new Vertex(new Vec2(300f, 100f)),
-					new Vertex(new Vec2(0f, 100f))
+					new Vertex(new Vec2(0f, SIDE)),
+					new Vertex(new Vec2(SIDE*2, -SIDE)),
+					new Vertex(new Vec2(0f, -SIDE))
 			};
-			GraphicsTriangle tri = new GraphicsTriangle(brush,
+			GraphicsTriangle tri = new GraphicsTriangle(brush, 
 					new Triangle(Arrays.asList(tpoints)));
-						
+//			tri.setAllowSelection(false);
+			tri.setSelected(true);
 			canvas.addDiagramFigure(tri);
+			
+//			GraphicsTriangle tri2 = new GraphicsTriangle(brush, new Triangle(Arrays.asList(
+//					new Vertex[] {
+//							new Vertex(new Vec2(-10f, -SIDE)),
+//							new Vertex(new Vec2(-10f, SIDE)),
+//							new Vertex(new Vec2(-SIDE*2, -SIDE))
+//						}
+//			)));
+////			tri2.setAllowSelection(false);
+			
+//			addDiagramFigures(Arrays.asList(tri, tri2));
+			
+
 			canvas.redraw();
 		}
 

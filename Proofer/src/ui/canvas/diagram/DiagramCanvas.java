@@ -46,37 +46,7 @@ public class DiagramCanvas extends AdvancedCanvas {
 		}
 		
 		// Add a GraphicsVertexBuffer to render the VertexBuffer
-		renderList.addDrawable(new GraphicsVertexBuffer(vertexBuff));
-		
-		
-		/*
-		 * EVERYTHING BELLOW IS TEMPORARY, FOR TESTING PURPOSES.
-		 * WILL BE DELETED
-		 */
-		
-		Brush brush = StyleManager.getDefaultFigureBrush();
-
-		Vertex[] tpoints = new Vertex[] {
-				new Vertex(new Vec2(0f, 200.0f)),
-				new Vertex(new Vec2(300f, -100f)),
-				new Vertex(new Vec2(0f, -100f))
-		};
-		GraphicsTriangle tri = new GraphicsTriangle(brush, 
-				new Triangle(Arrays.asList(tpoints)));
-//		tri.setAllowSelection(false);
-		tri.setSelected(true);
-		
-		GraphicsTriangle tri2 = new GraphicsTriangle(brush, new Triangle(Arrays.asList(
-				new Vertex[] {
-						new Vertex(new Vec2(-10f, -100f)),
-						new Vertex(new Vec2(-10f, 200f)),
-						new Vertex(new Vec2(-300f, -100f))
-					}
-		)));
-//		tri2.setAllowSelection(false);
-		
-		addDiagramFigures(Arrays.asList(tri, tri2));
-		
+		renderList.addDrawable(new GraphicsVertexBuffer(vertexBuff));		
 	}
 
 	@Override
