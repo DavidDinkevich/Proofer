@@ -332,7 +332,15 @@ public class Segment extends AbstractShape {
 				return true;
 			if (!(o instanceof Slope))
 				return false;
-			return getSlopeRaw() == ((Slope)o).getSlopeRaw();
+			Slope other = (Slope) o;
+			final float slopeDecimal = getSlopeRaw();
+			final float slopeDecimal2 = other.getSlopeRaw();
+			return slopeDecimal == slopeDecimal2
+					// If the line is vertical, then the slope can either be
+					// positive infinity or negative infinity (pointing up
+					// or down). For our purposes, these slopes are equal
+					|| (Float.isInfinite(slopeDecimal) 
+							&& Float.isInfinite(slopeDecimal2));
 		}
 		
 		@Override
@@ -375,4 +383,5 @@ public class Segment extends AbstractShape {
 			return isHorizontal() || isVertical();
 		}
 	}	
+	
 }
