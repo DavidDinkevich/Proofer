@@ -30,7 +30,8 @@ public class FigureRelationPanel extends HBox {
 			vals.add(type.toString());
 		
 		relationBox = new ComboBox<String>(vals);
-		relationBox.getSelectionModel().getSelectedItem();
+		relationBox.getSelectionModel().select(0);
+		
 		
 		getChildren().addAll(fig0TextField, relationBox, fig1TextField);
 	}
