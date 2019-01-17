@@ -30,7 +30,7 @@ public class FigureRelation {
 			figure1 = fig1;
 		}
 		
-		if (!isLegalRelation()) {
+		if (!isLegalRelation(this)) {
 			throw new IllegalRelationException(this);
 		}
 		
@@ -42,7 +42,11 @@ public class FigureRelation {
 		return isCongruentAndReflexive;
 	}
 	
-	private boolean isLegalRelation() {
+	public static boolean isLegalRelation(FigureRelation rel) {
+		Figure figure0 = rel.getFigure0();
+		Figure figure1 = rel.getFigure1();
+		FigureRelationType relType = rel.getRelationType();
+		
 		switch (relType) {
 		case CONGRUENT:
 			return figure0.getClass() == figure1.getClass()
