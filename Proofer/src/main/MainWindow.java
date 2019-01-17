@@ -3,11 +3,19 @@ package main;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.paint.Paint;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import ui.FigureRelationListPanel;
+import ui.canvas.diagram.DiagramCanvas;
+
+
 public class MainWindow extends Application {
+	
+	public static final int WIDTH = 1000;
+	public static final int HEIGHT = 600;
+	
+	private DiagramCanvas canvas;
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -15,36 +23,39 @@ public class MainWindow extends Application {
 	
 	@Override
 	public void stop() {
-		System.exit(0);
 	}
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-		//Setting the title to Stage. 
-		primaryStage.setTitle("Sample application");
+		final int relListWidth = (int) (WIDTH * 0.3);
+		FigureRelationListPanel relListPanel = 
+				new FigureRelationListPanel(this, relListWidth, HEIGHT);
 		
-		Canvas canvas = new Canvas(1000, 600);
-		canvas.getGraphicsContext2D().setFill(Paint.valueOf("red"));
-		canvas.getGraphicsContext2D().fillRect(0, 0, 1000, 600);
+		final int canvasWidth = (int) (WIDTH * 0.7);
+		canvas = new DiagramCanvas(canvasWidth, HEIGHT);
+		
+		HBox hbox = new HBox();
+		hbox.getChildren().add(canvas.getCanvas());
+		hbox.getChildren().add(relListPanel);		
 		
 		Group group = new Group();
-		group.getChildren().add(canvas);
-		
-		Scene scene = new Scene(group, 1000, 600);
-		
+		group.getChildren().add(hbox);
+		Scene scene = new Scene(group, WIDTH, HEIGHT);
 		//Setting the scene to Stage 
 		primaryStage.setScene(scene);
-		       
+		//Setting the title to Stage. 
+		primaryStage.setTitle("Proofer (alpha)");
+				
+		// Initial draw
+		canvas.redraw();
+		
 		//Displaying the stage 
 		primaryStage.show();
-
-		       
 	}
+	
+	public DiagramCanvas getCanvas() {
+		return canvas;
+	}
+	
 }
-
-
-
-
-
-

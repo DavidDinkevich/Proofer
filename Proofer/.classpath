@@ -6,8 +6,5 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/Documents/GitHub/Proofer/Proofer/lib/core.jar"/>
-	<classpathentry kind="lib" path="C:/Users/david/Documents/GitHub/Proofer/Proofer/lib/syntheticaAluOxide.jar"/>
-	<classpathentry kind="lib" path="C:/Users/david/Documents/GitHub/Proofer/Proofer/lib/synthetica.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
