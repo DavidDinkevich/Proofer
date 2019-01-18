@@ -54,7 +54,8 @@ public class FigureRelation {
 		case PARALLEL:
 		case PERPENDICULAR:
 			return figure0.getClass() == Segment.class
-			&& figure1.getClass() == Segment.class;
+			&& figure1.getClass() == Segment.class
+			&& !figure0.equals(figure1);
 		case BISECTS:
 			return figure0.getClass() == Segment.class &&
 			(figure1.getClass() == Segment.class ||
