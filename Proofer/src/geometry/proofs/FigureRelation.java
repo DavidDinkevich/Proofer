@@ -31,6 +31,7 @@ public class FigureRelation {
 		}
 		
 		if (!isLegalRelation(this)) {
+			System.err.println("Illegal Relation: " + this);
 			throw new IllegalRelationException(this);
 		}
 		
@@ -54,7 +55,8 @@ public class FigureRelation {
 		case PARALLEL:
 		case PERPENDICULAR:
 			return figure0.getClass() == Segment.class
-			&& figure1.getClass() == Segment.class;
+			&& figure1.getClass() == Segment.class
+			&& !figure0.equals(figure1);
 		case BISECTS:
 			return figure0.getClass() == Segment.class &&
 			(figure1.getClass() == Segment.class ||
