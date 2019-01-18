@@ -1,5 +1,5 @@
-/util/
-/ui/
+/exceptions/
 /geometry/
 /main/
-/exceptions/
+/ui/
+/util/
