@@ -440,6 +440,7 @@ public class Preprocessor {
 						(i == 0 ? baseSeg0 : baseSeg1),
 						pair // Parent
 				));
+				System.out.println(diagram.getFigureRelations().get(diagram.getFigureRelations().size()-1));
 			}
 		}		
 	}

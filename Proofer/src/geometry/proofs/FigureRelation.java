@@ -31,6 +31,7 @@ public class FigureRelation {
 		}
 		
 		if (!isLegalRelation(this)) {
+			System.err.println("Illegal Relation: " + this);
 			throw new IllegalRelationException(this);
 		}
 		
