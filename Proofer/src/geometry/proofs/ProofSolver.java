@@ -200,35 +200,40 @@ public class ProofSolver {
 		}
 	}
 	
+	/**
+	 * <i>This method, and the {@link ProofSolver} in general, assumes that
+	 * the given {@link FigureRelation} is of type 
+	 * {@link BisectsFigureRelation}</i>
+	 * <p>
+	 * DEFINITIONS
+	 * <ul>
+	 * <li>
+	 * Primary Non-intersecting Vertex: the vertices of the intersectING
+	 * {@link Segment}, <i>given that it is not the Point of Intersection</i>
+	 * </li>
+	 * <li>
+	 * Secondary Non-intersecting Vertex: the vertices of the intersectED
+	 * {@link Segment}, <i>given that it is not the Point of Intersection</i>
+	 * </li>
+	 * </ul>
+	 * @param pair the {@link BisectsFigureRelation} to be handled
+	 * @see ProofSolver#handlePerpendicularPair(FigureRelation)
+	 */
 	private void handleBisectPair(FigureRelation pair) {
-		// Make sure the given FigureRelation is of type BISECTS
-		if (pair.getRelationType() != FigureRelationType.BISECTS) {
-			throw new IllegalArgumentException("Given FigureRelation"
-					+ " must be of type BISECTS");
-		}
+		BisectsFigureRelation bisectsRel = (BisectsFigureRelation) pair;
 		
-		Segment seg0 = pair.getFigure0();
-		Segment seg1 = pair.getFigure1();
+		String intersectedSeg = bisectsRel.getFigure1().getName();
+		final char intersectVert = bisectsRel.getIntersectVert();
 		
-		final int index = seg1.getName().indexOf(seg0.getName().charAt(0));
-		char sharedVertexName;
-		Vertex vert;
+		String newSeg0 = String.valueOf(intersectVert) + intersectedSeg.substring(0, 1);
+		String newSeg1 = String.valueOf(intersectVert) + intersectedSeg.substring(1);
 		
-		if (index >= 0) {
-			sharedVertexName = seg1.getName().charAt(index);
-			vert = (Vertex)seg1.getChild(String.valueOf(sharedVertexName));
-		} else {
-			sharedVertexName = seg0.getName().charAt(1);
-			vert = (Vertex)seg0.getChild(String.valueOf(sharedVertexName));
-		}
-		
-		FigureRelation rel = new FigureRelation(
-				FigureRelationType.MIDPOINT,
-				vert,
-				seg1,
-				pair // Parent
-		);
-		handleMidpoint(rel);
+		diagram.addFigureRelation(new FigureRelation(
+			FigureRelationType.CONGRUENT,
+			diagram.getFigure(newSeg0),
+			diagram.getFigure(newSeg1),
+			pair
+		));
 	}
 	
 	private void handleMidpoint(FigureRelation pair) {
@@ -236,7 +241,6 @@ public class ProofSolver {
 		if (pair.getRelationType() != FigureRelationType.MIDPOINT) {
 			throw new IllegalArgumentException("Given FigureRelation"
 					+ " must be of type MIDPOINT");
-
 		}
 		
 		Vertex vert = pair.getFigure0();

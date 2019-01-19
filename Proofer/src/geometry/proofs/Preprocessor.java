@@ -351,38 +351,37 @@ public class Preprocessor {
 	}
 	
 	/**
-	 * Handle bisecting pairs. (Convert bisecting pairs to midpoint pairs.)
+	 * The primary goal of this method is to convert all standard 
+	 * {@link FigureRelation}s of type {@link FigureRelationType#BISECTS}
+	 * to {@link BisectsFigureRelation}s, which are more detailed. The
+	 * {@link ProofSolver} requires and assumes that all bisects FigureRelations
+	 * will be of this type.
 	 * @param diagram the diagram
-	 * @param pair the figure relation pair to be handled
+	 * @param pair the {@link FigureRelation} to be handled
 	 */
 	private void preprocessBisectingPairs(Diagram diagram, FigureRelation pair) {
 		// Get the segment being bisecTED
-		Segment seg1 = pair.getFigure1();
+		Segment bisectedSeg = pair.getFigure1();
 		// Get the midpoint loc of the second segment (segment being bisecTED)
-		Vec2 midptLoc = seg1.getCenter();
+		Vec2 midptLoc = bisectedSeg.getCenter();
 		// Get the vertex at that position
 		Vertex midpt = getVertexAtLoc(diagram, midptLoc);
 		
 		if (midpt == null)
 			throw new NullPointerException("No vertex at midpoint");
 
-		// TODO: verify technique
-		/*
-		 * Remove the bisecting pair from the diagram's given information
-		 * (all bisecting pairs are replaced with more specific midpoint
-		 * pairs).
-		 */
-		diagram.removeFigureRelation(pair);
-		
-		Segment bisectedSeg = pair.getFigure1();
-		
-		// Construct/add new midpoint pair
-		diagram.addFigureRelation(new FigureRelation(
-				FigureRelationType.MIDPOINT,
-				midpt,
+		// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPIVE 
+		// BisectsFigureRelation
+
+		BisectsFigureRelation bisectsRel = new BisectsFigureRelation(
+				pair.getFigure0(),
 				bisectedSeg,
-				pair
-		));
+				pair.getParent(),
+				midpt.getNameChar()
+		);
+		
+		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
+		diagram.getFigureRelations().set(REL_INDEX, bisectsRel);
 	}
 	
 	/**
