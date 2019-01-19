@@ -316,27 +316,6 @@ public class Preprocessor {
 		List<FigureRelation> buff = new ArrayList<>(diagram.getFigureRelations());
 		// For each figure relation pair
 		for (FigureRelation pair : buff) {
-			preprocessIntersectingLines(diagram, pair);
-		}
-	}
-	
-	/**
-	 * Preprocess intersecting lines (bisecting lines, perpendicular lines)
-	 * @param diagram
-	 * @param pair
-	 */
-	private void preprocessIntersectingLines(Diagram diagram, FigureRelation pair) {
-		// If the pair type is of type perpendicular or bisecting
-		if (pair.getRelationType() == FigureRelationType.BISECTS
-				|| pair.getRelationType() == FigureRelationType.PERPENDICULAR) {
-			// Get the first segment
-			Segment seg0 = pair.getFigure0();
-			// Get the second segment
-			Segment seg1 = pair.getFigure1();
-			
-			if (seg0 == null || seg1 == null)
-				throw new AssertionError("This shouldn't be possible");
-						
 			switch (pair.getRelationType()) {
 			case BISECTS:
 				preprocessBisectingPairs(diagram, pair);
@@ -346,49 +325,52 @@ public class Preprocessor {
 				break;
 			default:
 				break;
-			}	
+			}
 		}
 	}
-	
+		
 	/**
-	 * Handle bisecting pairs. (Convert bisecting pairs to midpoint pairs.)
+	 * The primary goal of this method is to convert all standard 
+	 * {@link FigureRelation}s of type {@link FigureRelationType#BISECTS}
+	 * to {@link BisectsFigureRelation}s, which are more detailed. The
+	 * {@link ProofSolver} requires and assumes that all bisects FigureRelations
+	 * will be of this type.
 	 * @param diagram the diagram
-	 * @param pair the figure relation pair to be handled
+	 * @param pair the {@link FigureRelation} to be handled
 	 */
 	private void preprocessBisectingPairs(Diagram diagram, FigureRelation pair) {
 		// Get the segment being bisecTED
-		Segment seg1 = pair.getFigure1();
+		Segment bisectedSeg = pair.getFigure1();
 		// Get the midpoint loc of the second segment (segment being bisecTED)
-		Vec2 midptLoc = seg1.getCenter();
+		Vec2 midptLoc = bisectedSeg.getCenter();
 		// Get the vertex at that position
 		Vertex midpt = getVertexAtLoc(diagram, midptLoc);
 		
 		if (midpt == null)
 			throw new NullPointerException("No vertex at midpoint");
 
-		// TODO: verify technique
-		/*
-		 * Remove the bisecting pair from the diagram's given information
-		 * (all bisecting pairs are replaced with more specific midpoint
-		 * pairs).
-		 */
-		diagram.removeFigureRelation(pair);
-		
-		Segment bisectedSeg = pair.getFigure1();
-		
-		// Construct/add new midpoint pair
-		diagram.addFigureRelation(new FigureRelation(
-				FigureRelationType.MIDPOINT,
-				midpt,
+		// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPIVE 
+		// BisectsFigureRelation
+
+		BisectsFigureRelation bisectsRel = new BisectsFigureRelation(
+				pair.getFigure0(),
 				bisectedSeg,
-				pair
-		));
+				pair.getParent(),
+				midpt.getNameChar()
+		);
+		
+		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
+		diagram.getFigureRelations().set(REL_INDEX, bisectsRel);
 	}
 	
 	/**
-	 * Handle perpendicular pairs.
+	 * The primary goal of this method is to convert all standard 
+	 * {@link FigureRelation}s of type {@link FigureRelationType#PERPENDICULAR}
+	 * to {@link PerpendicularFigureRelation}s, which are more detailed. The
+	 * {@link ProofSolver} requires and assumes that all perpendicular FigureRelations
+	 * will be of this type.
 	 * @param diagram the diagram
-	 * @param pair the figure relation pair to be handled
+	 * @param pair the {@link FigureRelation} to be handled
 	 */
 	private void preprocessPerpendicularPairs(Diagram diagram, FigureRelation pair) {
 		// The two segments in the given figure relation pair
@@ -398,51 +380,18 @@ public class Preprocessor {
 		// Get the vertex at the location at which the two segments intersect
 		Vertex poi = getVertexAtLoc(diagram, Segment.getPointOfIntersection(seg0, seg1));
 		
-		// The full intersecting segment
-		Segment fullIntersectingSeg = pair.getFigure0();
+		// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPIVE 
+		// PerpendicularFigureRelation
 		
-		// The endpoint(s) of the intersectING segment that do not LIE on the
-		// intersectED segment
-		List<String> nonIntersectingVerts = new ArrayList<>();
-		// Iterate through endpoints of intersectING vertices
-		for (int i = 0; i < fullIntersectingSeg.getName().length(); i++) {
-			final char c = fullIntersectingSeg.getName().charAt(i);
-			if (poi.getNameChar() != c) {
-				nonIntersectingVerts.add(String.valueOf(c));
-			}
-		}
+		PerpendicularFigureRelation perpRel = new PerpendicularFigureRelation(
+			pair.getFigure0(),
+			pair.getFigure1(),
+			pair.getParent(),
+			poi.getNameChar()
+		);
 		
-		// Remove the original figure relation pair, replace it with more specific ones
-		// that the proof solver can process
-		diagram.removeFigureRelation(pair);
-		
-		// Replace given, original figure relation pair with more specific
-		// ones
-		for (String nonIntersectingVert : nonIntersectingVerts) {
-			// Segment from point of intersection to an endpoint of the intersectING segment
-			// that does not lie on the intersectED segment.
-			Segment smallIntersectingSeg =
-					diagram.getFigure(nonIntersectingVert + poi.getName());
-			
-			// Segment from point of intersection to an endpoint of the intersectED segment
-			Segment baseSeg0 =
-					diagram.getFigure(poi.getName() + seg1.getName().substring(0, 1));
-			// Segment from point of intersection to the other
-			// endpoint of the intersectED segment
-			Segment baseSeg1 =
-					diagram.getFigure(poi.getName() + seg1.getName().substring(1));
-			
-			// Add more specific figure relation pairs to replace the given one
-			for (int i = 0; i < 2; i++) {
-				diagram.addFigureRelation(new FigureRelation(
-						FigureRelationType.PERPENDICULAR,
-						smallIntersectingSeg,
-						(i == 0 ? baseSeg0 : baseSeg1),
-						pair // Parent
-				));
-				System.out.println(diagram.getFigureRelations().get(diagram.getFigureRelations().size()-1));
-			}
-		}		
+		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
+		diagram.getFigureRelations().set(REL_INDEX, perpRel);
 	}
 	
 	private Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
@@ -458,8 +407,7 @@ public class Preprocessor {
 					return vert;
 			}
 		}
-		System.out.println("I returned null");
-		return null;
+		throw new NullPointerException("No vertex at given location");
 	}
 	
 	private void handleVerticalAngles(Diagram diagram) {

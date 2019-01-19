@@ -60,10 +60,12 @@ public class FigureRelation {
 		case BISECTS:
 			return figure0.getClass() == Segment.class &&
 			(figure1.getClass() == Segment.class ||
-			figure1.getClass() == Angle.class);
+			figure1.getClass() == Angle.class)
+			&& !figure0.equals(figure1);
 		case SIMILAR:
 			return figure0.getClass() == Triangle.class &&
-			figure1.getClass() == Triangle.class;
+			figure1.getClass() == Triangle.class
+			&& !figure0.equals(figure1);
 		case RIGHT:
 			return figure0.getClass() == Angle.class && figure1 == null;
 		case COMPLEMENTARY:

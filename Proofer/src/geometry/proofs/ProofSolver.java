@@ -131,59 +131,109 @@ public class ProofSolver {
 	/**
 	 * Convenience method to check if two figures are congruent
 	 */
-//	private boolean isCongruent(String f0, String f1) {
-//		return diagram.containsFigureRelation(FigureRelationType.CONGRUENT, f0, f1, null);
-//	}
-	
-	/**
-	 * Convenience method to check if two figures are congruent
-	 */
 	private boolean isCongruent(Figure f0, Figure f1) {
 		return diagram.containsFigureRelation(
 				new FigureRelation(FigureRelationType.CONGRUENT, f0, f1, null));
 	}
 	
+	/**
+	 * <i>This method, and the {@link ProofSolver} in general, assumes that
+	 * the given {@link FigureRelation} is of type 
+	 * {@link PerpendicularFigureRelation}</i>
+	 * <p>
+	 * DEFINITIONS
+	 * <ul>
+	 * <li>
+	 * Primary Non-intersecting Vertex: the vertices of the intersectING
+	 * {@link Segment}, <i>given that it is not the Point of Intersection</i>
+	 * </li>
+	 * <li>
+	 * Secondary Non-intersecting Vertex: the vertices of the intersectED
+	 * {@link Segment}, <i>given that it is not the Point of Intersection</i>
+	 * </li>
+	 * <li>
+	 * In this example, AD is perpendicular to BC		
+	 * 							A
+	 * 						B   E    C
+	 * 							D
+	 * A and D are primary non-intersecting vertices, and B and C are
+	 * secondary non-intersecting vertices. E is the point of intersection.
+	 * </li>
+	 * </ul>
+	 * @param pair the {@link PerpendicularFigureRelation} to be handled
+	 */
 	private void handlePerpendicularPair(FigureRelation pair) {
-		// Make sure the given FigureRelation is of type PERPENDICULAR
-		if (pair.getRelationType() != FigureRelationType.PERPENDICULAR) {
-			throw new IllegalArgumentException("Given FigureRelation"
-					+ " must be of type PERPENDICULAR");
+		// Get a more detailed FigureRelation
+		PerpendicularFigureRelation perpRel = (PerpendicularFigureRelation) pair;
+		// Get segments involved
+		Segment intersecting = perpRel.getFigure0();
+		Segment intersected = perpRel.getFigure1();
+		
+		// Get the primary non-intersecting vertices
+		String primNonIntersectVerts = "";
+		for (char c : intersecting.getName().toCharArray()) {
+			if (c != perpRel.getIntersectVert()) {
+				primNonIntersectVerts += c;
+			}
 		}
-				
-		String angleName = Utils.getAngleBetween(
-				pair.getFigure0().getName(), pair.getFigure1().getName());
-		diagram.makeRightAngle(angleName, pair);
+		
+		// Get the secondary non-intersecting vertices
+		String secNonIntersectVerts = "";
+		for (char c : intersected.getName().toCharArray()) {
+			if (c != perpRel.getIntersectVert()) {
+				secNonIntersectVerts += c;
+			}
+		}
+		
+		for (char primVert : primNonIntersectVerts.toCharArray()) {
+			for (char secVert : secNonIntersectVerts.toCharArray()) {
+				String angleName = 
+					// Primary non-intersecting vertex
+					String.valueOf(primVert) + 
+					// Middle vertex
+					String.valueOf(perpRel.getIntersectVert()) + 
+					// Secondary non-intersecting vertex
+					String.valueOf(secVert);
+				// Make the angle a right angle in the Diagram
+				diagram.makeRightAngle(angleName, perpRel);
+			}
+		}
 	}
 	
+	/**
+	 * <i>This method, and the {@link ProofSolver} in general, assumes that
+	 * the given {@link FigureRelation} is of type 
+	 * {@link BisectsFigureRelation}</i>
+	 * <p>
+	 * DEFINITIONS
+	 * <ul>
+	 * <li>
+	 * Primary Non-intersecting Vertex: the vertices of the intersectING
+	 * {@link Segment}, <i>given that it is not the Point of Intersection</i>
+	 * </li>
+	 * <li>
+	 * Secondary Non-intersecting Vertex: the vertices of the intersectED
+	 * {@link Segment}, <i>given that it is not the Point of Intersection</i>
+	 * </li>
+	 * </ul>
+	 * @param pair the {@link BisectsFigureRelation} to be handled
+	 * @see ProofSolver#handlePerpendicularPair(FigureRelation)
+	 */
 	private void handleBisectPair(FigureRelation pair) {
-		// Make sure the given FigureRelation is of type BISECTS
-		if (pair.getRelationType() != FigureRelationType.BISECTS) {
-			throw new IllegalArgumentException("Given FigureRelation"
-					+ " must be of type BISECTS");
-		}
+		BisectsFigureRelation bisectsRel = (BisectsFigureRelation) pair;
 		
-		Segment seg0 = pair.getFigure0();
-		Segment seg1 = pair.getFigure1();
+		String intersectedSeg = bisectsRel.getFigure1().getName();
+		final char intersectVert = bisectsRel.getIntersectVert();
 		
-		final int index = seg1.getName().indexOf(seg0.getName().charAt(0));
-		char sharedVertexName;
-		Vertex vert;
+		String newSeg0 = String.valueOf(intersectVert) + intersectedSeg.substring(0, 1);
+		String newSeg1 = String.valueOf(intersectVert) + intersectedSeg.substring(1);
 		
-		if (index >= 0) {
-			sharedVertexName = seg1.getName().charAt(index);
-			vert = (Vertex)seg1.getChild(String.valueOf(sharedVertexName));
-		} else {
-			sharedVertexName = seg0.getName().charAt(1);
-			vert = (Vertex)seg0.getChild(String.valueOf(sharedVertexName));
-		}
-		
-		FigureRelation rel = new FigureRelation(
-				FigureRelationType.MIDPOINT,
-				vert,
-				seg1,
-				pair // Parent
-		);
-		handleMidpoint(rel);
+		diagram.addFigureRelation(new FigureRelation(
+			FigureRelationType.CONGRUENT,
+			diagram.getFigure(newSeg0),
+			diagram.getFigure(newSeg1),
+			pair
+		));
 	}
 	
 	private void handleMidpoint(FigureRelation pair) {
@@ -191,7 +241,6 @@ public class ProofSolver {
 		if (pair.getRelationType() != FigureRelationType.MIDPOINT) {
 			throw new IllegalArgumentException("Given FigureRelation"
 					+ " must be of type MIDPOINT");
-
 		}
 		
 		Vertex vert = pair.getFigure0();

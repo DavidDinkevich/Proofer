@@ -436,6 +436,6 @@ public class Diagram {
 	}
 	
 	public List<FigureRelation> getFigureRelations() {
-		return Collections.unmodifiableList(relations);
+		return relations;
 	}
 }
