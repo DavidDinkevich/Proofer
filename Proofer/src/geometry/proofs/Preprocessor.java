@@ -386,9 +386,13 @@ public class Preprocessor {
 	}
 	
 	/**
-	 * Handle perpendicular pairs.
+	 * The primary goal of this method is to convert all standard 
+	 * {@link FigureRelation}s of type {@link FigureRelationType#PERPENDICULAR}
+	 * to {@link PerpendicularFigureRelation}s, which are more detailed. The
+	 * {@link ProofSolver} requires and assumes that all perpendicular FigureRelations
+	 * will be of this type.
 	 * @param diagram the diagram
-	 * @param pair the figure relation pair to be handled
+	 * @param pair the {@link FigureRelation} to be handled
 	 */
 	private void preprocessPerpendicularPairs(Diagram diagram, FigureRelation pair) {
 		// The two segments in the given figure relation pair

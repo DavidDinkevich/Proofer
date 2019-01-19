@@ -136,7 +136,32 @@ public class ProofSolver {
 				new FigureRelation(FigureRelationType.CONGRUENT, f0, f1, null));
 	}
 	
-	// TODO: write description, explain primary/secondary non-intersecting vertices
+	/**
+	 * <i>This method, and the {@link ProofSolver} in general, assumes that
+	 * the given {@link FigureRelation} is of type 
+	 * {@link PerpendicularFigureRelation}</i>
+	 * <p>
+	 * DEFINITIONS
+	 * <ul>
+	 * <li>
+	 * Primary Non-intersecting Vertex: the vertices of the intersectING
+	 * {@link Segment}, <i>given that it is not the Point of Intersection</i>
+	 * </li>
+	 * <li>
+	 * Secondary Non-intersecting Vertex: the vertices of the intersectED
+	 * {@link Segment}, <i>given that it is not the Point of Intersection</i>
+	 * </li>
+	 * <li>
+	 * In this example, AD is perpendicular to BC		
+	 * 							A
+	 * 						B   E    C
+	 * 							D
+	 * A and D are primary non-intersecting vertices, and B and C are
+	 * secondary non-intersecting vertices. E is the point of intersection.
+	 * </li>
+	 * </ul>
+	 * @param pair the {@link PerpendicularFigureRelation} to be handled
+	 */
 	private void handlePerpendicularPair(FigureRelation pair) {
 		// Get a more detailed FigureRelation
 		PerpendicularFigureRelation perpRel = (PerpendicularFigureRelation) pair;
