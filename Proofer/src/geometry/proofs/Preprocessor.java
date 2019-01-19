@@ -398,51 +398,18 @@ public class Preprocessor {
 		// Get the vertex at the location at which the two segments intersect
 		Vertex poi = getVertexAtLoc(diagram, Segment.getPointOfIntersection(seg0, seg1));
 		
-		// The full intersecting segment
-		Segment fullIntersectingSeg = pair.getFigure0();
+		// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPIVE 
+		// PerpendicularFigureRelation
 		
-		// The endpoint(s) of the intersectING segment that do not LIE on the
-		// intersectED segment
-		List<String> nonIntersectingVerts = new ArrayList<>();
-		// Iterate through endpoints of intersectING vertices
-		for (int i = 0; i < fullIntersectingSeg.getName().length(); i++) {
-			final char c = fullIntersectingSeg.getName().charAt(i);
-			if (poi.getNameChar() != c) {
-				nonIntersectingVerts.add(String.valueOf(c));
-			}
-		}
+		PerpendicularFigureRelation perpRel = new PerpendicularFigureRelation(
+			pair.getFigure0(),
+			pair.getFigure1(),
+			pair.getParent(),
+			poi.getNameChar()
+		);
 		
-		// Remove the original figure relation pair, replace it with more specific ones
-		// that the proof solver can process
-		diagram.removeFigureRelation(pair);
-		
-		// Replace given, original figure relation pair with more specific
-		// ones
-		for (String nonIntersectingVert : nonIntersectingVerts) {
-			// Segment from point of intersection to an endpoint of the intersectING segment
-			// that does not lie on the intersectED segment.
-			Segment smallIntersectingSeg =
-					diagram.getFigure(nonIntersectingVert + poi.getName());
-			
-			// Segment from point of intersection to an endpoint of the intersectED segment
-			Segment baseSeg0 =
-					diagram.getFigure(poi.getName() + seg1.getName().substring(0, 1));
-			// Segment from point of intersection to the other
-			// endpoint of the intersectED segment
-			Segment baseSeg1 =
-					diagram.getFigure(poi.getName() + seg1.getName().substring(1));
-			
-			// Add more specific figure relation pairs to replace the given one
-			for (int i = 0; i < 2; i++) {
-				diagram.addFigureRelation(new FigureRelation(
-						FigureRelationType.PERPENDICULAR,
-						smallIntersectingSeg,
-						(i == 0 ? baseSeg0 : baseSeg1),
-						pair // Parent
-				));
-				System.out.println(diagram.getFigureRelations().get(diagram.getFigureRelations().size()-1));
-			}
-		}		
+		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
+		diagram.getFigureRelations().set(REL_INDEX, perpRel);
 	}
 	
 	private Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {

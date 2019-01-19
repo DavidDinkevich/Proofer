@@ -131,28 +131,48 @@ public class ProofSolver {
 	/**
 	 * Convenience method to check if two figures are congruent
 	 */
-//	private boolean isCongruent(String f0, String f1) {
-//		return diagram.containsFigureRelation(FigureRelationType.CONGRUENT, f0, f1, null);
-//	}
-	
-	/**
-	 * Convenience method to check if two figures are congruent
-	 */
 	private boolean isCongruent(Figure f0, Figure f1) {
 		return diagram.containsFigureRelation(
 				new FigureRelation(FigureRelationType.CONGRUENT, f0, f1, null));
 	}
 	
+	// TODO: write description, explain primary/secondary non-intersecting vertices
 	private void handlePerpendicularPair(FigureRelation pair) {
-		// Make sure the given FigureRelation is of type PERPENDICULAR
-		if (pair.getRelationType() != FigureRelationType.PERPENDICULAR) {
-			throw new IllegalArgumentException("Given FigureRelation"
-					+ " must be of type PERPENDICULAR");
+		// Get a more detailed FigureRelation
+		PerpendicularFigureRelation perpRel = (PerpendicularFigureRelation) pair;
+		// Get segments involved
+		Segment intersecting = perpRel.getFigure0();
+		Segment intersected = perpRel.getFigure1();
+		
+		// Get the primary non-intersecting vertices
+		String primNonIntersectVerts = "";
+		for (char c : intersecting.getName().toCharArray()) {
+			if (c != perpRel.getIntersectVert()) {
+				primNonIntersectVerts += c;
+			}
 		}
-				
-		String angleName = Utils.getAngleBetween(
-				pair.getFigure0().getName(), pair.getFigure1().getName());
-		diagram.makeRightAngle(angleName, pair);
+		
+		// Get the secondary non-intersecting vertices
+		String secNonIntersectVerts = "";
+		for (char c : intersected.getName().toCharArray()) {
+			if (c != perpRel.getIntersectVert()) {
+				secNonIntersectVerts += c;
+			}
+		}
+		
+		for (char primVert : primNonIntersectVerts.toCharArray()) {
+			for (char secVert : secNonIntersectVerts.toCharArray()) {
+				String angleName = 
+					// Primary non-intersecting vertex
+					String.valueOf(primVert) + 
+					// Middle vertex
+					String.valueOf(perpRel.getIntersectVert()) + 
+					// Secondary non-intersecting vertex
+					String.valueOf(secVert);
+				// Make the angle a right angle in the Diagram
+				diagram.makeRightAngle(angleName, perpRel);
+			}
+		}
 	}
 	
 	private void handleBisectPair(FigureRelation pair) {
