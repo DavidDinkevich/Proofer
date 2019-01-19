@@ -316,27 +316,6 @@ public class Preprocessor {
 		List<FigureRelation> buff = new ArrayList<>(diagram.getFigureRelations());
 		// For each figure relation pair
 		for (FigureRelation pair : buff) {
-			preprocessIntersectingLines(diagram, pair);
-		}
-	}
-	
-	/**
-	 * Preprocess intersecting lines (bisecting lines, perpendicular lines)
-	 * @param diagram
-	 * @param pair
-	 */
-	private void preprocessIntersectingLines(Diagram diagram, FigureRelation pair) {
-		// If the pair type is of type perpendicular or bisecting
-		if (pair.getRelationType() == FigureRelationType.BISECTS
-				|| pair.getRelationType() == FigureRelationType.PERPENDICULAR) {
-			// Get the first segment
-			Segment seg0 = pair.getFigure0();
-			// Get the second segment
-			Segment seg1 = pair.getFigure1();
-			
-			if (seg0 == null || seg1 == null)
-				throw new AssertionError("This shouldn't be possible");
-						
 			switch (pair.getRelationType()) {
 			case BISECTS:
 				preprocessBisectingPairs(diagram, pair);
@@ -346,10 +325,10 @@ public class Preprocessor {
 				break;
 			default:
 				break;
-			}	
+			}
 		}
 	}
-	
+		
 	/**
 	 * The primary goal of this method is to convert all standard 
 	 * {@link FigureRelation}s of type {@link FigureRelationType#BISECTS}
@@ -428,8 +407,7 @@ public class Preprocessor {
 					return vert;
 			}
 		}
-		System.out.println("I returned null");
-		return null;
+		throw new NullPointerException("No vertex at given location");
 	}
 	
 	private void handleVerticalAngles(Diagram diagram) {
