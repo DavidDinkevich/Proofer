@@ -11,6 +11,8 @@ import geometry.proofs.ProofSolveRequestManager;
 import geometry.proofs.ProofSolveRequestManager.Request;
 import geometry.proofs.ProofSolver;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -76,7 +78,8 @@ public class FigureRelationListPanel extends VBox {
         buttonPanel = new FlowPane();
         buttonPanel.setHgap(2);
 //		buttonPanel.setPadding(new Insets(5, 10, 5, 10));
-//		buttonPanel.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+//		buttonPanel.setBorder(new Border(new BorderStroke(Color.BLACK, 
+//        	BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         getChildren().add(buttonPanel);
 		
 		addButton = new Button("Add");
@@ -106,12 +109,42 @@ public class FigureRelationListPanel extends VBox {
 		});
 		buttonPanel.getChildren().add(solveButton);
 		
+		/*
+		 * Add listener to all components
+		 */
+		addReturnFocusToCanvasListener(proofPanel);
+		addButton.focusedProperty().addListener(getReturnFocusToCanvasListener());
+		removeButton.focusedProperty().addListener(getReturnFocusToCanvasListener());
+		solveButton.focusedProperty().addListener(getReturnFocusToCanvasListener());
+		
 		// Initial panel
 		addEmptyFigureRelationPanels(1);
-		
-//		this.addEventFilter(FocusEvent., e -> {
-//			
-//		});
+	}
+	
+	/**
+	 * Prevents bug that prevents the canvas from regaining focus when this
+	 * panel gains it.
+	 */
+	private ChangeListener<Boolean> getReturnFocusToCanvasListener() {
+		return new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> arg0, 
+		    		Boolean oldPropertyValue, Boolean newPropertyValue) {
+		        if (!newPropertyValue) {
+		        	System.out.println("lost focus");
+		            mainWindow.getCanvas().getCanvas().requestFocus();
+		        }
+		    }
+		};
+	}
+	
+	private void addReturnFocusToCanvasListener(FigureRelationPanel relPanel) {
+		relPanel.getFigTextField0().focusedProperty()
+				.addListener(getReturnFocusToCanvasListener());
+		relPanel.getFigTextField1().focusedProperty()
+				.addListener(getReturnFocusToCanvasListener());
+		relPanel.getRelationBox().focusedProperty()
+				.addListener(getReturnFocusToCanvasListener());
 	}
 	
 	public void addFigureRelationPanel(FigureRelationPanel panel) {
@@ -132,7 +165,11 @@ public class FigureRelationListPanel extends VBox {
 		if (amount < 0)
 			throw new IllegalArgumentException("Number of panels must be >= 0");
 		for (int i = 0; i < amount; i++) {
-			addFigureRelationPanel(new FigureRelationPanel());
+			FigureRelationPanel relPanel = new FigureRelationPanel();
+			// Add change listener (focus)
+			addReturnFocusToCanvasListener(relPanel);
+			
+			addFigureRelationPanel(relPanel);
 		}
 	}
 	
