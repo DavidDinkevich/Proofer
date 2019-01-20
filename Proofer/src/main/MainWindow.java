@@ -28,9 +28,12 @@ public class MainWindow extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
+		Group group = new Group();
+		Scene scene = new Scene(group, WIDTH, HEIGHT);
+		
 		final int relListWidth = (int) (WIDTH * 0.3);
 		FigureRelationListPanel relListPanel = 
-				new FigureRelationListPanel(this, relListWidth, HEIGHT);
+				new FigureRelationListPanel(scene, this, relListWidth, HEIGHT);
 		
 		final int canvasWidth = (int) (WIDTH * 0.7);
 		canvas = new DiagramCanvas(canvasWidth, HEIGHT);
@@ -39,9 +42,7 @@ public class MainWindow extends Application {
 		hbox.getChildren().add(canvas.getCanvas());
 		hbox.getChildren().add(relListPanel);		
 		
-		Group group = new Group();
 		group.getChildren().add(hbox);
-		Scene scene = new Scene(group, WIDTH, HEIGHT);
 		//Setting the scene to Stage 
 		primaryStage.setScene(scene);
 		//Setting the title to Stage. 

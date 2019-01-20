@@ -14,6 +14,8 @@ import geometry.proofs.ProofSolver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
@@ -33,6 +35,7 @@ public class FigureRelationListPanel extends VBox {
 	private List<FigureRelationPanel> panels;
 	
 //	private BorderPane borderPane;
+	private ScrollPane scroller;
 	private VBox panelVBox;
 //	private HBox buttonPanel;
 	private FlowPane buttonPanel;
@@ -41,7 +44,7 @@ public class FigureRelationListPanel extends VBox {
 	
 	private FigureRelationPanel proofPanel;
 
-	public FigureRelationListPanel(MainWindow win, int w, int h) {
+	public FigureRelationListPanel(Scene scene, MainWindow win, int w, int h) {
 		mainWindow = win;
 		panels = new ArrayList<>();
 		setBackground(new Background(new BackgroundFill(
@@ -54,7 +57,7 @@ public class FigureRelationListPanel extends VBox {
 		 */
 				
 		panelVBox = new VBox();
-        ScrollPane scroller = new ScrollPane(panelVBox);
+        scroller = new ScrollPane(panelVBox);
         scroller.setFitToWidth(true);
         final double scrollerHeight = h * 0.9;
         scroller.setPrefHeight(scrollerHeight);
@@ -110,41 +113,28 @@ public class FigureRelationListPanel extends VBox {
 		buttonPanel.getChildren().add(solveButton);
 		
 		/*
-		 * Add listener to all components
+		 * Prevents canvas from not being able to regain focus after it
+		 * is lost
 		 */
-		addReturnFocusToCanvasListener(proofPanel);
-		addButton.focusedProperty().addListener(getReturnFocusToCanvasListener());
-		removeButton.focusedProperty().addListener(getReturnFocusToCanvasListener());
-		solveButton.focusedProperty().addListener(getReturnFocusToCanvasListener());
-		
+		scene.focusOwnerProperty().addListener(new ChangeListener<Node>() {
+			@Override
+			public void changed(ObservableValue<? extends Node> arg0, 
+					Node oldNode, Node newNode) {
+				// If the user clicks on a ScrollPane, TitledPane, or Button,
+				// then focus will be auto given to AdvancedCanvas
+				if (
+						   newNode instanceof ScrollPane
+						|| newNode instanceof TitledPane
+						|| newNode instanceof Button
+				) {
+					// Give focus to canvas
+		            mainWindow.getCanvas().getCanvas().requestFocus();
+				}				
+			}
+		});
+				
 		// Initial panel
 		addEmptyFigureRelationPanels(1);
-	}
-	
-	/**
-	 * Prevents bug that prevents the canvas from regaining focus when this
-	 * panel gains it.
-	 */
-	private ChangeListener<Boolean> getReturnFocusToCanvasListener() {
-		return new ChangeListener<Boolean>() {
-		    @Override
-		    public void changed(ObservableValue<? extends Boolean> arg0, 
-		    		Boolean oldPropertyValue, Boolean newPropertyValue) {
-		        if (!newPropertyValue) {
-		        	System.out.println("lost focus");
-		            mainWindow.getCanvas().getCanvas().requestFocus();
-		        }
-		    }
-		};
-	}
-	
-	private void addReturnFocusToCanvasListener(FigureRelationPanel relPanel) {
-		relPanel.getFigTextField0().focusedProperty()
-				.addListener(getReturnFocusToCanvasListener());
-		relPanel.getFigTextField1().focusedProperty()
-				.addListener(getReturnFocusToCanvasListener());
-		relPanel.getRelationBox().focusedProperty()
-				.addListener(getReturnFocusToCanvasListener());
 	}
 	
 	public void addFigureRelationPanel(FigureRelationPanel panel) {
@@ -165,11 +155,7 @@ public class FigureRelationListPanel extends VBox {
 		if (amount < 0)
 			throw new IllegalArgumentException("Number of panels must be >= 0");
 		for (int i = 0; i < amount; i++) {
-			FigureRelationPanel relPanel = new FigureRelationPanel();
-			// Add change listener (focus)
-			addReturnFocusToCanvasListener(relPanel);
-			
-			addFigureRelationPanel(relPanel);
+			addFigureRelationPanel(new FigureRelationPanel());
 		}
 	}
 	
