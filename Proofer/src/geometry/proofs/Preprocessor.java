@@ -19,6 +19,8 @@ import ui.canvas.diagram.DiagramCanvas;
 
 import util.Utils;
 
+import static geometry.proofs.FigureRelationType.CONGRUENT;
+
 public class Preprocessor {
 	private DiagramCanvas canvas;
 	private FigureRelationListPanel figRelPanel;
@@ -64,9 +66,9 @@ public class Preprocessor {
 					// Get first figure
 					searchForFigure(diagram, figText0),
 					// Get second figure
-					searchForFigure(diagram, figText1),
-					null // Null parent?
+					searchForFigure(diagram, figText1)
 			);
+			rel.setReason("Given");
 			// Add the given
 			diagram.addFigureRelation(rel);
 		}
@@ -84,9 +86,9 @@ public class Preprocessor {
 		FigureRelation proofGoal = new FigureRelation(
 				goalPanel.getRelationType(),
 				searchForFigure(diagram, goalPanel.getFigTextField0().getText()),
-				searchForFigure(diagram, goalPanel.getFigTextField1().getText()),
-				null // Null parent?
+				searchForFigure(diagram, goalPanel.getFigTextField1().getText())
 		);
+		proofGoal.setReason("Proof Goal");
 		diagram.setProofGoal(proofGoal);
 		
 		return diagram;
@@ -355,9 +357,10 @@ public class Preprocessor {
 		BisectsFigureRelation bisectsRel = new BisectsFigureRelation(
 				pair.getFigure0(),
 				bisectedSeg,
-				pair.getParent(),
 				midpt.getNameChar()
 		);
+		bisectsRel.addParents(pair.getParents());
+		bisectsRel.setReason(pair.getReason());
 		
 		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
 		diagram.getFigureRelations().set(REL_INDEX, bisectsRel);
@@ -386,9 +389,10 @@ public class Preprocessor {
 		PerpendicularFigureRelation perpRel = new PerpendicularFigureRelation(
 			pair.getFigure0(),
 			pair.getFigure1(),
-			pair.getParent(),
 			poi.getNameChar()
 		);
+		perpRel.addParents(pair.getParents());
+		perpRel.setReason(pair.getReason());
 		
 		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
 		diagram.getFigureRelations().set(REL_INDEX, perpRel);
@@ -426,12 +430,8 @@ public class Preprocessor {
 				Angle a1 = (Angle)diagram.getFigures().get(j);
 				
 				if (Utils.areVerticalAngles(a0, a1)) {
-					FigureRelation rel = new FigureRelation(
-							FigureRelationType.CONGRUENT,
-							a0,
-							a1,
-							null // Null parent?
-					);
+					FigureRelation rel = new FigureRelation(CONGRUENT, a0, a1);
+					rel.setReason("Vertical Angle");
 					diagram.addFigureRelation(rel);
 				}
 			}

@@ -8,6 +8,7 @@ import util.Utils;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -98,9 +99,9 @@ public class Diagram {
 		FigureRelation rel = new FigureRelation(
 				FigureRelationType.CONGRUENT,
 				fig,
-				fig,
-				null // Null parent
+				fig
 		);
+		rel.setReason("Reflexive Postulate");
 		return addFigureRelation(rel);
 	}
 	
@@ -149,9 +150,9 @@ public class Diagram {
 				FigureRelation newRel = new FigureRelation(
 						FigureRelationType.CONGRUENT,
 						newFriend0,
-						newFriend1,
-						null // Null parent
+						newFriend1
 				);
+				newRel.setReason("Transitive Postulate");
 				// Add the new relation
 				if (!containsFigureRelation(newRel))
 					relations.add(newRel);
@@ -177,9 +178,8 @@ public class Diagram {
 		FigureRelation rel = new FigureRelation(
 				FigureRelationType.RIGHT,
 				a,
-				null,
-				parent // Parent
-			);
+				null
+		);
 		
 		// If there is already a figure relation pair that makes the given
 		// Angle a right angle, our job is already done, we can exit.
@@ -203,9 +203,9 @@ public class Diagram {
 				FigureRelation newPair = new FigureRelation(
 						FigureRelationType.CONGRUENT,
 						a,
-						pair.getFigure0(),
-						parent // Parent
-					);
+						pair.getFigure0()
+				);
+				newPair.addParents(Arrays.asList(parent));
 				
 				// Ensure that we're not adding a duplicate
 				if (!containsFigureRelation(newPair)) {
@@ -338,9 +338,10 @@ public class Diagram {
 						FigureRelation newPair = new FigureRelation(
 								FigureRelationType.CONGRUENT,
 								anglePair[0],
-								anglePair[1],
-								pair // TODO: change this to "corresponding angles"
+								anglePair[1]
 						);
+						newPair.addParents(Arrays.asList(pair));
+						newPair.setReason("Corresponding angles");
 						addFigureRelation(newPair);
 					}
 					// For all corresponding segments
@@ -349,9 +350,10 @@ public class Diagram {
 						FigureRelation newPair = new FigureRelation(
 								FigureRelationType.CONGRUENT,
 								segPair[0],
-								segPair[1],
-								pair // TODO: change this to "corresponding segments"
+								segPair[1]
 						);
+						newPair.addParents(Arrays.asList(pair));
+						newPair.setReason("Corresponding segments");
 						addFigureRelation(newPair);
 					}
 				}

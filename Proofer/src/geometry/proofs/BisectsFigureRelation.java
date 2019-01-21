@@ -6,10 +6,8 @@ public class BisectsFigureRelation extends FigureRelation {
 
 	private char intersectVert;
 	
-	public BisectsFigureRelation(Segment fig0, Segment fig1, 
-			FigureRelation parent, char intersectVert) {
-		
-		super(FigureRelationType.BISECTS, fig0, fig1, parent);
+	public BisectsFigureRelation(Segment fig0, Segment fig1, char intersectVert) {
+		super(FigureRelationType.BISECTS, fig0, fig1);
 		this.intersectVert = intersectVert;
 	}
 

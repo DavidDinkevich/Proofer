@@ -6,10 +6,8 @@ public class PerpendicularFigureRelation extends FigureRelation {
 
 	private char intersectVert;
 	
-	public PerpendicularFigureRelation(Segment fig0, Segment fig1, 
-			FigureRelation parent, char intersectVert) {
-		
-		super(FigureRelationType.PERPENDICULAR, fig0, fig1, parent);
+	public PerpendicularFigureRelation(Segment fig0, Segment fig1, char intersectVert) {
+		super(FigureRelationType.PERPENDICULAR, fig0, fig1);
 		this.intersectVert = intersectVert;
 	}
 

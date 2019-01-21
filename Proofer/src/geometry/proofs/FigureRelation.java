@@ -1,6 +1,8 @@
 package geometry.proofs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,17 +13,16 @@ import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
 public class FigureRelation {
-	private final FigureRelationType relType;
-	private final Figure figure0;
-	private final Figure figure1;
-	private final FigureRelation parent;
-	private final boolean isCongruentAndReflexive;
+	private FigureRelationType relType;
+	private Figure figure0;
+	private Figure figure1;
+	private boolean isCongruentAndReflexive;
+	private List<FigureRelation> parents;
+	private String reason;
 	
-	public FigureRelation(FigureRelationType type, Figure fig0, Figure fig1,
-			FigureRelation parent) {
+	public FigureRelation(FigureRelationType type, Figure fig0, Figure fig1) {
 		relType = type;
 		figure0 = Objects.requireNonNull(fig0);
-		this.parent = parent;
 		
 		// Only in RIGHT relation pairs can the second figure be null
 		if (type != FigureRelationType.RIGHT) {
@@ -37,6 +38,9 @@ public class FigureRelation {
 		
 		isCongruentAndReflexive = relType == FigureRelationType.CONGRUENT
 				&& figure0.equals(figure1);
+		
+		parents = new ArrayList<>();
+		reason = "";
 	}
 	
 	public boolean isCongruentAndReflexive() {
@@ -114,7 +118,16 @@ public class FigureRelation {
 	
 	@Override
 	public String toString() {
-		return relType + " ( " + figure0 + ", " + figure1 + " )";
+		return relType + " ( " + figure0 + ", " + figure1 + " )"
+				+ (!reason.isEmpty() ? " -- " + reason : "");
+	}
+	
+	public void addParents(Collection<FigureRelation> parents) {
+		this.parents.addAll(parents);
+	}
+	
+	public boolean containsFigure(Figure fig) {
+		return figure0.equals(fig) || (figure1 != null ? figure1.equals(fig) : fig == null);
 	}
 
 	public FigureRelationType getRelationType() {
@@ -132,16 +145,20 @@ public class FigureRelation {
 	public <T extends Figure> T getFigure1() {
 		return (T)figure1;
 	}
-
-	public FigureRelation getParent() {
-		return parent;
-	}
 	
 	public List<Figure> getFigures() {
 		return Arrays.asList(figure0, figure1);
 	}
+
+	public List<FigureRelation> getParents() {
+		return parents;
+	}
 	
-	public boolean containsFigure(Figure fig) {
-		return figure0.equals(fig) || (figure1 != null ? figure1.equals(fig) : fig == null);
+	public void setReason(String reason) {
+		this.reason = Objects.requireNonNull(reason);
+	}
+	
+	public String getReason() {
+		return reason;
 	}
 }
