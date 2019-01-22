@@ -442,8 +442,6 @@ public class ProofSolver {
 				FigureRelation congAngles = getCongruentRel(a0, a1);
 				// If they are congruent
 				if (congAngles != null) {
-					// Add these congruent angles
-					parents.add(congAngles);
 					// Get the adjacent Segments of each angle
 					Segment[] segs0 = tri0.getAdjacentSegments(a0.getNameShort());
 					Segment[] segs1 = tri1.getAdjacentSegments(a1.getNameShort());
@@ -459,8 +457,12 @@ public class ProofSolver {
 						}
 					}
 					
-					// Once we find an instance of SAS, we needn't check for more
-					if (parents.size() == 3) {
+					// Once we find an instance of SAS, we needn't check for more.
+					// If we find two pairs of congruent segments adjacent to the
+					// pair of angles, than we're done
+					if (parents.size() == 2) {
+						// Add these congruent angles
+						parents.add(congAngles);
 						break outer;
 					}
 				}
@@ -490,8 +492,6 @@ public class ProofSolver {
 				FigureRelation congSegs = getCongruentRel(s0, s1);
 				// If they are congruent
 				if (congSegs != null) {
-					// Add these congruent segments
-					parents.add(congSegs);
 					// Get the adjacent angles around the first segment
 					String[] adjacentAngles0 = 
 							Utils.getSurroundingAngles(tri0.getName(), s0.getName());
@@ -506,14 +506,18 @@ public class ProofSolver {
 						Angle a0 = tri0.getAngle(angle0);
 						for (String angle1 : adjacentAngles1) {
 							Angle a1 = tri1.getAngle(angle1);
-							FigureRelation segRel = getCongruentRel(a0, a1);
-							if (segRel != null)
-								parents.add(segRel);
+							FigureRelation anglesRel = getCongruentRel(a0, a1);
+							if (anglesRel != null)
+								parents.add(anglesRel);
 						}
 					}
 					
-					// Once we find an instance of ASA, we needn't check for more
-					if (parents.size() == 3) {
+					// Once we find an instance of ASA, we needn't check for more.
+					// If we find two pairs of congruent angles adjacent to the
+					// pair of segments, than we're done
+					if (parents.size() == 2) {
+						// Add these congruent segments
+						parents.add(congSegs);
 						break outer;
 					}
 
