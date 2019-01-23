@@ -16,6 +16,7 @@ import util.Utils;
 import static geometry.proofs.FigureRelationType.CONGRUENT;
 import static geometry.proofs.FigureRelationType.MIDPOINT;
 import static geometry.proofs.FigureRelationType.SIMILAR;
+import static geometry.proofs.FigureRelationType.RIGHT;
 
 
 public class ProofSolver {
@@ -208,7 +209,11 @@ public class ProofSolver {
 					// Secondary non-intersecting vertex
 					String.valueOf(secVert);
 				// Make the angle a right angle in the Diagram
-				diagram.makeRightAngle(angleName, perpRel);
+				Angle angle = diagram.getFigure(angleName, Angle.class);
+				FigureRelation rel = new FigureRelation(RIGHT, angle, null);
+				rel.addParents(Arrays.asList(perpRel));
+				rel.setReason("Perpendicular");
+				diagram.addFigureRelation(rel);
 			}
 		}
 	}
@@ -247,7 +252,7 @@ public class ProofSolver {
 				diagram.getFigure(newSeg1)
 		);
 		rel.addParents(Arrays.asList(pair));
-		rel.setReason("Bisects?");
+		rel.setReason("Bisects");
 		diagram.addFigureRelation(rel);
 		
 	}
@@ -268,7 +273,7 @@ public class ProofSolver {
 				diagram.getFigure(vert.getName() + seg.getName().substring(1));
 		
 		FigureRelation rel = new FigureRelation(CONGRUENT, newSeg0, newSeg1);
-		rel.setReason("Midpoint?");
+		rel.setReason("Midpoint");
 		rel.addParents(Arrays.asList(pair));
 		diagram.addFigureRelation(rel);
 	}

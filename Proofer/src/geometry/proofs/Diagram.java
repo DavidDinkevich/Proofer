@@ -161,35 +161,14 @@ public class Diagram {
 	}
 	
 	/**
-	 * Make the given angle a right angle, and make it congruent to all
-	 * other right angles in the given list of {@link FigureRelation}s.
-	 * @param a the angle
-	 * @param parent the parent relation
-	 * @return returns false if the given Angle name does not belong to an
-	 * Angle in this Diagram, or if the given angle is already a right angle
-	 * in this Diagram, true otherwise
+	 * Make the given angle congruent to all
+	 * other right angles in the list of {@link FigureRelation}s.
+	 * @param rightAngleRel the {@link FigureRelation} that makes the angle
+	 * a right angle
 	 */
-	public boolean makeRightAngle(String angle, FigureRelation parent) {
-		Angle a = getFigure(angle, Angle.class);
-		final int angleIndex = figures.indexOf(a);
-		if (angleIndex < 0)
-			return false;
-		// Make angle a right angle
-		FigureRelation rel = new FigureRelation(
-				FigureRelationType.RIGHT,
-				a,
-				null
-		);
-		
-		// If there is already a figure relation pair that makes the given
-		// Angle a right angle, our job is already done, we can exit.
-		if (containsFigureRelation(rel)) {
-			return false;
-		}
-		
-		// Add the new pair that makes the angle a right angle
-		relations.add(rel);
-		
+	private void makeRightAngle(FigureRelation rightAngleRel) {
+		// Get the angle
+		Angle angle = rightAngleRel.getFigure0();
 		// Make new right angle congruent to all other right angles in collection
 		for (int i = 0; i < relations.size() - 1; i++) {
 			// (Above): we say "i < relations() '-1' " bc we don't want to compare
@@ -202,10 +181,11 @@ public class Diagram {
 			if (pair.getRelationType() == FigureRelationType.RIGHT) {
 				FigureRelation newPair = new FigureRelation(
 						FigureRelationType.CONGRUENT,
-						a,
+						angle,
 						pair.getFigure0()
 				);
-				newPair.addParents(Arrays.asList(parent));
+				newPair.addParents(Arrays.asList(rightAngleRel));
+				newPair.setReason("Right angles congruent");
 				
 				// Ensure that we're not adding a duplicate
 				if (!containsFigureRelation(newPair)) {
@@ -213,7 +193,6 @@ public class Diagram {
 				}
 			}
 		}
-		return true;
 	}
 	
 	public boolean removeFigure(Figure fig) {
@@ -317,7 +296,7 @@ public class Diagram {
 			// If the relation declares that an angle is a right angle,
 			// make this right angle congruent to all other right angles.
 			if (pair.getRelationType() == FigureRelationType.RIGHT) {
-				makeRightAngle(pair.getFigure0().getName(), pair);
+				makeRightAngle(pair);
 			}
 			// If the pair declares two figures congruent, apply the transitive
 			// postulate
