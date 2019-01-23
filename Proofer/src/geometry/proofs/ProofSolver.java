@@ -211,7 +211,7 @@ public class ProofSolver {
 				// Make the angle a right angle in the Diagram
 				Angle angle = diagram.getFigure(angleName, Angle.class);
 				FigureRelation rel = new FigureRelation(RIGHT, angle, null);
-				rel.addParents(Arrays.asList(perpRel));
+				rel.addParent(perpRel);
 				rel.setReason("Perpendicular");
 				diagram.addFigureRelation(rel);
 			}
@@ -251,7 +251,7 @@ public class ProofSolver {
 				diagram.getFigure(newSeg0),
 				diagram.getFigure(newSeg1)
 		);
-		rel.addParents(Arrays.asList(pair));
+		rel.addParent(pair);
 		rel.setReason("Bisects");
 		diagram.addFigureRelation(rel);
 		
@@ -274,7 +274,7 @@ public class ProofSolver {
 		
 		FigureRelation rel = new FigureRelation(CONGRUENT, newSeg0, newSeg1);
 		rel.setReason("Midpoint");
-		rel.addParents(Arrays.asList(pair));
+		rel.addParent(pair);
 		diagram.addFigureRelation(rel);
 	}
 	
@@ -297,7 +297,7 @@ public class ProofSolver {
 					CONGRUENT, corrAngles.get(i)[0], corrAngles.get(i)[1]
 			);
 			rel.setReason("Corresponding angles congruent");
-			rel.addParents(Arrays.asList(pair));
+			rel.addParent(pair);
 			diagram.addFigureRelation(rel);
 		}
 	}
@@ -337,7 +337,7 @@ public class ProofSolver {
 						
 						// Make the two angles congruent
 						FigureRelation rel = new FigureRelation(CONGRUENT, a0, a1);
-						rel.addParents(Arrays.asList(segsRel));
+						rel.addParent(segsRel);
 						rel.setReason("Isosceles Triangle Theorem");
 						// Update Diagram
 						diagram.addFigureRelation(rel);
@@ -363,7 +363,7 @@ public class ProofSolver {
 						FigureRelation rel = new FigureRelation(
 								CONGRUENT, segment0, segment1
 						);
-						rel.addParents(Arrays.asList(anglesRel));
+						rel.addParent(anglesRel);
 						rel.setReason("Isosceles Triangle Theorem");
 						diagram.addFigureRelation(rel);
 					}

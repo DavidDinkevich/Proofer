@@ -8,7 +8,6 @@ import util.Utils;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -184,7 +183,7 @@ public class Diagram {
 						angle,
 						pair.getFigure0()
 				);
-				newPair.addParents(Arrays.asList(rightAngleRel));
+				newPair.addParent(rightAngleRel);
 				newPair.setReason("Right angles congruent");
 				
 				// Ensure that we're not adding a duplicate
@@ -319,7 +318,7 @@ public class Diagram {
 								anglePair[0],
 								anglePair[1]
 						);
-						newPair.addParents(Arrays.asList(pair));
+						newPair.addParent(pair);
 						newPair.setReason("Corresponding angles");
 						addFigureRelation(newPair);
 					}
@@ -331,7 +330,7 @@ public class Diagram {
 								segPair[0],
 								segPair[1]
 						);
-						newPair.addParents(Arrays.asList(pair));
+						newPair.addParent(pair);
 						newPair.setReason("Corresponding segments");
 						addFigureRelation(newPair);
 					}

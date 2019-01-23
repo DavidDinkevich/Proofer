@@ -126,6 +126,10 @@ public class FigureRelation {
 		this.parents.addAll(parents);
 	}
 	
+	public void addParent(FigureRelation parent) {
+		parents.add(parent);
+	}
+	
 	public boolean containsFigure(Figure fig) {
 		return figure0.equals(fig) || (figure1 != null ? figure1.equals(fig) : fig == null);
 	}
