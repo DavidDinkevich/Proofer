@@ -464,6 +464,11 @@ public class ProofSolver {
 						// Add these congruent angles
 						parents.add(congAngles);
 						break outer;
+					} else {
+						// If one pair of congruent segments were found
+						// (not the min of two, then get rid of the one we found
+						// since it's useless alone)
+						parents.clear();
 					}
 				}
 			}
@@ -518,7 +523,13 @@ public class ProofSolver {
 					if (parents.size() == 2) {
 						// Add these congruent segments
 						parents.add(congSegs);
+						System.out.println("ASA Parents: " + parents);
 						break outer;
+					} else {
+						// If one pair of congruent angles were found
+						// (not the min of two, then get rid of the one we found
+						// since it's useless alone)
+						parents.clear();
 					}
 
 				}
