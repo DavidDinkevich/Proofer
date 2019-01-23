@@ -156,7 +156,7 @@ public class Preprocessor {
 			figuresWereAdded = false;
 			
 			// Loop through segments
-			for (int i = 0; i < COUNT; i++) {
+			for (int i = 0; i < COUNT-1; i++) {
 				// If the inspected figure is a segment
 				if (diagram.getFigures().get(i) instanceof Segment) {
 					// Capture the segment

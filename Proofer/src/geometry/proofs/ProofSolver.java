@@ -1,7 +1,6 @@
 package geometry.proofs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Deque;
 import java.util.ArrayDeque;
@@ -319,7 +318,7 @@ public class ProofSolver {
 			Angle[] angles = tri.getAngles();
 			
 			// For each segment
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < 2; i++) {
 				// For each segment located AFTER the above segment in the list of segments
 				// (this prevents us from comparing a pair of segments twice. We don't
 				// want to compare A to B and then B to A)
@@ -374,7 +373,7 @@ public class ProofSolver {
 	
 	private void findCongruentTriangles() {
 		// For each figure
-		for (int i = 0; i < diagram.getFigures().size(); i++) {
+		for (int i = 0; i < diagram.getFigures().size()-1; i++) {
 			// Make sure figure is a triangle
 			if (!(diagram.getFigures().get(i) instanceof Triangle))
 				continue;
