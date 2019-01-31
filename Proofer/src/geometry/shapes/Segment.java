@@ -134,24 +134,20 @@ public class Segment extends AbstractShape {
 	
 	@Override
 	public boolean containsPoint(Vec2 point) {
-		final float dist1 = Vec2.dist(
-				vertices[0].getCenter(), point);
-		final float dist2 = Vec2.dist(
-				vertices[1].getCenter(), point);
+		final float dist1 = Vec2.dist(vertices[0].getCenter(), point);
+		final float dist2 = Vec2.dist(vertices[1].getCenter(), point);
 		return dist1 + dist2 == getLength();
 	}
 		
 	public float getLength() {
-		return Vec2.dist(vertices[0].getCenter(),
-				vertices[1].getCenter());
+		return Vec2.dist(vertices[0].getCenter(), vertices[1].getCenter());
 	}
 	
 	@Override
 	public Vec2 getCenter() {
 		Vec2 point1 = vertices[0].getCenter();
 		Vec2 point2 = vertices[1].getCenter();
-		return new Vec2((point1.getX() + point2.getX())/2, 
-				(point1.getY() + point2.getY())/2);
+		return new Vec2((point1.getX() + point2.getX())/2, (point1.getY() + point2.getY())/2);
 	}
 	
 	@Override
@@ -168,8 +164,7 @@ public class Segment extends AbstractShape {
 	}
 	
 	public Slope getSlope() {
-		return new Slope(
-				Vec2.sub(vertices[1].getCenter(), vertices[0].getCenter()));
+		return new Slope(Vec2.sub(vertices[1].getCenter(), vertices[0].getCenter()));
 	}
 	
 	public float getYIntercept() {
@@ -340,7 +335,7 @@ public class Segment extends AbstractShape {
 					|| (Float.isInfinite(slopeDecimal) 
 							&& Float.isInfinite(slopeDecimal2));
 		}
-		
+
 		@Override
 		public int hashCode() {
 			int result = 17;
