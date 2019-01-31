@@ -184,6 +184,15 @@ public class Segment extends AbstractShape {
 		return getName().indexOf(name) > -1;
 	}
 	
+	/**
+	 * Get whether this {@link Segment} contains both end points of the given {@link Segment}
+	 * @param other the other {@link Segment}
+	 * @return true if the above condition is met
+	 */
+	public boolean containsSegment(Segment other) {
+		return containsPoints(Arrays.asList(other.getVertexLocations()));
+	}
+
 	public Vertex[] getVertices() {
 		return vertices;
 	}

@@ -377,6 +377,59 @@ public final class Utils {
 	}
 	
 	/**
+	 * Compare the two Angles to see if they are synonyms.
+	 * @param a the first {@link Angle}
+	 * @param b the second {@link Angle}
+	 * @return 0 if a = b, 1 if a > b, -1 if a < b, -2 if angles don't share a vertex, -3 if angles
+	 * share a vertex but are not aligned.
+	 */
+	public static int compareAngleSynonyms(Angle a, Angle b) {
+		// Check if the angles share a center vertex
+		final boolean shareVertex = a.getCenter().equals(b.getCenter());
+		if (shareVertex) {
+			Segment a0s0 = a.getSides()[0];
+			Segment a0s1 = a.getSides()[1];
+			Segment a1s0 = b.getSides()[0];
+			Segment a1s1 = b.getSides()[1];
+			// Make sure the segments in the 2 pairs are parallel to each other
+			a1s0 = a1s0.getSlope().equals(a0s0.getSlope()) ? a1s0 : b.getSides()[1];
+			a1s1 = a1s1.getSlope().equals(a0s1.getSlope()) ? a1s1 : b.getSides()[0];
+			
+			// Get end points of each segment
+			List<Vec2> a0s0Points = Arrays.asList(a0s0.getVertexLocations());
+			List<Vec2> a0s1Points = Arrays.asList(a0s1.getVertexLocations());
+			List<Vec2> a1s0Points = Arrays.asList(a1s0.getVertexLocations());
+			List<Vec2> a1s1Points = Arrays.asList(a1s1.getVertexLocations());
+			
+			// Angles are equal--on top of each other perfectly
+			if (
+					// The first pair of segments are equal
+					a0s0.containsPoints(a1s0Points) && a1s0.containsPoints(a0s0Points)
+					// The second pair of segments are equal
+				&&  a0s1.containsPoints(a1s1Points) && a1s1.containsPoints(a0s1Points)	
+			) {
+				return 0;
+			}
+			
+			// Angle b is on top of Angle a, Angle a is bigger
+			if (a0s0.containsPoints(a1s0Points) && a0s1.containsPoints(a1s1Points)) {
+				return 1;
+			}
+			
+			// Angle a is on top of Angle b, Angle b is bigger
+			if (a1s0.containsPoints(a0s0Points) && a1s1.containsPoints(a0s1Points)) {
+				return -1;
+			}
+			
+			// Angles are not aligned
+			return -3;
+		} else {
+			// Angles don't share a vertex, not synonyms
+			return -2;
+		}
+	}
+	
+	/**
 	 * Get the pairs of corresponding angles between the two given
 	 * {@link Triangle}s.
 	 * @param tri0 the first triangle

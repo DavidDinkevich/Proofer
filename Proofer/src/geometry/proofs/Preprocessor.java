@@ -40,7 +40,7 @@ public class Preprocessor {
 		
 		// Add and include all hidden figures
 		addHiddenFigures(diagram);
-		
+				
 		// Make vertical angles congruent
 		handleVerticalAngles(diagram);
 		
@@ -102,8 +102,9 @@ public class Preprocessor {
 			final boolean figIsAngle = !figIsTri && name.startsWith(Utils.ANGLE_SYMBOL);
 			if (figIsTri)
 				fig = diagram.getFigure(name.substring(1), Triangle.class);
-			else if (figIsAngle)
-				fig = diagram.getFigure(name.substring(1), Angle.class);
+			else if (figIsAngle) {
+				fig = diagram.getPrimaryAngleSynonym(name.substring(1));
+			}
 		}
 		// Not triangle or angle
 		else
@@ -267,12 +268,15 @@ public class Preprocessor {
 			String sharedVert = originalAngleName.substring(1, 2);
 			String v0 = originalAngleName.substring(0, 1);
 			String v1 = originalAngleName.substring(2); 
+			// Derive two hypothetical angles that WOULD exist if there was a hidden triangle
 			String secondAngle = sharedVert + v0 + v1;
 			String thirdAngle = sharedVert + v1 + v0;
 			
 			// Check if the two derived angles (secondAngle, thirdAngle) exist in the diagram
-			if (!diag.containsFigures(Arrays.asList(secondAngle, thirdAngle), Angle.class))
+			if (!(diag.containsAngleSynonym(secondAngle) 
+				&& diag.containsAngleSynonym(thirdAngle))) {
 				continue;
+			}
 			// New triangle
 			Angle originalAngle = (Angle)a;
 			Vertex vertex0 = (Vertex) originalAngle.getChild(v0);

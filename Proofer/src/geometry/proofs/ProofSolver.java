@@ -307,7 +307,7 @@ public class ProofSolver {
 			// If the figure is not a Triangle, leave the function
 			if (!(fig instanceof Triangle))
 				continue;
-			
+						
 			// Get the triangle
 			Triangle tri = (Triangle)fig;
 			// Get the name of the triangle
@@ -316,7 +316,7 @@ public class ProofSolver {
 			Segment[] segs = tri.getSides();
 			// Get the triangle's angles
 			Angle[] angles = tri.getAngles();
-			
+						
 			// For each segment
 			for (int i = 0; i < 2; i++) {
 				// For each segment located AFTER the above segment in the list of segments
@@ -335,7 +335,11 @@ public class ProofSolver {
 						Angle a1 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert1));
 						
 						// Make the two angles congruent
-						FigureRelation rel = new FigureRelation(CONGRUENT, a0, a1);
+						FigureRelation rel = new FigureRelation(
+								CONGRUENT, 
+								diagram.getPrimaryAngleSynonym(a0.getName()), 
+								diagram.getPrimaryAngleSynonym(a1.getName())
+						);
 						rel.addParent(segsRel);
 						rel.setReason("Isosceles Triangle Theorem");
 						// Update Diagram

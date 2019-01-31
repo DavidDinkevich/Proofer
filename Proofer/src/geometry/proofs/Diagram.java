@@ -16,9 +16,20 @@ public class Diagram {
 	private List<FigureRelation> relations;
 	private FigureRelation proofGoal;
 	
+	/**
+	 * This list is necessary to make
+	 * sure that only one angle of a set of angle synonyms are included in the diagram, so as to
+	 * avoid compatibility issues (for example, when adding {@link FigureRelation}s, the
+	 * relation is true for all synonyms, so only one "representative" angle is needed.
+	 * The representative angle synonym is always the first in its respective list of synonyms,
+	 * and is called the "primary angle synonym".
+	 */
+	private List<List<Angle>> angleSynonyms;
+	
 	public Diagram() {
 		figures = new ArrayList<>();
 		relations = new ArrayList<>();
+		angleSynonyms = new ArrayList<>();
 	}
 	
 	public FigureRelation getProofGoal() {
@@ -35,6 +46,10 @@ public class Diagram {
 		proofGoal = newGoal;
 		return old;
 	}
+	
+	/*
+	 * FIGURES
+	 */
 	
 	@SuppressWarnings("unchecked")
 	public <T extends Figure> T getFigure(String name) {
@@ -81,117 +96,26 @@ public class Diagram {
 	}
 	
 	private boolean addFigureAndRelations(Figure fig) {
+		// No duplicates
 		if (containsFigure(fig))
 			return false;
+		// If it's an angle, handle angle synonyms
+		if (fig.getClass() == Angle.class) {
+			// Add the angle to the list of angle synonyms
+			addAngle((Angle) fig);
+			// If the angle is NOT a primary angle synonym, then we don't want to add it
+			if (!isPrimaryAngleSynonym(fig.getName())) {
+				// Return false because the figure was not added (the fact that the angle was
+				// added to the angle synonyms list is irrelevant
+				return false;
+			}
+		}
+		// Add the figure
 		figures.add(fig);
+		// Apply the reflexive postulate
 		applyReflexivePostulate(fig);
+		// Return true because the figure was added
 		return true;
-	}
-	
-	/**
-	 * Apply the reflexive postulate
-	 * @param the figure
-	 */
-	private boolean applyReflexivePostulate(Figure fig) {
-		if (fig.getClass() == Vertex.class)
-			return false;
-		FigureRelation rel = new FigureRelation(
-				FigureRelationType.CONGRUENT,
-				fig,
-				fig
-		);
-		rel.setReason("Reflexive Postulate");
-		return addFigureRelation(rel);
-	}
-	
-	/**
-	 * Apply the transitive postulate.
-	 * @param rel the {@link FigureRelation} of type CONGRUENT to
-	 * which the transitive postulate will be applied.
-	 */
-	private void applyTransitivePostulate(FigureRelation rel) {
-		// Conditions
-		if (
-				// Figure relation type is not "congruent"
-//				rel.getRelationType() != FigureRelationType.CONGRUENT
-				// FigureRelation must not be reflexive
-//				|| rel.isCongruentAndReflexive()
-				rel.isCongruentAndReflexive()
-			)
-			return;
-		
-		final int COUNT = relations.size();
-		
-		for (Figure sharedFriend : rel.getFigures()) {
-			for (int i = 0; i < COUNT; i++) {
-				FigureRelation iter = relations.get(i);
-				
-				// Conditions
-				if (
-						// Figure relation type is not "congruent"
-						iter.getRelationType() != FigureRelationType.CONGRUENT
-						// Figures in iter must be same type as sharedFriend
-						|| iter.getFigure0().getClass() != sharedFriend.getClass()
-						// Figures in iter must NOT be the same figure congruent to itself
-						|| iter.isCongruentAndReflexive()
-						// Iter must not be equal to rel
-						|| iter.equals(rel)
-						// Iteration must contain figure
-						|| !iter.containsFigure(sharedFriend)
-					)
-					continue;
-				
-				Figure newFriend0 = rel.getFigure0().equals(sharedFriend) ?
-						rel.getFigure1() : rel.getFigure0();
-				Figure newFriend1 = iter.getFigure0().equals(sharedFriend) ?
-						iter.getFigure1() : iter.getFigure0();
-				
-				FigureRelation newRel = new FigureRelation(
-						FigureRelationType.CONGRUENT,
-						newFriend0,
-						newFriend1
-				);
-				newRel.setReason("Transitive Postulate");
-				// Add the new relation
-				if (!containsFigureRelation(newRel))
-					relations.add(newRel);
-			}
-		}
-	}
-	
-	/**
-	 * Make the given angle congruent to all
-	 * other right angles in the list of {@link FigureRelation}s.
-	 * @param rightAngleRel the {@link FigureRelation} that makes the angle
-	 * a right angle
-	 */
-	private void makeRightAngle(FigureRelation rightAngleRel) {
-		// Get the angle
-		Angle angle = rightAngleRel.getFigure0();
-		// Make new right angle congruent to all other right angles in collection
-		for (int i = 0; i < relations.size() - 1; i++) {
-			// (Above): we say "i < relations() '-1' " bc we don't want to compare
-			// the relation pair to itself. Therefore, we must exclude it from the list.
-			// Since we just added it to the list, we know that it is at the very end
-			// of the list. The "-1" excludes the relation pair and makes sure that
-			// we don't compare it to itself.
-
-			FigureRelation pair = relations.get(i);
-			if (pair.getRelationType() == FigureRelationType.RIGHT) {
-				FigureRelation newPair = new FigureRelation(
-						FigureRelationType.CONGRUENT,
-						angle,
-						pair.getFigure0()
-				);
-				newPair.addParent(rightAngleRel);
-				newPair.setReason("Right angles congruent");
-				
-				// Ensure that we're not adding a duplicate
-				if (!containsFigureRelation(newPair)) {
-					relations.add(newPair);
-				}
-			}
-		}
 	}
 	
 	public boolean removeFigure(Figure fig) {
@@ -234,7 +158,184 @@ public class Diagram {
 		return Collections.unmodifiableList(figures);
 	}
 	
-	/////////////////////////////
+	/*
+	 * ANGLE SYNONYMS
+	 */
+	
+	public List<Angle> getAngleSynonyms(String angle) {
+		for (List<Angle> subList : angleSynonyms) {
+			for (Angle a : subList) {
+				if (a.isValidName(angle)) {
+					return Collections.unmodifiableList(subList);
+				}
+			}
+		}
+		return null;
+	}
+	
+	public boolean containsAngleSynonym(String angle) {
+		List<Angle> subList = getAngleSynonyms(angle);
+		return subList != null && subList.size() > 1;
+	}
+	
+	public boolean isPrimaryAngleSynonym(String a) {
+		for (List<Angle> subList : angleSynonyms) {
+			if (subList.get(0).isValidName(a)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Get the primary angle synonym of the set of angle synonyms that the given angle
+	 * belongs to.
+	 * @param angle the angle
+	 * @return the primary angle synonym, or null if the given angle is not contained
+	 * in this diagram.
+	 */
+	public Angle getPrimaryAngleSynonym(String angle) {
+		List<Angle> synSet = getAngleSynonyms(angle);
+		return synSet == null ? null : synSet.get(0);
+	}
+	
+	/**
+	 * Adds the given {@link Angle} to the list of angle synonyms. 
+	 * @param angle the angle
+	 * @return true if the angle was added, false if it is already contained in the list
+	 */
+	private boolean addAngle(Angle angle) {
+		// For each list of angle synonyms
+		for (List<Angle> subList : angleSynonyms) {
+			// If it contains the given angle, we're not going to add it (no duplicates)
+			if (subList.contains(angle)) {
+				return false;
+			}
+			// Otherwise, check if it is a synonym of the other angles in this sublist, and if it
+			// is the smallest, move it to the front (it will become the new primary angle synonym).
+			final int result = Utils.compareAngleSynonyms(angle, subList.get(0));
+			// The angle IS a synonym (as opposed to -3, -2, which mean that it is NOT a synonym)
+			if (result > -2) {				
+				// If the angle is SMALLER than the existing smallest angle 
+				// (for this set of synonyms), then insert the angle to the front of the set.
+				// It will become the new primary angle synonym
+				if (result == -1) {
+					subList.add(0, angle);
+				} 
+				// Otherwise, if result = 0 or 1, just append it to the end
+				else {
+					subList.add(angle);
+				}
+				return true;
+			}
+		}
+
+		// If this angle does NOT have any angle synonyms, make an new list for it
+		List<Angle> newSubList = new ArrayList<>();
+		newSubList.add(angle);
+		angleSynonyms.add(newSubList);
+		return true;
+	}
+	
+	/*
+	 * FIGURE RELATIONS
+	 */
+	
+	/**
+	 * Apply the reflexive postulate
+	 * @param the figure
+	 */
+	private boolean applyReflexivePostulate(Figure fig) {
+		if (fig.getClass() == Vertex.class)
+			return false;
+		FigureRelation rel = new FigureRelation(FigureRelationType.CONGRUENT, fig, fig);
+		rel.setReason("Reflexive Postulate");
+		return addFigureRelation(rel);
+	}
+	
+	/**
+	 * Apply the transitive postulate.
+	 * @param rel the {@link FigureRelation} of type CONGRUENT to
+	 * which the transitive postulate will be applied.
+	 */
+	private void applyTransitivePostulate(FigureRelation rel) {
+		// Conditions
+		if (
+				// Figure relation type is not "congruent"
+//				rel.getRelationType() != FigureRelationType.CONGRUENT
+				// FigureRelation must not be reflexive
+//				|| rel.isCongruentAndReflexive()
+				rel.isCongruentAndReflexive()
+				)
+			return;
+		
+		final int COUNT = relations.size();
+		
+		for (Figure sharedFriend : rel.getFigures()) {
+			for (int i = 0; i < COUNT; i++) {
+				FigureRelation iter = relations.get(i);
+				
+				// Conditions
+				if (
+						// Figure relation type is not "congruent"
+						iter.getRelationType() != FigureRelationType.CONGRUENT
+						// Figures in iter must be same type as sharedFriend
+						|| iter.getFigure0().getClass() != sharedFriend.getClass()
+						// Figures in iter must NOT be the same figure congruent to itself
+						|| iter.isCongruentAndReflexive()
+						// Iter must not be equal to rel
+						|| iter.equals(rel)
+						// Iteration must contain figure
+						|| !iter.containsFigure(sharedFriend)
+						)
+					continue;
+				
+				Figure newFriend0 = rel.getFigure0().equals(sharedFriend) ?
+						rel.getFigure1() : rel.getFigure0();
+				Figure newFriend1 = iter.getFigure0().equals(sharedFriend) ?
+						iter.getFigure1() : iter.getFigure0();
+								
+				FigureRelation newRel = new FigureRelation(
+						FigureRelationType.CONGRUENT, newFriend0, newFriend1);
+				newRel.setReason("Transitive Postulate");
+				// Add the new relation
+				if (!containsFigureRelation(newRel))
+					relations.add(newRel);
+			}
+		}
+	}
+	
+	/**
+	 * Make the given angle congruent to all
+	 * other right angles in the list of {@link FigureRelation}s.
+	 * @param rightAngleRel the {@link FigureRelation} that makes the angle
+	 * a right angle
+	 */
+	private void makeRightAngle(FigureRelation rightAngleRel) {
+		// Get the angle
+		Angle angle = rightAngleRel.getFigure0();
+		// Make new right angle congruent to all other right angles in collection
+		for (int i = 0; i < relations.size() - 1; i++) {
+			// (Above): we say "i < relations() '-1' " bc we don't want to compare
+			// the relation pair to itself. Therefore, we must exclude it from the list.
+			// Since we just added it to the list, we know that it is at the very end
+			// of the list. The "-1" excludes the relation pair and makes sure that
+			// we don't compare it to itself.
+			
+			FigureRelation pair = relations.get(i);
+			if (pair.getRelationType() == FigureRelationType.RIGHT) {
+				FigureRelation newPair = new FigureRelation(
+						FigureRelationType.CONGRUENT, angle, pair.getFigure0());
+				newPair.addParent(rightAngleRel);
+				newPair.setReason("Right angles congruent");
+
+				// Ensure that we're not adding a duplicate
+				if (!containsFigureRelation(newPair)) {
+					relations.add(newPair);
+				}
+			}
+		}
+	}
 	
 //	/**
 //	 * Use the given information to create a {@link FigureRelation}.
