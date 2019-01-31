@@ -359,21 +359,27 @@ public final class Utils {
 	 * @param b the second angle
 	 * @return whether they are vertical angles
 	 */
-	public static boolean areVerticalAngles(Angle a, Angle b) {
-		String name0 = a.getName();
-		String name1 = b.getName();
-		int sharedVertCount = 0;
-		if (a.getNameShort().equals(b.getNameShort())) {
-			for (int i = 0; i < name0.length(); i++) {
-				// If the name of the first angle does not contain the char at the given
-				// index in the second angle name.
-				if (!(name0.indexOf(name1.charAt(i)) > -1))
-					continue;
-				++sharedVertCount;
-			}
-			return sharedVertCount == 1 && a.getAngle() == b.getAngle();
-		}
-		return false;
+	public static boolean areVerticalAngles(Angle a, Angle b) {		
+		// Check if the two angles share ONE common vertex
+		String endVerts0 = a.getName().substring(0, 1) + a.getName().substring(2);
+		String endVerts1 = b.getName().substring(0, 1) + b.getName().substring(2);
+		
+		final boolean shareVert = 
+				// Middle vertices are equal
+				a.getNameShort().equals(b.getNameShort()) 
+				// ONLY share the middle vertex, no other vertices shared
+				&& !(endVerts0.contains(endVerts1.substring(0, 1)) 
+						|| endVerts0.contains(endVerts1.substring(1)));
+		
+		// Get corresponding segments, check if they're aligned
+		Segment[][] corrSegs = getCorrespondingSegments(a, b);
+		final boolean segsAligned = 
+				// a0s0 == a1s0
+				corrSegs[0][0].getSlope().equals(corrSegs[0][1].getSlope())
+				// a0s1 == a1s1
+			&&	corrSegs[1][0].getSlope().equals(corrSegs[1][1].getSlope());
+				
+		return shareVert && segsAligned;
 	}
 	
 	/**
@@ -387,13 +393,11 @@ public final class Utils {
 		// Check if the angles share a center vertex
 		final boolean shareVertex = a.getCenter().equals(b.getCenter());
 		if (shareVertex) {
-			Segment a0s0 = a.getSides()[0];
-			Segment a0s1 = a.getSides()[1];
-			Segment a1s0 = b.getSides()[0];
-			Segment a1s1 = b.getSides()[1];
-			// Make sure the segments in the 2 pairs are parallel to each other
-			a1s0 = a1s0.getSlope().equals(a0s0.getSlope()) ? a1s0 : b.getSides()[1];
-			a1s1 = a1s1.getSlope().equals(a0s1.getSlope()) ? a1s1 : b.getSides()[0];
+			Segment[][] corrSegs = getCorrespondingSegments(a, b);
+			Segment a0s0 = corrSegs[0][0];
+			Segment a1s0 = corrSegs[0][1];
+			Segment a0s1 = corrSegs[1][0];
+			Segment a1s1 = corrSegs[1][1];			
 			
 			// Get end points of each segment
 			List<Vec2> a0s0Points = Arrays.asList(a0s0.getVertexLocations());
@@ -436,8 +440,7 @@ public final class Utils {
 	 * @param tri1 the second triangle
 	 * @return the pairs of corresponding angles
 	 */
-	public static List<Angle[]> getCorrespondingAngles(
-			Triangle tri0, Triangle tri1) {
+	public static List<Angle[]> getCorrespondingAngles(Triangle tri0, Triangle tri1) {
 		// List of pairs
 		List<Angle[]> list = new ArrayList<>();
 		// As we loop through the pairs of angles between the triangles,
@@ -505,6 +508,28 @@ public final class Utils {
 		}
 		
 		return list;
+	}
+	
+	/**
+	 * Get the corresponding segments of the given two angles <i>that share a
+	 * common vertex</i>
+	 * <p>
+	 * Format: [ [ a0s0, a1s0 ] , [ a0s1, a1s1 ]  ]
+	 * @param a the first angle
+	 * @param b the second angle
+	 * @return the list of corresponding segments if the angles share a common vertex, null
+	 * if the angles do not share a common vertex, empty if the angles are not aligned.
+	 */
+	public static Segment[][] getCorrespondingSegments(Angle a, Angle b) {
+		Segment a0s0 = a.getSides()[0];
+		Segment a0s1 = a.getSides()[1];
+		Segment a1s0 = b.getSides()[0];
+		Segment a1s1 = b.getSides()[1];
+		// Make sure the segments in the 2 pairs are parallel to each other
+		a1s0 = a1s0.getSlope().equals(a0s0.getSlope()) ? a1s0 : b.getSides()[1];
+		a1s1 = a1s1.getSlope().equals(a0s1.getSlope()) ? a1s1 : b.getSides()[0];
+		
+		return new Segment[][] { { a0s0, a1s0 }, { a0s1, a1s1 } };
 	}
 	
 	/**
