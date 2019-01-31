@@ -71,31 +71,6 @@ public class Diagram {
 	}
 	
 	public boolean addFigure(Figure fig) {
-		// Add the figure
-		if (!addFigureAndRelations(fig))
-			return false;
-		
-		for (Figure child : fig.getChildren()) {
-			addFigure(child);
-		}
-		return true;
-	}
-	
-	/**
-	 * Add the given List of figures
-	 * @param figs the List
-	 * @return true if the diagram was modified (if a single figure was added)
-	 */
-	public boolean addFigures(Collection<? extends Figure> figs) {
-		boolean result = false;
-		for (Figure fig : figs) {
-			if (addFigure(fig))
-				result = true;
-		}
-		return result;
-	}
-	
-	private boolean addFigureAndRelations(Figure fig) {
 		// No duplicates
 		if (containsFigure(fig))
 			return false;
@@ -114,8 +89,26 @@ public class Diagram {
 		figures.add(fig);
 		// Apply the reflexive postulate
 		applyReflexivePostulate(fig);
-		// Return true because the figure was added
+		
+		// REPEAT THIS STEP RECURSIVELY FOR ALL CHILDREN OF THIS FIGURE
+		for (Figure child : fig.getChildren()) {
+			addFigure(child);
+		}
 		return true;
+	}
+	
+	/**
+	 * Add the given List of figures
+	 * @param figs the List
+	 * @return true if the diagram was modified (if a single figure was added)
+	 */
+	public boolean addFigures(Collection<? extends Figure> figs) {
+		boolean result = false;
+		for (Figure fig : figs) {
+			if (addFigure(fig))
+				result = true;
+		}
+		return result;
 	}
 	
 	public boolean removeFigure(Figure fig) {
