@@ -168,7 +168,7 @@ public class Diagram {
 	
 	public boolean containsAngleSynonym(String angle) {
 		List<Angle> subList = getAngleSynonyms(angle);
-		return subList != null && subList.size() > 1;
+		return subList != null;
 	}
 	
 	public boolean isPrimaryAngleSynonym(String a) {
@@ -291,6 +291,7 @@ public class Diagram {
 				FigureRelation newRel = new FigureRelation(
 						FigureRelationType.CONGRUENT, newFriend0, newFriend1);
 				newRel.setReason("Transitive Postulate");
+				newRel.addParent(iter);
 				// Add the new relation
 				if (!containsFigureRelation(newRel))
 					relations.add(newRel);
