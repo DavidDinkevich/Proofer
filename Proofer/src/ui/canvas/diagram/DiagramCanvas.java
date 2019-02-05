@@ -6,6 +6,7 @@ import java.util.List;
 
 import geometry.Dimension;
 import geometry.Vec2;
+import geometry.proofs.Figure;
 import geometry.shapes.Polygon;
 import geometry.shapes.VertexBuffer;
 
@@ -102,6 +103,16 @@ public class DiagramCanvas extends AdvancedCanvas {
 		for (GraphicsShape<?> shape : elements) {
 			removeDiagramFigure(shape);
 		}
+	}
+	
+	public boolean containsDiagramFigure(String name, Class<?> c) {
+		for (GraphicsShape<?> gshape : diagramFigures) {
+			Figure shape = gshape.getShape();
+			if (shape.getClass() == c && shape.isValidName(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public List<GraphicsShape<?>> getDiagramFigures() {
