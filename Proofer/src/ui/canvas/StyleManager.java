@@ -13,6 +13,8 @@ public final class StyleManager {
 	 */
 	private static Brush highlightedFigureBrush;
 	
+	private static Brush invisibleHiddenFigureBrush;
+	
 	private static Brush selectionContainerBrush;
 	
 	private static Brush canvasGridBrush;
@@ -37,6 +39,11 @@ public final class StyleManager {
 		brushBuilder.getFill().setA(0.5f);
 		brushBuilder.setStrokeWeight(0.1f);
 		highlightedFigureBrush = brushBuilder.buildBrush();
+		
+		// Slightly more transparent
+		brushBuilder.getFill().setA(0.25f);
+		brushBuilder.setStrokeWeight(0.01f);
+		invisibleHiddenFigureBrush = brushBuilder.buildBrush();
 		
 		brushBuilder.getFill().set(255, 255, 0).setA(0.3f);
 		brushBuilder.getStroke().set(255, 220, 0).setA(0f);
@@ -116,6 +123,14 @@ public final class StyleManager {
 		highlightedFigureBrush = brush;
 	}
 	
+	public static Brush getInvisibleHiddenFigureBrush() {
+		return invisibleHiddenFigureBrush;
+	}
+
+	public static void setInvisibleHiddenFigureBrush(Brush brush) {
+		invisibleHiddenFigureBrush = brush;
+	}
+
 	public static GraphicsEllipse getKnobBody() {
 		return knobBody;
 	}
