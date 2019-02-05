@@ -180,6 +180,19 @@ public class Diagram {
 		return false;
 	}
 	
+	public boolean isSecondaryAngleSynonym(String a) {
+		for (List<Angle> subList : angleSynonyms) {
+			if (subList.size() > 1) {
+				for (int i = 1; i < subList.size(); i++) {
+					if (subList.get(i).isValidName(a)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Get the primary angle synonym of the set of angle synonyms that the given angle
 	 * belongs to.
