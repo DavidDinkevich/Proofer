@@ -196,6 +196,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 		// Update the VertexNameBuffer
 		if (charList.set(CURR_NAME_INDEX, newName)) {
 			vertex.setName(newName);
+			updatePolygons();
 			return true;
 		}
 		return false;
@@ -221,7 +222,8 @@ public class VertexBuffer implements Iterable<Vertex> {
 			charList.set(INDEX, newName);
 			// Change the vertex's name
 			vertex.setName(newName);
-			return true;			
+			updatePolygons();
+			return true;
 		}
 		return false;
 	}
@@ -237,10 +239,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 	 * are on top of each other
 	 * @return true if the name of the given vertex changed, false otherwise
 	 */
-	public boolean updateVertexName(Vertex vertex, boolean mergeIfNecessary) {
-		// Whether or not a vertex's name was modified
-		boolean modified = false;
-		
+	public boolean updateVertexName(Vertex vertex, boolean mergeIfNecessary) {		
 		if (mergeIfNecessary) {			
 			for (Vertex vert : vertices) {
 				// Don't want to analyze same vertex
@@ -255,17 +254,13 @@ public class VertexBuffer implements Iterable<Vertex> {
 				if (OTHER_VERT_NAME != VERTEX_NAME && otherVertLoc.equals(vertexLoc)) {
 					// We found another vertex with the same loc as the given vertex
 					// and with a different name
-					modified = setVertexName(vertex, OTHER_VERT_NAME);
-					updatePolygons();
+					return setVertexName(vertex, OTHER_VERT_NAME);
 				}
 			}
-			modified = false; // No vertices were modified
+			return false; // No vertices were modified
 		} else {
-			modified = demergeVertices(vertex);
-			updatePolygons();
+			return demergeVertices(vertex);
 		}
-		
-		return modified;
 	}
 	
 	@Override
