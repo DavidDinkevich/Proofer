@@ -21,16 +21,18 @@ import util.Utils;
 
 import static geometry.proofs.FigureRelationType.CONGRUENT;
 
-public class Preprocessor {
-	private DiagramCanvas canvas;
-	private FigureRelationListPanel figRelPanel;
+public final class Preprocessor {
 	
-	public Preprocessor(DiagramCanvas canvas, FigureRelationListPanel figRelPanel) {
-		this.canvas = canvas;
-		this.figRelPanel = figRelPanel;
-	}
+	// No instantiating this class
+	private Preprocessor() {}
 	
-	public Diagram generateDiagram() {
+	/**
+	 * Create a {@link Diagram} and fill it with {@link Figure}s from a 
+	 * {@link DiagramCanvas}
+	 * @param canvas the {@link DiagramCanvas}
+	 * @return the newly created {@link Diagram}
+	 */
+	public static Diagram compileFigures(DiagramCanvas canvas) {
 		Diagram diagram = new Diagram();
 		
 		// Gather figures
@@ -40,9 +42,23 @@ public class Preprocessor {
 		
 		// Add and include all hidden figures
 		addHiddenFigures(diagram);
-				
 		// Make vertical angles congruent
 		handleVerticalAngles(diagram);
+		
+		return diagram;
+	}
+
+	/**
+	 * Prepare a {@link Diagram} to be processed by {@link ProofSolver}.
+	 * @param canvas the {@link}
+	 * @param figRelPanel
+	 * @return
+	 */
+	public static Diagram generateDiagram(DiagramCanvas canvas, 
+			FigureRelationListPanel figRelPanel) {
+		
+		// Compile the figures
+		Diagram diagram = compileFigures(canvas);
 		
 		// Determine given
 		for (FigureRelationPanel panel : figRelPanel.getFigureRelationPanels()) {
@@ -94,7 +110,7 @@ public class Preprocessor {
 		return diagram;
 	}
 	
-	private Figure searchForFigure(Diagram diagram, String name) {
+	private static Figure searchForFigure(Diagram diagram, String name) {
 		Figure fig = null;
 		// Angle or triangle
 		if (name.length() == 4) { // 3 cars and a special character
@@ -148,7 +164,7 @@ public class Preprocessor {
 	 * included in the diagram and can be safely referenced.
 	 * @param diagram the diagram that contains the hidden figures.
 	 */
-	private void addHiddenFigures(Diagram diagram) {
+	private static void addHiddenFigures(Diagram diagram) {
 		List<Angle> hiddenAngles = new ArrayList<>();
 		boolean figuresWereAdded = false;
 		
@@ -201,7 +217,7 @@ public class Preprocessor {
 	 * @return the hidden segment OR figure, or null if the two given segments
 	 * do not connect at one vertex
 	 */
-	private Figure identifyHiddenSegOrAngle(Segment seg0, Segment seg1) {
+	private static Figure identifyHiddenSegOrAngle(Segment seg0, Segment seg1) {
 //		// If we're analyzing the same segment, we can't combine it
 //		if (seg0.equals(seg1))
 //			return new Figure[0];
@@ -258,7 +274,7 @@ public class Preprocessor {
 	 * to find the hidden triangles
 	 * @return a List of hidden triangles
 	 */
-	private List<Triangle> identifyHiddenTriangles(Diagram diag, List<Angle> hiddenAngles) {
+	private static List<Triangle> identifyHiddenTriangles(Diagram diag, List<Angle> hiddenAngles) {
 		List<Triangle> hiddenTriangles = null;
 		
 		// Add hidden triangles
@@ -291,7 +307,7 @@ public class Preprocessor {
 		return hiddenTriangles == null ? Collections.emptyList() : hiddenTriangles;
 	}
 	
-	private Vertex[] getFarthestVertices(List<Vertex> vertices) {
+	private static Vertex[] getFarthestVertices(List<Vertex> vertices) {
 		// The pair of farthest vertices
 		Vertex[] pair = new Vertex[2];
 		// Distance of the previously checked pair of vertices
@@ -317,7 +333,7 @@ public class Preprocessor {
 		return pair;
 	}
 	
-	private void preprocessGivenInfo(Diagram diagram) {
+	private static void preprocessGivenInfo(Diagram diagram) {
 		// To avoid a ConcurrentModificationException
 		List<FigureRelation> buff = new ArrayList<>(diagram.getFigureRelations());
 		// For each figure relation pair
@@ -344,7 +360,7 @@ public class Preprocessor {
 	 * @param diagram the diagram
 	 * @param pair the {@link FigureRelation} to be handled
 	 */
-	private void preprocessBisectingPairs(Diagram diagram, FigureRelation pair) {
+	private static void preprocessBisectingPairs(Diagram diagram, FigureRelation pair) {
 		// Get the segment being bisecTED
 		Segment bisectedSeg = pair.getFigure1();
 		// Get the midpoint loc of the second segment (segment being bisecTED)
@@ -379,7 +395,7 @@ public class Preprocessor {
 	 * @param diagram the diagram
 	 * @param pair the {@link FigureRelation} to be handled
 	 */
-	private void preprocessPerpendicularPairs(Diagram diagram, FigureRelation pair) {
+	private static void preprocessPerpendicularPairs(Diagram diagram, FigureRelation pair) {
 		// The two segments in the given figure relation pair
 		Segment seg0 = pair.getFigure0(); // The intersectING segment
 		Segment seg1 = pair.getFigure1(); // The intersectED segment
@@ -402,7 +418,7 @@ public class Preprocessor {
 		diagram.getFigureRelations().set(REL_INDEX, perpRel);
 	}
 	
-	private Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
+	private static Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
 		// Check for vertex in given diagram
 		for (Figure fig : diag.getFigures()) {
 			// If the shape being checked is a vertex
@@ -418,7 +434,7 @@ public class Preprocessor {
 		throw new NullPointerException("No vertex at given location");
 	}
 	
-	private void handleVerticalAngles(Diagram diagram) {
+	private static void handleVerticalAngles(Diagram diagram) {
 		// For each figure
 		for (int i = 0; i < diagram.getFigures().size(); i++) {
 			// If the figure is NOT an angle, we don't care about it
@@ -440,21 +456,5 @@ public class Preprocessor {
 				}
 			}
 		}
-	}
-	
-	public DiagramCanvas getDiagramCanvas() {
-		return canvas;
-	}
-
-	public void setDiagramCanvas(DiagramCanvas canvas) {
-		this.canvas = canvas;
-	}
-
-	public FigureRelationListPanel getFigureRelationListPanel() {
-		return figRelPanel;
-	}
-
-	public void setFigureRelationListPanel(FigureRelationListPanel figRelPanel) {
-		this.figRelPanel = figRelPanel;
 	}
 }

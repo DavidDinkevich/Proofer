@@ -100,8 +100,7 @@ public class FigureRelationListPanel extends VBox {
 		solveButton = new Button("Solve");
 //		solveButton.setStyle("-fx-background-color: green");
 		solveButton.setOnAction(e -> {
-			Preprocessor preprocessor = new Preprocessor(mainWindow.getCanvas(), this);
-			Diagram diagram = preprocessor.generateDiagram();
+			Diagram diagram = Preprocessor.generateDiagram(mainWindow.getCanvas(), this);
 			ProofSolveRequestManager.requestSolveProof(new Request(diagram) {
 				@Override
 				public void onRequestCompleted(ProofSolver solver) {
