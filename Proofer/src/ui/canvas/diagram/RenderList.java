@@ -7,6 +7,7 @@ import ui.canvas.Drawable;
 import ui.canvas.diagram.UIDiagramLayers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class RenderList implements Drawable {
 	 * Add a {@link Drawable} to the list of its layer.
 	 */
 	public boolean addDrawable(Drawable o) {
-		return getLayerList(o.getLayer()).add(o);
+		return _getLayerList(o.getLayer()).add(o);
 	}
 	
 	/**
@@ -50,7 +51,7 @@ public class RenderList implements Drawable {
 	 * and successfully removed. False otherwise.
 	 */
 	public boolean removeDrawable(Drawable o) {
-		return getLayerList(o.getLayer()).remove(o);
+		return _getLayerList(o.getLayer()).remove(o);
 	}
 	
 	/**
@@ -78,10 +79,19 @@ public class RenderList implements Drawable {
 	}
 	
 	/**
-	 * Get the {@link List} that stores the {@link Drawable}s of the given
+	 * Get the {@link List} (unmodifiable) that stores the {@link Drawable}s of the given
 	 * layer.
 	 */
 	public List<Drawable> getLayerList(UIDiagramLayers layer) {
+		return Collections.unmodifiableList(list.get(layer));
+	}
+	
+	/**
+	 * This returns a modifiable version of the layer list, just for this class
+	 * @param layer
+	 * @return
+	 */
+	private List<Drawable> _getLayerList(UIDiagramLayers layer) {
 		return list.get(layer);
 	}
 	
@@ -90,7 +100,7 @@ public class RenderList implements Drawable {
 	 * @param layer the layer to be cleared
 	 */
 	public void clearLayerList(UIDiagramLayers layer) {
-		List<Drawable> layerList = getLayerList(layer);
+		List<Drawable> layerList = _getLayerList(layer);
 		
 		if (layerList == null)
 			throw new IllegalArgumentException("Their is no corresponding "
@@ -112,7 +122,7 @@ public class RenderList implements Drawable {
 	}
 	
 	public boolean contains(Drawable o) {
-		List<Drawable> list = getLayerList(o.getLayer());
+		List<Drawable> list = _getLayerList(o.getLayer());
 		if (list == null)
 			return false;
 		return list.contains(o);
