@@ -9,7 +9,7 @@ import geometry.proofs.Figure;
  * All children of this interface embody a geometric shape.
  * @author David Dinkevich
  */
-public interface Shape extends Figure, Resizeable {
+public interface Shape extends Figure {
 	/*
 	 * Force implementing classes to override these Object methods
 	 */

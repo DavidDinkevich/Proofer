@@ -169,8 +169,6 @@ public class SimplePolygon extends AbstractShape implements Polygon, Iterable<Ve
 	
 	@Override
 	public boolean setVertexLoc(char vertexName, Vec2 newLoc) {
-		if (!isResizeable())
-			throw new CannotResizeObjectException();
 		final int index = getName().indexOf(vertexName);
 		if (index < 0)
 			return false;
@@ -180,8 +178,6 @@ public class SimplePolygon extends AbstractShape implements Polygon, Iterable<Ve
 	
 	@Override
 	public void setVertexLoc(int index, Vec2 newLoc) {
-		if (!isResizeable())
-			throw new CannotResizeObjectException();
 		Vertex v = vertices.get(index);
 		v.setCenter(newLoc);
 	}

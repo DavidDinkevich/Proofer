@@ -142,14 +142,4 @@ public abstract class AbstractShape implements Shape {
 			throw new NullPointerException("A Shape's location cannot be null.");
 		center.set(loc);
 	}
-	
-	@Override
-	public boolean isResizeable() {
-		return resizeable;
-	}
-
-	@Override
-	public void setResizeable(boolean resizeable) {
-		this.resizeable = resizeable;
-	}
 }

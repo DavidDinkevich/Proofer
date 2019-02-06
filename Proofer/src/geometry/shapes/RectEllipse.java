@@ -59,16 +59,11 @@ public abstract class RectEllipse extends AbstractShape implements Shape2D {
 	}
 	
 	public RectEllipse setSize(Dimension size) {
-		if (!isResizeable())
-			return null;
 		this.size.set(Dimension.requireNonNegative(size));
 		return this;
 	}
 	
 	public RectEllipse setSize(float width, float height) {
-		if (!isResizeable()) {
-			return null;
-		}
 		// TODO: enable
 //		if (width < 0 || height < 0) {
 //			throw new IllegalArgumentException("Width or height cannot be < 0");

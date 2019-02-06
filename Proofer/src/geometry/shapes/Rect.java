@@ -178,8 +178,6 @@ public class Rect extends RectEllipse implements Polygon {
 	 */
 	@Override
 	public boolean setVertexLoc(char vertexName, Vec2 newLoc) {
-		if (!isResizeable())
-			throw new CannotResizeObjectException();
 		// Get the index of the given vertex
 		final int vertIndex = getName().indexOf(vertexName);
 		if (vertIndex < 0) {
@@ -198,8 +196,6 @@ public class Rect extends RectEllipse implements Polygon {
 	// TODO: make enum (see above)
 	@Override
 	public void setVertexLoc(int index, Vec2 newLoc) {
-		if (!isResizeable())
-			throw new CannotResizeObjectException();
 		if (index < 0 || index > 3) {
 			throw new IllegalArgumentException("The index of a Vertex on a Rect must be 0, 1, 2, or 3");
 		}
