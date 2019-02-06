@@ -18,11 +18,6 @@ public abstract class AbstractShape implements Shape {
 	private Vec2.Mutable center;
 
 	/**
-	 * Get whether this {@link AbstractShape} is resizable.
-	 */
-	private boolean resizeable = true;
-
-	/**
 	 * The name of this {@link AbstractShape}.
 	 */
 	private String name = "";

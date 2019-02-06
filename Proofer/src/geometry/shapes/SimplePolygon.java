@@ -6,8 +6,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import exceptions.CannotResizeObjectException;
-
 import geometry.Dimension;
 import geometry.Vec2;
 import geometry.proofs.Figure;

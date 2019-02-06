@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import exceptions.CannotResizeObjectException;
-
 import geometry.Dimension;
 import geometry.Vec2;
 import geometry.proofs.Figure;
