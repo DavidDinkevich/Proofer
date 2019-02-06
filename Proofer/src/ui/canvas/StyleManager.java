@@ -7,6 +7,8 @@ public final class StyleManager {
 	
 	private static Brush defaultFigureBrush;
 	
+	private static Brush strokeFigureBrush;
+	
 	/**
 	 * The brush with which a figure is painted when it is
 	 * highlighted
@@ -34,6 +36,10 @@ public final class StyleManager {
 		brushBuilder.getStroke().set(Brush.PINK);
 		brushBuilder.setStrokeWeight(0.4f);
 		defaultFigureBrush = brushBuilder.buildBrush();
+		
+		brushBuilder.getStroke().set(Brush.PINK);
+		brushBuilder.setStrokeWeight(2f);
+		strokeFigureBrush = brushBuilder.buildBrush();
 		
 		// Slightly less transparent
 		brushBuilder.getFill().setA(0.5f);
@@ -87,6 +93,14 @@ public final class StyleManager {
 		defaultFigureBrush = brush;
 	}
 	
+	public static Brush getStrokeFigureBrush() {
+		return strokeFigureBrush;
+	}
+
+	public static void setStrokeFigureBrush(Brush brush) {
+		strokeFigureBrush = brush;
+	}
+
 	public static Brush getSelectorBrush() {
 		return selectorBrush;
 	}
