@@ -7,7 +7,7 @@ import java.util.List;
 import geometry.Vec2;
 import geometry.proofs.Figure;
 
-public class Segment extends AbstractShape {
+public class Segment extends AbstractShape implements VertexShape {
 	
 	private Vertex[] vertices;
 	
@@ -47,18 +47,14 @@ public class Segment extends AbstractShape {
 		}
 		syncNameWithVertexNames();
 	}
-	
-	private void syncNameWithVertexNames() {
-		setName(vertices[0].getName() + vertices[1].getName());
-	}
-	
+		
 	/**
 	 * Get whether the given string is a valid name for a {@link Segment}.
 	 * @param name the name to be checked
 	 * @return whether it is a valid name for a {@link Segment}.
 	 */
 	public static boolean isValidSegmentName(String name) {
-		return name.length() == 2;
+		return name.length() == 2 && name.charAt(0) != name.charAt(1);
 	}
 	
 	/**
@@ -136,7 +132,8 @@ public class Segment extends AbstractShape {
 	public boolean containsPoint(Vec2 point) {
 		final float dist1 = Vec2.dist(vertices[0].getCenter(), point);
 		final float dist2 = Vec2.dist(vertices[1].getCenter(), point);
-		return dist1 + dist2 == getLength();
+//		return dist1 + dist2 == getLength();
+		return Math.abs((dist1 + dist2) - getLength()) < 1f;
 	}
 		
 	public float getLength() {
@@ -175,10 +172,6 @@ public class Segment extends AbstractShape {
 		return yInt;
 	}
 	
-	public boolean containsVertex(char name) {
-		return getName().indexOf(name) > -1;
-	}
-	
 	/**
 	 * Get whether this {@link Segment} contains both end points of the given {@link Segment}
 	 * @param other the other {@link Segment}
@@ -187,7 +180,13 @@ public class Segment extends AbstractShape {
 	public boolean containsSegment(Segment other) {
 		return containsPoints(Arrays.asList(other.getVertexLocations()));
 	}
-
+	
+	@Override
+	public boolean containsVertex(char name) {
+		return getName().indexOf(name) > -1;
+	}
+	
+	@Override
 	public Vertex[] getVertices() {
 		return vertices;
 	}
@@ -197,6 +196,7 @@ public class Segment extends AbstractShape {
 	 * @param index the index of the location of the requested {@link Vertex}.
 	 * @return the {@link Vertex}'s location.
 	 */
+	@Override
 	public Vec2 getVertexLoc(int index) {
 		return vertices[index].getCenter();
 	}
@@ -206,6 +206,7 @@ public class Segment extends AbstractShape {
 	 * @param vertexName the location of the requested {@link Vertex}.
 	 * @return the {@link Vertex}'s location.
 	 */
+	@Override
 	public Vec2 getVertexLoc(char vertexName) {
 		final int index = getName().indexOf(vertexName);
 		if (index < 0)
@@ -217,6 +218,7 @@ public class Segment extends AbstractShape {
 	 * Get a list of the locations of the {@link Vertex}es.
 	 * @return the locations as an array of {@link Vec2}s.
 	 */
+	@Override
 	public Vec2[] getVertexLocations() {
 		return new Vec2[] { vertices[0].getCenter(), vertices[1].getCenter() };
 	}
@@ -233,6 +235,7 @@ public class Segment extends AbstractShape {
 	 * @param index the index of the {@link Vertex} to be relocated.
 	 * @param newLoc the new location of the {@link Vertex} at the given index.
 	 */
+	@Override
 	public void setVertexLoc(int index, Vec2 newLoc) {
 //		if (!isResizeable())
 //			throw new CannotResizeObjectException();
@@ -250,6 +253,7 @@ public class Segment extends AbstractShape {
 	 * @return true if a {@link Vertex} with the given name was found
 	 * and its location was set. False otherwise.
 	 */
+	@Override
 	public boolean setVertexLoc(char vertexName, Vec2 newLoc) {
 //		if (!isResizeable())
 //			throw new CannotResizeObjectException();
@@ -267,6 +271,7 @@ public class Segment extends AbstractShape {
 	 * @param newName the new name to give to the {@link Vertex} at
 	 * the given index.
 	 */
+	@Override
 	public void setVertexName(int vertexIndex, char newName) {
 		vertices[vertexIndex].setName(newName);
 		syncNameWithVertexNames();
@@ -277,6 +282,7 @@ public class Segment extends AbstractShape {
 	 * @param currName the name of the {@link Vertex} that will be renamed.
 	 * @param newName the new name of the {@link Vertex}.
 	 */
+	@Override
 	public boolean setVertexName(char currName, char newName) {
 		final int index = getName().indexOf(currName);
 		if (index < 0)
@@ -290,8 +296,14 @@ public class Segment extends AbstractShape {
 	 * @param index the index of the vertex whose name will be retrieved.
 	 * @return the name of the vertex at the given index.
 	 */
+	@Override
 	public char getVertexName(int index) {
 		return vertices[index].getNameChar();
+	}
+	
+	@Override
+	public int getVertexCount() {
+		return 2;
 	}
 	
 	@Override
@@ -375,6 +387,6 @@ public class Segment extends AbstractShape {
 		public boolean isHorizontalOrVertical() {
 			return isHorizontal() || isVertical();
 		}
-	}	
+	}
 	
 }
