@@ -3,7 +3,7 @@ package ui.canvas.selection;
 import exceptions.IllegalSelectionException;
 
 import geometry.Vec2;
-import geometry.shapes.Shape2D;
+import geometry.shapes.Shape;
 
 import ui.canvas.AdvancedCanvas;
 import ui.canvas.GraphicsShape;
@@ -14,7 +14,7 @@ import ui.canvas.diagram.UIDiagramLayers;
  * {@linkplain Selector}s select {@link GraphicsShape}s.
  * @author David Dinkevich
  */
-public abstract class Selector<SelShape extends Shape2D, TargetType extends GraphicsShape<?>>
+public abstract class Selector<SelShape extends Shape, TargetType extends GraphicsShape<?>>
 extends GraphicsShape<SelShape> {
 	
 	private TargetType targetObject;
