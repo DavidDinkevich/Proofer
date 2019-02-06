@@ -9,8 +9,7 @@ import ui.canvas.selection.Selectable;
  * A graphical representation of a {@link Shape}.
  * @author David Dinkevich
  */
-public abstract class GraphicsShape<T extends Shape>
-implements Drawable, Selectable {	
+public abstract class GraphicsShape<T extends Shape> implements Drawable, Selectable {	
 	private T shape;
 	private Brush.Builder brush;
 
