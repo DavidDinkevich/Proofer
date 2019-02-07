@@ -1,6 +1,7 @@
 package ui.canvas.selection;
 
 import geometry.Vec2;
+import geometry.shapes.Vertex;
 import geometry.shapes.VertexShape;
 
 import ui.canvas.AdvancedCanvas;
@@ -23,8 +24,9 @@ public class Selector extends GraphicsShape<VertexShape> {
 
 		// Create knobs
 		knobs = new Knob[target.getShape().getVertexCount()];
+		Vertex[] vertices = target.getShape().getVertices();
 		for (int i = 0; i < knobs.length; i++) {
-			knobs[i] = new Knob(this, target.getShape().getVertexName(i));
+			knobs[i] = new Knob(this, vertices[i]);
 		}
 		
 		updateKnobPositions();
@@ -73,9 +75,9 @@ public class Selector extends GraphicsShape<VertexShape> {
 	public static class Knob extends GraphicsEllipse {
 
 		private Selector sel;
-		private char controlledVertex;
+		private Vertex controlledVertex;
 		
-		public Knob(Selector sel, char controlledVertex) {
+		public Knob(Selector sel, Vertex controlledVertex) {
 			super(new GraphicsEllipse(StyleManager.getKnobBody()));
 			setLayer(UIDiagramLayers.KNOB);
 			// TODO:
@@ -86,15 +88,17 @@ public class Selector extends GraphicsShape<VertexShape> {
 		}
 		
 		public void moveKnob(Vec2 newLoc) {
-			sel.getShape().setVertexLoc(controlledVertex, newLoc);
+			// Move vertex in selector
+			controlledVertex.setCenter(newLoc);
+			// Move the knob itself
 			getShape().setCenter(newLoc);
 		}
 		
 		public Selector getSelector() {
 			return sel;
 		}
-		
-		public char getControlledVertex() {
+				
+		public Vertex getControlledVertex() {
 			return controlledVertex;
 		}
 	}
