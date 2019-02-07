@@ -19,16 +19,16 @@ public class VertexBuffer implements Iterable<Vertex> {
 	private VertexNameBuffer charList;
 	
 	/**
-	 * List of Polygons whose vertices are stored in this
+	 * List of {@link VertexShape}s whose vertices are stored in this
 	 * {@link VertexBuffer}. When we modify their vertices,
-	 * we have to "let the polygons know" and update them.
+	 * we have to "let them know" and update them.
 	 */
-	private List<Polygon> polygons;
+	private List<VertexShape> vshapes;
 		
 	public VertexBuffer() {
 		vertices = new ArrayList<>();
 		charList = new VertexNameBuffer();
-		polygons = new ArrayList<>();
+		vshapes = new ArrayList<>();
 	}
 	
 	private void removeChar(Vertex vert) {
@@ -49,7 +49,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 	 */
 	private void validateVertexParameter(Vertex v) {
 		if (v == null || !vertices.contains(v))
-			throw new IllegalArgumentException("Vertex not contained in buffer.");
+			throw new IllegalArgumentException("Vertex: \"" + v + "\" not contained in buffer.");
 	}
 	
 	/**
@@ -138,41 +138,41 @@ public class VertexBuffer implements Iterable<Vertex> {
 	}
 	
 	/**
-	 * Add the {@link Polygon} to this {@link VertexBuffer}. The
-	 * Polygon's vertices will be added to this {@link VertexBuffer},
-	 * and when they are modified, the Polygon will be updated via the
-	 * {@link Polygon#syncNameWithVertexNames()} method.
-	 * @param poly the {@link Polygon}
+	 * Add the {@link VertexShape} to this {@link VertexBuffer}. The
+	 * VertexShape's vertices will be added to this {@link VertexBuffer},
+	 * and when they are modified, the VertexShape will be updated via the
+	 * {@link VertexShape#syncNameWithVertexNames()} method.
+	 * @param vshape the {@link VertexShape}
 	 */
-	public void addPolygon(Polygon poly) {
-		// Add the polygon to the list
-		polygons.add(poly);
-		// Add the polygon's vertices to the list
-		addVertices(poly.getVertices());
-		// Update all of the polygons' names
-		updatePolygons();
+	public void addVertexShape(VertexShape vshape) {
+		// Add the VertexShape to the list
+		vshapes.add(vshape);
+		// Add the VertexShape's vertices to the list
+		addVertices(vshape.getVertices());
+		// Update all of the VertexShapes' names
+		updateVertexShapes();
 	}
 	
 	/**
-	 * Remove the {@link Polygon} from this {@link VertexBuffer}
-	 * @param poly the {@link Polygon}
+	 * Remove the {@link VertexShape} from this {@link VertexBuffer}
+	 * @param vshape the {@link VertexShape}
 	 */
-	public void removePolygon(Polygon poly) {
-		// Remove the polygon from the list
-		polygons.remove(poly);
-		// Remove the polygon's vertices
-		removeVertices(poly.getVertices());
-		// Update all of the polygons' names
-		updatePolygons();
+	public void removeVertexShape(VertexShape vshape) {
+		// Remove the VertexShape from the list
+		vshapes.remove(vshape);
+		// Remove the VertexShape's vertices
+		removeVertices(vshape.getVertices());
+		// Update all of the VertexShapes' names
+		updateVertexShapes();
 	}
 	
 	/**
-	 * For each {@link Polygon}, call the Polygon's
-	 * {@link Polygon#syncNameWithVertexNames()} method
+	 * For each {@link VertexShape}, call the VertexShape's
+	 * {@link VertexShape#syncNameWithVertexNames()} method
 	 */
-	private void updatePolygons() {
-		for (Polygon poly : polygons) {
-			poly.syncNameWithVertexNames();
+	private void updateVertexShapes() {
+		for (VertexShape vshape : vshapes) {
+			vshape.syncNameWithVertexNames();
 		}
 	}
 	
@@ -186,7 +186,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 	private boolean setVertexName(Vertex vertex, char newName) {
 		final char CURR_NAME = vertex.getNameChar();
 		final int CURR_NAME_INDEX = charList.indexOf(CURR_NAME);
-		
+
 		// If the given vertex is not contained
 		if (CURR_NAME_INDEX < 0) {
 			// Crash the program
@@ -196,7 +196,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 		// Update the VertexNameBuffer
 		if (charList.set(CURR_NAME_INDEX, newName)) {
 			vertex.setName(newName);
-			updatePolygons();
+			updateVertexShapes();
 			return true;
 		}
 		return false;
@@ -205,7 +205,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 	/**
 	 * Demerge two vertices
 	 * @param vertex the vertex to be demerged
-	 * @return true if the operation was successful--if the given {@link Polygon} contains
+	 * @return true if the operation was successful--if the given {@link VertexShape} contains
 	 * the vertexName, false otherwise.
 	 */
 	private boolean demergeVertices(Vertex vertex) {
@@ -222,7 +222,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 			charList.set(INDEX, newName);
 			// Change the vertex's name
 			vertex.setName(newName);
-			updatePolygons();
+			updateVertexShapes();
 			return true;
 		}
 		return false;
