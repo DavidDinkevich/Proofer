@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javafx.scene.paint.Color;
+
 import geometry.Dimension;
 import geometry.Vec2;
 import geometry.proofs.Figure;
-import geometry.shapes.Polygon;
-import geometry.shapes.Segment;
 import geometry.shapes.VertexBuffer;
-
-import javafx.scene.paint.Color;
+import geometry.shapes.VertexShape;
 
 import ui.canvas.AdvancedCanvas;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsVertexBuffer;
 import ui.canvas.selection.InputManager;
+
 
 public class DiagramCanvas extends AdvancedCanvas {
 	
@@ -62,17 +62,15 @@ public class DiagramCanvas extends AdvancedCanvas {
 	public void addDiagramFigure(GraphicsShape<?> shape) {
 		// Add to list to diagram figures list
 		diagramFigures.add(shape);
+		
 		// Add to render list
 		renderList.addDrawable(shape);
-		// If it's a polygon, add it to VertexBuffer
-		if (shape.getShape() instanceof Polygon) {
-			Polygon poly = (Polygon)shape.getShape();
-			vertexBuff.addPolygon(poly);
+		
+		// Add VertexShapes to the VertexBuffer
+		if (shape.getShape() instanceof VertexShape) {
+			vertexBuff.addVertexShape((VertexShape) shape.getShape());
 		}
-		else if (shape.getShape().getClass() == Segment.class) {
-			Segment seg = (Segment) shape.getShape();
-			vertexBuff.addVertices(seg.getVertices());
-		}
+		
 		// Add to list of selectables
 		if (inputManager != null) {
 			inputManager.addSelectableFigure(shape);
@@ -94,11 +92,12 @@ public class DiagramCanvas extends AdvancedCanvas {
 			if (inputManager != null) {
 				inputManager.removeSelectableFigure(shape);
 			}
-			// If it's a polygon, remove from Vertex
-			if (shape.getShape() instanceof Polygon) {
-				Polygon poly = (Polygon)shape.getShape();
-				vertexBuff.removePolygon(poly);
+			
+			// Remove VertexShapes from the VertexBuffer
+			if (shape.getShape() instanceof VertexShape) {
+				vertexBuff.removeVertexShape((VertexShape) shape.getShape());
 			}
+			
 			return true;
 		}
 		return false;
