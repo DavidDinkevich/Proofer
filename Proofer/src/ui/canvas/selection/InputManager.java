@@ -696,8 +696,7 @@ public class InputManager implements Drawable {
 			reloadPolygonChildren();
 		}
 		
-		final char controlledVertName = knob.getControlledVertex();
-		Vertex controlledVert = new Vertex(controlledVertName, knobLoc);
+		Vertex controlledVert = knob.getControlledVertex();
 		updateVertexName(controlledVert, true);
 	}
 	
@@ -712,7 +711,7 @@ public class InputManager implements Drawable {
 		
 		// Whether to merge the vertex with another, or demerge it from another
 		final boolean mergeVert = canvasGrid.pointIsSnapped(vertLoc);
-		
+
 		// Update the vertex in the VertexBuffer
 		final boolean vertexModified = vertexBuff.updateVertexName(vert, mergeVert);
 		
