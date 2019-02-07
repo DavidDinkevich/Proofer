@@ -334,6 +334,7 @@ public class Diagram {
 				FigureRelation newPair = new FigureRelation(
 						FigureRelationType.CONGRUENT, angle, pair.getFigure0());
 				newPair.addParent(rightAngleRel);
+				newPair.addParent(pair);
 				newPair.setReason("Right angles congruent");
 
 				// Ensure that we're not adding a duplicate
