@@ -80,6 +80,20 @@ public interface VertexShape extends Shape {
 	public Vertex[] getVertices();
 	
 	/**
+	 * Get the {@link Vertex} with the given name
+	 * @param name the name
+	 * @return the vertex
+	 */
+	default public Vertex getVertex(char name) {
+		for (Vertex v : getVertices()) {
+			if (v.getNameChar() == name) {
+				return v;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Get whether this {@link VertexShape} contains a vertex with the given name.
 	 * @param vertexName the name of the vertex being checked
 	 * @return whether or not this {@link VertexShape} contains a vertex with
