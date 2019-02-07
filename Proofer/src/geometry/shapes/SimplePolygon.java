@@ -144,14 +144,6 @@ public class SimplePolygon extends AbstractShape implements Polygon, Iterable<Ve
 		return getName().length();
 	}
 	
-	private Vertex getVertex(char name) {
-		final int index = getName().indexOf(name);
-		if (index < 0) {
-			return null;
-		}
-		return vertices.get(index);
-	}
-
 	@Override
 	public Vec2 getVertexLoc(char vertexName) {
 		final int index = getName().indexOf(vertexName);
