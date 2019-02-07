@@ -34,6 +34,10 @@ public class Vertex extends AbstractShape {
 		super(shape);
 	}
 	
+	public static boolean isValidVertexName(String s) {
+		return s.length() == 1;
+	}
+	
 	public void setName(char name) {
 		setName(String.valueOf(name));
 	}
