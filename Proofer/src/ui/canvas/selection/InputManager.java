@@ -13,17 +13,19 @@ import geometry.Vec2;
 import geometry.proofs.Figure;
 import geometry.proofs.Preprocessor;
 import geometry.shapes.Angle;
-import geometry.shapes.Polygon;
+import geometry.shapes.Segment;
 import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 import geometry.shapes.VertexBuffer;
+import geometry.shapes.VertexShape;
+import geometry.proofs.Diagram;
 
 import ui.canvas.AdvancedCanvas;
 import ui.canvas.Brush;
 import ui.canvas.Drawable;
 import ui.canvas.GraphicsPolygonChild;
-import ui.canvas.GraphicsRectEllipse;
+import ui.canvas.GraphicsSegment;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsTriangle;
 import ui.canvas.StyleManager;
@@ -31,8 +33,7 @@ import ui.canvas.diagram.DiagramCanvas;
 import ui.canvas.diagram.DiagramCanvasGrid;
 import ui.canvas.diagram.RenderList;
 import ui.canvas.diagram.UIDiagramLayers;
-
-import geometry.proofs.Diagram;
+import ui.canvas.selection.Selector.Knob;
 
 import static javafx.scene.input.MouseEvent.MOUSE_PRESSED;
 import static javafx.scene.input.MouseEvent.MOUSE_DRAGGED;
@@ -54,7 +55,7 @@ public class InputManager implements Drawable {
 	// Selection
 	
 	private List<GraphicsShape<?>> selectables;
-	private List<Selector<?, ?>> selectors;
+	private List<Selector> selectors;
 	private List<Knob> knobs;
 	private Knob selectedKnob;
 	
@@ -261,15 +262,10 @@ public class InputManager implements Drawable {
 		// Move all existing selectors. NOTE: moving selectors will move their
 		// target objects as well
 		else if (!selectors.isEmpty()) {
-			for (Selector<?, ?> sel : selectors) {
+			for (Selector sel : selectors) {
 				Vec2 newSelLoc = dragSceneObject(sel.getShape().getCenter(), false);
-				sel.moveSelector(newSelLoc); // Don't snap to grid
-				// If the shape of the selector's target object is a polygon,
-				// fix its vertex names (we moved it)
-				if (sel.getTargetObject().getShape() instanceof Polygon) {
-					Polygon poly = (Polygon)sel.getTargetObject().getShape();
-					updateVertexNamesInPolygon(poly);
-				}
+				sel.setSelectorLoc(newSelLoc); // Don't snap to grid
+				updateVertexNamesInPolygon(sel.getTarget().getShape());
 			}
 			canvas.redraw();
 		}
@@ -294,7 +290,7 @@ public class InputManager implements Drawable {
 		
 		// If the user clicks space, snap selected object(s) to the grid
 		else if (e.getCode().equals(KeyCode.SPACE)) {
-			for (Selector<?, ?> sel : selectors) {
+			for (Selector sel : selectors) {
 				snapSelector(sel, true);
 			}
 		}
@@ -334,7 +330,16 @@ public class InputManager implements Drawable {
 
 			canvas.redraw();
 		}
-
+		
+		else if (e.getCode().equals(KeyCode.M)) {
+			Brush brush = StyleManager.getStrokeFigureBrush();
+			Segment seg = new Segment(new Vertex(Vec2.ZERO), new Vertex(new Vec2(100, 100)));
+			seg.setName("AB");
+			GraphicsSegment gseg = new GraphicsSegment(brush, seg);
+			gseg.setSelected(true);
+			canvas.addDiagramFigure(gseg);
+			canvas.redraw();
+		}
 		
 	}
 	
@@ -379,7 +384,7 @@ public class InputManager implements Drawable {
 			// If the figure is selected at the time of removal
 			if (shape.isSelected()) {
 				// Get the selector
-				Selector<?, ?> selForFigure = getSelectorForFigure(shape);
+				Selector selForFigure = getSelectorForFigure(shape.getShape());
 				// Destroy the selector
 				destroySelector(selForFigure);
 			}
@@ -454,7 +459,7 @@ public class InputManager implements Drawable {
 		}
 	}
 	
-	public List<Selector<?, ?>> getSelectors() {
+	public List<Selector> getSelectors() {
 		return selectors;
 	}
 	
@@ -462,10 +467,11 @@ public class InputManager implements Drawable {
 	 * Get the {@link Selector} for the given {@link GraphicsShape}
 	 * @return the {@link Selector}, or null if it was not found
 	 */
-	private Selector<?, ?> getSelectorForFigure(GraphicsShape<?> shape) {
-		for (Selector<?, ?> sel : selectors) {
-			if (sel.getTargetObject().equals(shape))
+	private Selector getSelectorForFigure(Shape shape) {
+		for (Selector sel : selectors) {
+			if (sel.getTarget().getShape().equals(shape)) {
 				return sel;
+			}
 		}
 		return null;
 	}
@@ -474,32 +480,32 @@ public class InputManager implements Drawable {
 	 * Destroys all existing selectors. Selected objects are deselected.
 	 */
 	private void destroyAllSelectors() {
-		// Remove knobs
-		knobs.clear();
 		// Deselect all selected objects
 		for (int i = selectors.size()-1; i >= 0; i--) {
-			Selector<?, ?> sel = selectors.get(i);
+			Selector sel = selectors.get(i);
 			// Deselect target object of selector
-			sel.deselectTargetObject();
+			sel.deselectTarget();
 		}
+		
+		// Remove knobs
+		knobs.clear();
 		// Destroy all selectors in render list
 		renderList.clearLayerList(UIDiagramLayers.SELECTOR);
-
 		// Destroy all selectors
-		selectors.clear();
+		selectors.clear();				
 	}
 	
-	private void destroySelector(Selector<?, ?> sel) {
+	private void destroySelector(Selector sel) {
+		// Deselect target object of selector
+		sel.deselectTarget();
 		// Remove knobs
 		knobs.removeAll(Arrays.asList(sel.getKnobs()));
-		// Deselect target object of selector
-		sel.deselectTargetObject();
-		// Remove from render list
-		renderList.removeDrawable(sel);
 		// Remove from selectors list
 		selectors.remove(sel);
+		// Remove from render list
+		renderList.removeDrawable(sel);
 	}
-	
+		
 	/**
 	 * Destroy all selected objects and their selectors.
 	 */
@@ -513,32 +519,16 @@ public class InputManager implements Drawable {
 		destroyAllSelectors();
 	}
 	
-	@SuppressWarnings("unchecked")
-	private Selector<?, GraphicsShape<?>> createSelector(GraphicsShape<?> o, boolean redraw) {
-		@SuppressWarnings("rawtypes")
-		Selector sel = null;
+	private Selector createSelector(GraphicsShape<?> o, boolean redraw) {
+		// TODO: dangerous cast
+		@SuppressWarnings("unchecked")
+		Selector sel = new Selector((GraphicsShape<? extends VertexShape>) o);
+		selectors.add(sel);
+		knobs.addAll(Arrays.asList(sel.getKnobs())); // Add to knobs list
+		renderList.addDrawable(sel); // Add to render list
 		
-		try {
-			if (RectSelector.canSelect(o)) {
-				sel = new RectSelector<>((GraphicsRectEllipse<?>)o);
-			}
-			else if (PolygonSelector.canSelect(o)) {
-				sel = new PolygonSelector((GraphicsTriangle)o);
-			}
-		} catch (Exception e) {
-			System.err.println("Error while trying to create a selector.");
-			e.printStackTrace();
-		}
-		
-		if (sel != null) {
-			selectors.add(sel);
-			sel.getShape().setResizeable(o.getShape().isResizeable());
-			knobs.addAll(Arrays.asList(sel.getKnobs())); // Add to knobs list
-			renderList.addDrawable(sel); // Add to render list
-			
-			if (redraw)
-				canvas.redraw();
-		}
+		if (redraw)
+			canvas.redraw();
 		
 		return sel;
 	}
@@ -653,8 +643,9 @@ public class InputManager implements Drawable {
 				} else { // If the object is not covered by the box
 					// If the object IS selected
 					if (selectable.isSelected()) {
+						System.out.println("Selectors: " + selectors);
 						// Deselect the object
-						Selector<?, ?> sel = getSelectorForFigure(selectable);
+						Selector sel = getSelectorForFigure(selectable.getShape());
 						destroySelector(sel);
 					}
 				}
@@ -705,14 +696,8 @@ public class InputManager implements Drawable {
 			reloadPolygonChildren();
 		}
 		
-		// If the knob is not a PolygonSelectorKnob, we have no more 
-		// business in this method.
-		if (!(knob.getSelector().getTargetObject().getShape() instanceof Polygon))
-			return;
-		
-		// Get the knob as a polygon knob
-		PolygonSelectorKnob polyKnob = ((PolygonSelectorKnob) selectedKnob);
-		Vertex controlledVert = polyKnob.getControlledVertex();
+		final char controlledVertName = knob.getControlledVertex();
+		Vertex controlledVert = new Vertex(controlledVertName, knobLoc);
 		updateVertexName(controlledVert, true);
 	}
 	
@@ -739,7 +724,7 @@ public class InputManager implements Drawable {
 		}
 	}
 	
-	private void updateVertexNamesInPolygon(Polygon p) {
+	private void updateVertexNamesInPolygon(VertexShape p) {
 		Vertex[] vertices = p.getVertices();
 		
 		for (int i = 0; i < p.getVertexCount(); i++) {
@@ -755,28 +740,21 @@ public class InputManager implements Drawable {
 	 * @param sel selector to snap
 	 * @param redraw whether or not to redraw the canvas
 	 */
-	private void snapSelector(Selector<?, ?> sel, boolean redraw) {
-		// In the case of a PolygonSelector
-		if (sel instanceof PolygonSelector) {
-			// Get the selector as a PolygonSelector
-			PolygonSelector polySel = (PolygonSelector)sel;
-			// Get the knobs of the selector
-			PolygonSelectorKnob[] knobs = (PolygonSelectorKnob[]) polySel.getKnobs();
-			// For each knob
-			for (PolygonSelectorKnob knob : knobs) {
-				// Get the location of the knob
-				Vec2 knobLoc = knob.getControlledVertex().getCenter();
-				// Get the nearest snap point of the knob
-				Vec2 nearestSnap = canvasGrid.getNearestSnapPoint(knobLoc);
-				// Move the knob
-				knob.moveKnob(nearestSnap);
-			}
-			// Update the name of the target polygon figure
-			updateVertexNamesInPolygon(polySel.getTargetObject().getShape());
-			
-			// Update the name of the selector
-			polySel.getShape().setName(polySel.getTargetObject().getShape().getName());
+	private void snapSelector(Selector sel, boolean redraw) {
+		for (Knob knob : sel.getKnobs()) {
+			// Get the location of the knob
+			Vec2 knobLoc = knob.getShape().getCenter();
+			// Get the nearest snap point of the knob
+			Vec2 nearestSnap = canvasGrid.getNearestSnapPoint(knobLoc);
+			// Move the knob
+			knob.moveKnob(nearestSnap);
 		}
+		// Update the name of the target polygon figure
+		updateVertexNamesInPolygon(sel.getTarget().getShape());
+		
+		// Update the name of the selector
+//		sel.getShape().setName(sel.getTarget().getShape().getName());
+		
 		// Redraw if instructed to
 		if (redraw)
 			canvas.redraw();

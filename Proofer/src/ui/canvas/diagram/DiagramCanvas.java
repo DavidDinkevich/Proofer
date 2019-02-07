@@ -8,6 +8,7 @@ import geometry.Dimension;
 import geometry.Vec2;
 import geometry.proofs.Figure;
 import geometry.shapes.Polygon;
+import geometry.shapes.Segment;
 import geometry.shapes.VertexBuffer;
 
 import javafx.scene.paint.Color;
@@ -67,6 +68,10 @@ public class DiagramCanvas extends AdvancedCanvas {
 		if (shape.getShape() instanceof Polygon) {
 			Polygon poly = (Polygon)shape.getShape();
 			vertexBuff.addPolygon(poly);
+		}
+		else if (shape.getShape().getClass() == Segment.class) {
+			Segment seg = (Segment) shape.getShape();
+			vertexBuff.addVertices(seg.getVertices());
 		}
 		// Add to list of selectables
 		if (inputManager != null) {
