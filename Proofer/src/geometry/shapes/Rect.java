@@ -10,13 +10,6 @@ import geometry.proofs.Figure;
 
 public class Rect extends RectEllipse implements Polygon {
 	private Vertex[] vertices;
-	// Buffer for storing the locations of the vertices
-	private Vec2[] vertexLocs;
-	// Buffer for storing the sides of this rect (Segments)
-	private Segment[] segs;
-	// Buffer for storing the angles of this rect (Angles)
-	private Angle[] angles;
-	// Buffer for storing the children of this rect (angles, segs, vertices)
 	private List<Figure> children;
 	
 	public Rect(Vec2 loc, Dimension size) {
@@ -280,38 +273,32 @@ public class Rect extends RectEllipse implements Polygon {
 
 	@Override
 	public Vec2[] getVertexLocations() {
-		if (vertexLocs == null) {
-			vertexLocs = new Vec2[] {
-					getVertices()[0].getCenter(),
-					getVertices()[1].getCenter(),
-					getVertices()[2].getCenter(),
-					getVertices()[3].getCenter()
-			};
-		}
+		Vec2[] vertexLocs = new Vec2[] {
+			getVertices()[0].getCenter(),
+			getVertices()[1].getCenter(),
+			getVertices()[2].getCenter(),
+			getVertices()[3].getCenter()
+		};
 		return vertexLocs;
 	}
 	
 	@Override
 	public Segment[] getSides() {
-		if (segs == null) {
-			segs = new Segment[getVertexCount()];
-			segs[0] = new Segment(getVertex(0), getVertex(1));
-			segs[1] = new Segment(getVertex(1), getVertex(2));
-			segs[2] = new Segment(getVertex(2), getVertex(3));
-			segs[3] = new Segment(getVertex(3), getVertex(0));
-		}
+		Segment[] segs = new Segment[getVertexCount()];
+		segs[0] = new Segment(getVertex(0), getVertex(1));
+		segs[1] = new Segment(getVertex(1), getVertex(2));
+		segs[2] = new Segment(getVertex(2), getVertex(3));
+		segs[3] = new Segment(getVertex(3), getVertex(0));
 		return segs;
 	}
 	
 	@Override
 	public Angle[] getAngles() {
-		if (angles == null) {
-			angles = new Angle[getVertexCount()];
-			angles[0] = new Angle(getVertex(1), getVertex(0), getVertex(3));
-			angles[1] = new Angle(getVertex(0), getVertex(1), getVertex(2));
-			angles[2] = new Angle(getVertex(1), getVertex(2), getVertex(3));
-			angles[3] = new Angle(getVertex(0), getVertex(3), getVertex(2));
-		}
+		Angle[] angles = new Angle[getVertexCount()];
+		angles[0] = new Angle(getVertex(1), getVertex(0), getVertex(3));
+		angles[1] = new Angle(getVertex(0), getVertex(1), getVertex(2));
+		angles[2] = new Angle(getVertex(1), getVertex(2), getVertex(3));
+		angles[3] = new Angle(getVertex(0), getVertex(3), getVertex(2));
 		return angles;
 	}
 	
