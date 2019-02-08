@@ -62,7 +62,8 @@ public class Segment extends AbstractShape implements VertexShape {
 	 * {@link Segment}s intersect.
 	 * @param a the first segment
 	 * @param b the second segment
-	 * @return the point at which the two segments meet
+	 * @return the point at which the two segments meet, or null if the segments
+	 * don't intersect, or if they are on top of each other
 	 */
 	public static Vec2 getPointOfIntersection(Segment a, Segment b) {
 		Slope slopeA = a.getSlope();
@@ -83,6 +84,14 @@ public class Segment extends AbstractShape implements VertexShape {
 			return aVertical ? new Vec2(endPointA.getX(), endPointB.getY()) : 
 				new Vec2(endPointB.getX(), endPointA.getY());
 		}
+		if (slopeA.isVertical()) {
+			final float x = a.getCenter().getX();
+			return new Vec2(x, slopeB.getSlopeRaw() * x + b.getYIntercept());
+		}
+		else if (slopeB.isVertical()) {
+			final float x = b.getCenter().getX();
+			return new Vec2(x, slopeA.getSlopeRaw() * x + a.getYIntercept());
+		}
 		
 		final float slopeARaw = slopeA.getSlopeRaw();
 		final float slopeBRaw = slopeB.getSlopeRaw();
@@ -92,6 +101,17 @@ public class Segment extends AbstractShape implements VertexShape {
 		final float x = (yIntB - yIntA) / (slopeARaw - slopeBRaw);
 	    final float y = slopeARaw * x + yIntA;
 		return new Vec2(x, y);
+	}
+	
+	/**
+	 * Get whether or not the two segments intersect.
+	 * @param a the first segment
+	 * @param b the second segment
+	 * @return whether or not they intersect
+	 */
+	public static boolean segmentsDoIntersect(Segment a, Segment b) {
+		Vec2 poi = getPointOfIntersection(a, b);
+		return a.containsPoint(poi) && b.containsPoint(poi);
 	}
 	
 	@Override
