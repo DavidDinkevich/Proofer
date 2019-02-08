@@ -1,6 +1,7 @@
 package ui;
 
 import geometry.proofs.FigureRelationType;
+import geometry.proofs.ProofUtils;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,7 +9,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import util.Utils;
+
 
 public class FigureRelationPanel extends HBox {
 	
@@ -52,7 +53,7 @@ public class FigureRelationPanel extends HBox {
 	}
 
 	public FigureRelationType getRelationType() {
-		return Utils.toFigureRelationType(relationBox.getValue());
+		return ProofUtils.toFigureRelationType(relationBox.getValue());
 	}
 	
 	public TextField getFigTextField0() {

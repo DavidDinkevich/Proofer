@@ -6,7 +6,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 
-import util.Utils;
+import geometry.proofs.ProofUtils;
+
 
 public class FigureTextField extends TextField {
 
@@ -27,7 +28,7 @@ public class FigureTextField extends TextField {
 			);
 			
 			for (int i = newText.length() - 1; i >= 0; i--) {
-				if (!Utils.isPermissibleText(newText.charAt(i))) {
+				if (!ProofUtils.isPermissibleText(newText.charAt(i))) {
 					newText.deleteCharAt(i);
 					Toolkit.getDefaultToolkit().beep();
 				}

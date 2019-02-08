@@ -5,7 +5,8 @@ import java.util.List;
 
 import geometry.Vec2;
 
-import util.Utils;
+import geometry.proofs.ProofUtils;
+
 
 public class Triangle extends SimplePolygon {
 	
@@ -85,7 +86,7 @@ public class Triangle extends SimplePolygon {
 	
 	@Override
 	public String toString() {
-		return Utils.DELTA + getName();
+		return ProofUtils.DELTA + getName();
 	}
 
 	@Override

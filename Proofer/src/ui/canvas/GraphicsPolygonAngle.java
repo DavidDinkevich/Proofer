@@ -4,13 +4,12 @@ import java.util.List;
 
 import geometry.Dimension;
 import geometry.Vec2;
+import geometry.proofs.ProofUtils;
 import geometry.shapes.Angle;
 import geometry.shapes.Arc;
 import geometry.shapes.Segment;
 import geometry.shapes.Shape;
 import geometry.shapes.Vertex;
-
-import util.Utils;
 
 /**
  * Represents an angle in a {@link GraphicsPolygon}.
@@ -91,7 +90,7 @@ public class GraphicsPolygonAngle extends GraphicsPolygonChild<Angle> {
 		// The size of the arc: shorter segment * 0.2
 		final float arcSize = Math.min(s0Len, s1Len) * SCALE_DOWN_FRACTION;
 		// Derive arc
-		return Utils.getArc(super.getShape(), new Dimension(arcSize));
+		return ProofUtils.getArc(super.getShape(), new Dimension(arcSize));
 	}
 	
 	@Override

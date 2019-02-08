@@ -4,12 +4,12 @@ import geometry.shapes.Angle;
 import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
-import util.Utils;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+
 
 public class Diagram {
 	private List<Figure> figures;
@@ -219,7 +219,7 @@ public class Diagram {
 			}
 			// Otherwise, check if it is a synonym of the other angles in this sublist, and if it
 			// is the smallest, move it to the front (it will become the new primary angle synonym).
-			final int result = Utils.compareAngleSynonyms(angle, subList.get(0));
+			final int result = ProofUtils.compareAngleSynonyms(angle, subList.get(0));
 			// The angle IS a synonym (as opposed to -3, -2, which mean that it is NOT a synonym)
 			if (result > -2) {				
 				// If the angle is SMALLER than the existing smallest angle 
@@ -421,7 +421,7 @@ public class Diagram {
 					Triangle tri1 = pair.getFigure1();
 					
 					// For all corresponding angles
-					for (Angle[] anglePair : Utils.getCorrespondingAngles(tri0, tri1)) {
+					for (Angle[] anglePair : ProofUtils.getCorrespondingAngles(tri0, tri1)) {
 						// Make congruent pair
 						FigureRelation newPair = new FigureRelation(
 								FigureRelationType.CONGRUENT,
@@ -433,7 +433,7 @@ public class Diagram {
 						addFigureRelation(newPair);
 					}
 					// For all corresponding segments
-					for (Segment[] segPair : Utils.getCorrespondingSegments(tri0, tri1)) {
+					for (Segment[] segPair : ProofUtils.getCorrespondingSegments(tri0, tri1)) {
 						// Make congruent pair
 						FigureRelation newPair = new FigureRelation(
 								FigureRelationType.CONGRUENT,

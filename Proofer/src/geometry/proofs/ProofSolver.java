@@ -10,8 +10,6 @@ import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
-import util.Utils;
-
 import static geometry.proofs.FigureRelationType.CONGRUENT;
 import static geometry.proofs.FigureRelationType.MIDPOINT;
 import static geometry.proofs.FigureRelationType.SIMILAR;
@@ -288,7 +286,7 @@ public class ProofSolver {
 		Triangle tri1 = pair.getFigure1();
 		
 		// Get corresponding angles in triangles
-		List<Angle[]> corrAngles = Utils.getCorrespondingAngles(tri0, tri1);
+		List<Angle[]> corrAngles = ProofUtils.getCorrespondingAngles(tri0, tri1);
 
 		// Length of corrAngles should always be 3
 		for (int i = 0; i < corrAngles.size(); i++) {
@@ -327,12 +325,12 @@ public class ProofSolver {
 					FigureRelation segsRel = getCongruentRel(segs[i], segs[j]);
 					if (segsRel != null) {
 						// Get the opposite vertex from the FIRST segment
-						String oppVert0 = Utils.getOppositeVertex(triName, segs[i].getName());
+						String oppVert0 = ProofUtils.getOppositeVertex(triName, segs[i].getName());
 						// Get the opposite vertex from the CURRENT segment
-						String oppVert1 = Utils.getOppositeVertex(triName, segs[j].getName());
+						String oppVert1 = ProofUtils.getOppositeVertex(triName, segs[j].getName());
 						// Get the angles at each of the vertices
-						Angle a0 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert0));
-						Angle a1 = tri.getAngle(Utils.getFullNameOfAngle(triName, oppVert1));
+						Angle a0 = tri.getAngle(ProofUtils.getFullNameOfAngle(triName, oppVert0));
+						Angle a1 = tri.getAngle(ProofUtils.getFullNameOfAngle(triName, oppVert1));
 						
 						// Make the two angles congruent
 						FigureRelation rel = new FigureRelation(
@@ -355,7 +353,7 @@ public class ProofSolver {
 						// Get the segment in between of the two angles
 						String middleSegment = midVertex0 + midVertex1;
 						// Get the vertex opposite to the middle segment
-						String oppVertex = Utils.getOppositeVertex(triName, middleSegment);
+						String oppVertex = ProofUtils.getOppositeVertex(triName, middleSegment);
 						// Make the first segment
 						String seg0 = oppVertex + midVertex0;
 						// Make the second segment
@@ -507,10 +505,10 @@ public class ProofSolver {
 				if (congSegs != null) {
 					// Get the adjacent angles around the first segment
 					String[] adjacentAngles0 = 
-							Utils.getSurroundingAngles(tri0.getName(), s0.getName());
+							ProofUtils.getSurroundingAngles(tri0.getName(), s0.getName());
 					// Get the adjacent angles around the second segment
 					String[] adjacentAngles1 =
-							Utils.getSurroundingAngles(tri1.getName(), s1.getName());
+							ProofUtils.getSurroundingAngles(tri1.getName(), s1.getName());
 			
 					// For each pair of adjacent angles, check if the two
 					// angles are congruent. If so, add them to the list
@@ -559,7 +557,7 @@ public class ProofSolver {
 		// List of relations
 		List<FigureRelation> list = new ArrayList<>();
 		
-		for (Segment[] pair : Utils.getCorrespondingSegments(tri0, tri1)) {
+		for (Segment[] pair : ProofUtils.getCorrespondingSegments(tri0, tri1)) {
 			// Hypothetical FigureRelation with two congruent Segments
 			FigureRelation hypoRel = new FigureRelation(CONGRUENT, pair[0], pair[1]);
 			// Try to find this hypothetical FigureRelation (if exists)

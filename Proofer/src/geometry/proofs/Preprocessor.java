@@ -17,9 +17,8 @@ import ui.FigureRelationPanel;
 import ui.canvas.GraphicsShape;
 import ui.canvas.diagram.DiagramCanvas;
 
-import util.Utils;
-
 import static geometry.proofs.FigureRelationType.CONGRUENT;
+
 
 public final class Preprocessor {
 	
@@ -114,8 +113,8 @@ public final class Preprocessor {
 		Figure fig = null;
 		// Angle or triangle
 		if (name.length() == 4) { // 3 cars and a special character
-			final boolean figIsTri = name.startsWith(Utils.DELTA);
-			final boolean figIsAngle = !figIsTri && name.startsWith(Utils.ANGLE_SYMBOL);
+			final boolean figIsTri = name.startsWith(ProofUtils.DELTA);
+			final boolean figIsAngle = !figIsTri && name.startsWith(ProofUtils.ANGLE_SYMBOL);
 			if (figIsTri)
 				fig = diagram.getFigure(name.substring(1), Triangle.class);
 			else if (figIsAngle) {
@@ -222,7 +221,7 @@ public final class Preprocessor {
 //		if (seg0.equals(seg1))
 //			return new Figure[0];
 		// Get the shared vertex between the two segments
-		String sharedVertex = Utils.getSharedVertex(seg0.getName(), seg1.getName());
+		String sharedVertex = ProofUtils.getSharedVertex(seg0.getName(), seg1.getName());
 		if (sharedVertex == null)
 			return null;
 		
@@ -252,7 +251,7 @@ public final class Preprocessor {
 		}
 		// Add hidden angles
 		else {
-			String angleName = Utils.getAngleBetween(seg0.getName(), seg1.getName());
+			String angleName = ProofUtils.getAngleBetween(seg0.getName(), seg1.getName());
 			String unsharedVert0 = angleName.substring(0, 1);
 			String unsharedVert1 = angleName.substring(2);
 			String sharedVert = angleName.substring(1, 2);
@@ -449,7 +448,7 @@ public final class Preprocessor {
 					continue;
 				Angle a1 = (Angle)diagram.getFigures().get(j);
 				
-				if (Utils.areVerticalAngles(a0, a1)) {
+				if (ProofUtils.areVerticalAngles(a0, a1)) {
 					FigureRelation rel = new FigureRelation(CONGRUENT, a0, a1);
 					rel.setReason("Vertical Angle");
 					diagram.addFigureRelation(rel);

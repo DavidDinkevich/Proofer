@@ -7,6 +7,8 @@ import geometry.Measurements;
 import geometry.Vec2;
 import geometry.proofs.Figure;
 
+import geometry.proofs.ProofUtils;
+
 import util.Utils;
 
 public final class Angle extends AbstractShape {
@@ -53,7 +55,7 @@ public final class Angle extends AbstractShape {
 	}
 	
 	public Angle(Segment a, Segment b) {
-		this(Utils.getAngleBetween(a, b));
+		this(ProofUtils.getAngleBetween(a, b));
 	}
 	
 	public Angle() {
@@ -107,7 +109,7 @@ public final class Angle extends AbstractShape {
 		// This could be changed to be more accurate, by checking
 		// if a triangle with the same dimensions as this Angle contains
 		// the given point
-		return Utils.getArc(this).containsPoint(point);
+		return ProofUtils.getArc(this).containsPoint(point);
 	}
 	
 	@Override
@@ -168,7 +170,7 @@ public final class Angle extends AbstractShape {
 	
 	@Override
 	public String toString() {
-		return Utils.ANGLE_SYMBOL + getName();
+		return ProofUtils.ANGLE_SYMBOL + getName();
 	}
 	
 	@Override
