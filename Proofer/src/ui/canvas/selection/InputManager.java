@@ -32,7 +32,7 @@ import ui.canvas.StyleManager;
 import ui.canvas.diagram.DiagramCanvas;
 import ui.canvas.diagram.DiagramCanvasGrid;
 import ui.canvas.diagram.RenderList;
-import ui.canvas.diagram.UIDiagramLayers;
+import ui.canvas.diagram.DiagramCanvas.UIDiagramLayers;
 import ui.canvas.selection.Selector.Knob;
 
 import static javafx.scene.input.MouseEvent.MOUSE_PRESSED;

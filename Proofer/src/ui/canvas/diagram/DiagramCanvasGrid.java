@@ -12,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import ui.canvas.AdvancedCanvas;
 import ui.canvas.Drawable;
 import ui.canvas.StyleManager;
+import ui.canvas.diagram.DiagramCanvas.UIDiagramLayers;
 
 
 public class DiagramCanvasGrid implements Drawable {

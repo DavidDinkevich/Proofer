@@ -2,7 +2,7 @@ package ui.canvas;
 
 import geometry.shapes.Shape;
 
-import ui.canvas.diagram.UIDiagramLayers;
+import ui.canvas.diagram.DiagramCanvas.UIDiagramLayers;
 import ui.canvas.selection.Selectable;
 
 /**

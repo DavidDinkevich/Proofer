@@ -1,6 +1,6 @@
 package ui.canvas;
 
-import ui.canvas.diagram.UIDiagramLayers;
+import ui.canvas.diagram.DiagramCanvas.UIDiagramLayers;
 
 /**
  * All object that inherit from this interface must be able to draw

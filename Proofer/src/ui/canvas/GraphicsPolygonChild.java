@@ -2,7 +2,7 @@ package ui.canvas;
 
 import geometry.shapes.Shape;
 
-import ui.canvas.diagram.UIDiagramLayers;
+import ui.canvas.diagram.DiagramCanvas.UIDiagramLayers;
 
 /**
  * Represents a child in a {@link GraphicsPolygon}. 

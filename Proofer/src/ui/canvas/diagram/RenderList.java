@@ -4,7 +4,7 @@ import java.util.Map;
 
 import ui.canvas.AdvancedCanvas;
 import ui.canvas.Drawable;
-import ui.canvas.diagram.UIDiagramLayers;
+import ui.canvas.diagram.DiagramCanvas.UIDiagramLayers;
 
 import java.util.ArrayList;
 import java.util.Collections;

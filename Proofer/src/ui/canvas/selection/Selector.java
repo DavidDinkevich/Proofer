@@ -8,7 +8,8 @@ import ui.canvas.AdvancedCanvas;
 import ui.canvas.GraphicsEllipse;
 import ui.canvas.GraphicsShape;
 import ui.canvas.StyleManager;
-import ui.canvas.diagram.UIDiagramLayers;
+import ui.canvas.diagram.DiagramCanvas.UIDiagramLayers;
+
 
 public class Selector extends GraphicsShape<VertexShape> {
 	
