@@ -1,10 +1,10 @@
 package ui.canvas.selection;
 
 import geometry.Vec2;
+import geometry.shapes.Polygon;
 import geometry.shapes.Rect;
+import geometry.shapes.Segment;
 import geometry.shapes.Shape;
-import geometry.shapes.Shape2D;
-import geometry.shapes.Triangle;
 
 import ui.canvas.GraphicsRect;
 import ui.canvas.StyleManager;
@@ -26,10 +26,11 @@ public class SelectionBox extends GraphicsRect {
 		this.corner2 = new Vec2.Mutable(corner2);
 		resize();
 	}
+	
 	public SelectionBox() {
 		this(Vec2.ZERO, Vec2.ZERO);
 	}
-	
+		
 	private void resize() {
 		Vec2 loc = new Vec2(
 				corner1.getX() + (corner2.getX() - corner1.getX()) / 2,
@@ -46,13 +47,33 @@ public class SelectionBox extends GraphicsRect {
 	 * Check if the given object is covered by this {@link SelectionBox}.
 	 */
 	public boolean coversObject(Shape object) {
-		if (!(object instanceof Shape2D))
-			return false; // TODO: accommodate objects of type Shape
-		if (object instanceof Triangle) {
-			return Triangle.overlap(getShape(), (Triangle) object);
+		Segment[] mySides = getShape().getSides();
+
+		if (object instanceof Polygon) {
+			Polygon poly = (Polygon) object;
+			Segment[] polySides = poly.getSides();
+			for (Segment mySide : mySides) {
+				for (Segment theirSide : polySides) {
+					if (Segment.segmentsDoIntersect(mySide, theirSide)) {
+						return true;
+					}
+				}
+			}
 		}
-		// If boundary rects overlap
-		return Rect.rectsOverlap(getShape(), ((Shape2D) object).getBoundaryRect());
+		else if (object instanceof Segment) {
+			Segment other = (Segment) object;
+
+			for (Segment mySide : mySides) {
+				if (Segment.segmentsDoIntersect(mySide, other)) {
+					return true;
+				}
+			}
+		}
+		else {
+			return getShape().containsPoint(object.getCenter());
+		}
+		
+		return false;
 	}
 	
 	public void setCorner1(Vec2 corner1) {
