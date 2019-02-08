@@ -6,9 +6,11 @@ import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 
 
 public class Diagram {
@@ -29,15 +31,66 @@ public class Diagram {
 	 */
 	private List<List<Angle>> angleSynonyms;
 	
+	/**
+	 * Map of all hidden figures sorted by type.
+	 */
+	private Map<Class<?>, List<Figure>> hiddenFigures;
+	
 	public Diagram() {
 		figures = new ArrayList<>();
 		relations = new ArrayList<>();
 		angleSynonyms = new ArrayList<>();
 		listeners = new ArrayList<>();
+		hiddenFigures = new HashMap<>();
+		hiddenFigures.put(Vertex.class, new ArrayList<>());
+		hiddenFigures.put(Angle.class, new ArrayList<>());
+		hiddenFigures.put(Segment.class, new ArrayList<>());
+		hiddenFigures.put(Triangle.class, new ArrayList<>());
 	}
 	
 	public List<DiagramListener> getListeners() {
 		return listeners;
+	}
+	
+	/**
+	 * Add a <i>HIDDEN</i> {@link Figure} to this {@link Diagram}. This will also add
+	 * all of the given children's children (and their children, and so on). Lastly, it will
+	 * add a default reflexive postulate and if necessary transitive postulate 
+	 * {@link FigureRelation}.
+	 * <p>
+	 * NOTE: if the given figure is a secondary angle synonym, it will be store internally
+	 * in this {@link Diagram} (and accessible via {@link Diagram#getAngleSynonyms(String)})
+	 * but it will NOT be added as a normal figure.
+	 * @param fig the figure to add
+	 * @return false IF it is a duplicate OR if it is not a primary angle synonym. 
+	 * True otherwise.
+	 */
+	public boolean addHiddenFigure(Figure fig) {
+		if (addFigure(fig)) {
+			hiddenFigures.get(fig.getClass()).add(fig);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean addHiddenFigures(Collection<? extends Figure> figs) {
+		boolean result = false;
+		for (Figure fig : figs) {
+			if (addHiddenFigure(fig))
+				result = true;
+		}
+		return result;
+	}
+	
+	/**
+	 * Get the list of hidden {@link Figure}s of the given type.
+	 * @param type the type of hidden figures to retrieve
+	 * @return the list of hidden figures (of the given type)
+	 */
+	// Will crash if types don't match up
+	@SuppressWarnings({ "unchecked", "unlikely-arg-type" })
+	public <T extends Figure> List<T> getHiddenFigures(T type) {
+		return Collections.unmodifiableList((List<T>) hiddenFigures.get(type));
 	}
 	
 	public FigureRelation getProofGoal() {
@@ -78,6 +131,19 @@ public class Diagram {
 		return null;
 	}
 	
+	/**
+	 * Add a (non-hidden) {@link Figure} to this {@link Diagram}. This will also add
+	 * all of the given children's children (and their children, and so on). Lastly, it will
+	 * add a default reflexive postulate and if necessary transitive postulate 
+	 * {@link FigureRelation}.
+	 * <p>
+	 * NOTE: if the given figure is a secondary angle synonym, it will be store internally
+	 * in this {@link Diagram} (and accessible via {@link Diagram#getAngleSynonyms(String)})
+	 * but it will NOT be added as a normal figure.
+	 * @param fig the figure to add
+	 * @return false IF it is a duplicate OR if it is not a primary angle synonym. 
+	 * True otherwise.
+	 */
 	public boolean addFigure(Figure fig) {
 		// No duplicates
 		if (containsFigure(fig))
