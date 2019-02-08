@@ -138,7 +138,9 @@ public class ProofSolver {
 	 * Convenience method to check if two figures are congruent
 	 */	
 	private FigureRelation getCongruentRel(Figure f0, Figure f1) {
-		// TODO: document
+		// Create a FigureRelation making the two figures congruent. If they are
+		// congruent according to the Diagram, then this FigureRelation will
+		// also exist in the Diagram
 		FigureRelation hypoRel = new FigureRelation(CONGRUENT, f0, f1);
 		for (FigureRelation rel : diagram.getFigureRelations()) {
 			if (rel.equals(hypoRel))

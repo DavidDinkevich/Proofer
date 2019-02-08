@@ -48,8 +48,8 @@ public class Selector extends GraphicsShape<VertexShape> {
 	 */
 	public void updateKnobPositions() {
 		for (int i = 0; i < getKnobs().length; i++) {
-			// TODO: change target to getshape to test that the shape is moving
-			// with target
+			// I could also update the vertex in the selector's shape
+			// as the selector's shape is the same as the target object
 			getKnobs()[i].getShape().setCenter(target.getShape().getVertexLoc(i));
 		}
 	}
@@ -81,8 +81,6 @@ public class Selector extends GraphicsShape<VertexShape> {
 		public Knob(Selector sel, Vertex controlledVertex) {
 			super(new GraphicsEllipse(StyleManager.getKnobBody()));
 			setLayer(UIDiagramLayers.KNOB);
-			// TODO:
-//			setAllowSelection(false);
 			getShape().setName("" + controlledVertex);
 			this.controlledVertex = controlledVertex;
 			this.sel = sel;
