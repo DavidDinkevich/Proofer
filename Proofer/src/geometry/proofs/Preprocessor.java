@@ -163,11 +163,14 @@ public final class Preprocessor {
 	 * included in the diagram and can be safely referenced.
 	 * @param diagram the diagram that contains the hidden figures.
 	 */
-	private static void addHiddenFigures(Diagram diagram) {
+	private static void addHiddenFigures(Diagram diagram) {		
 		List<Angle> hiddenAngles = new ArrayList<>();
 		boolean figuresWereAdded = false;
 		
 		do {
+			// Add hidden vertices
+			addHiddenVertices(diagram);
+
 			final int COUNT = diagram.getFigures().size();
 			figuresWereAdded = false;
 			
@@ -206,6 +209,44 @@ public final class Preprocessor {
 			if (diagram.addFigures(hiddenTris))
 				figuresWereAdded = true; // Update variable
 		} while (figuresWereAdded);
+	}
+	
+	private static void addHiddenVertices(Diagram diag) {
+		// For each figure
+		for (int i = 0; i < diag.getFigures().size() - 1; i++) {
+			// Only segments
+			if (diag.getFigures().get(i).getClass() != Segment.class)
+				continue;
+			// Get the segment
+			Segment seg0 = (Segment) diag.getFigures().get(i);
+			// For every other figure
+			for (int j = i + 1; j < diag.getFigures().size(); j++) {
+				// Only segments
+				if (diag.getFigures().get(j).getClass() != Segment.class)
+					continue;
+				// Get the segment
+				Segment seg1 = (Segment) diag.getFigures().get(j);
+				
+				// IF the segments intersect
+				if (Segment.segmentsDoIntersect(seg0, seg1)) {
+					// Get the point of intersection
+					Vec2 poi = Segment.getPointOfIntersection(seg0, seg1);
+					// Skip if there already is a vertex at the given location
+					if (getVertexAtLoc(diag, poi) == null) {
+						// Create a new vertex at the given intersection
+						Vertex newVertex = new Vertex(generateNewVertexName(diag), poi);
+						// Add the vertex
+						diag.addFigure(newVertex);
+						System.out.println("Segments: " + seg0 + ", " + seg1 + " : " + poi);
+						System.out.println("Added vertex: " + newVertex);
+					}
+				}
+			}
+		}
+	}
+	
+	private static void addHiddenIntersectionSegs(Diagram diag) {
+		
 	}
 	
 	/**
@@ -306,32 +347,6 @@ public final class Preprocessor {
 		return hiddenTriangles == null ? Collections.emptyList() : hiddenTriangles;
 	}
 	
-	private static Vertex[] getFarthestVertices(List<Vertex> vertices) {
-		// The pair of farthest vertices
-		Vertex[] pair = new Vertex[2];
-		// Distance of the previously checked pair of vertices
-		float prevDist = 0f;
-		for (int i = 0; i < vertices.size(); i++) {
-			for (int j = 0; j < vertices.size(); j++) {
-				// Don't wanna compare the same vertices
-				if (i == j)
-					continue;
-				// Distance between the two vertices currently being checked
-				final float newDist = Vec2.dist(vertices.get(i).getCenter(),
-						vertices.get(j).getCenter());
-				// If the distance of the vertices currently being checked is greater
-				// than the previously farthest recorded pair of vertices,
-				// update the pair of farthest vertices
-				if (newDist > prevDist) {
-					prevDist = newDist;
-					pair[0] = vertices.get(i);
-					pair[1] = vertices.get(j);
-				}
-			}
-		}
-		return pair;
-	}
-	
 	private static void preprocessGivenInfo(Diagram diagram) {
 		// To avoid a ConcurrentModificationException
 		List<FigureRelation> buff = new ArrayList<>(diagram.getFigureRelations());
@@ -416,23 +431,7 @@ public final class Preprocessor {
 		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
 		diagram.getFigureRelations().set(REL_INDEX, perpRel);
 	}
-	
-	private static Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
-		// Check for vertex in given diagram
-		for (Figure fig : diag.getFigures()) {
-			// If the shape being checked is a vertex
-			if (fig instanceof Vertex) {
-				// Cast the shape as a vertex
-				Vertex vert = (Vertex)fig;
-				// If the vertex's loc is equal to the given loc
-				if (vert.getCenter().equals(loc))
-					// Return the vertex
-					return vert;
-			}
-		}
-		throw new NullPointerException("No vertex at given location");
-	}
-	
+		
 	private static void handleVerticalAngles(Diagram diagram) {
 		// For each figure
 		for (int i = 0; i < diagram.getFigures().size(); i++) {
@@ -456,4 +455,82 @@ public final class Preprocessor {
 			}
 		}
 	}
+	
+	/*
+	 * UTILITY METHODS
+	 */
+	
+	private static boolean isSegmentEndpoint(Diagram diag, Vec2 loc) {
+		for (Figure fig : diag.getFigures()) {
+			if (fig.getClass() == Segment.class) {
+				Segment seg = (Segment) fig;
+				for (Vec2 endpt : seg.getVertexLocations()) {
+					if (endpt.equals(loc))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private static char generateNewVertexName(Diagram diag) {
+		for (char c = 'A'; c <= 'Z';) {
+			for (Figure fig : diag.getFigures()) {
+				if (fig.isValidName("" + c)) {
+					++c;
+					continue;
+				}
+			}
+			return c;
+		}
+		throw new NullPointerException("No more available vertex names.");
+	}
+	
+	private static Vertex[] getFarthestVertices(List<Vertex> vertices) {
+		// The pair of farthest vertices
+		Vertex[] pair = new Vertex[2];
+		// Distance of the previously checked pair of vertices
+		float prevDist = 0f;
+		for (int i = 0; i < vertices.size(); i++) {
+			for (int j = 0; j < vertices.size(); j++) {
+				// Don't wanna compare the same vertices
+				if (i == j)
+					continue;
+				// Distance between the two vertices currently being checked
+				final float newDist = Vec2.dist(vertices.get(i).getCenter(),
+						vertices.get(j).getCenter());
+				// If the distance of the vertices currently being checked is greater
+				// than the previously farthest recorded pair of vertices,
+				// update the pair of farthest vertices
+				if (newDist > prevDist) {
+					prevDist = newDist;
+					pair[0] = vertices.get(i);
+					pair[1] = vertices.get(j);
+				}
+			}
+		}
+		return pair;
+	}
+	
+	private static Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
+		// Check for vertex in given diagram
+		for (Figure fig : diag.getFigures()) {
+			// If the shape being checked is a vertex
+			if (fig instanceof Vertex) {
+				// Cast the shape as a vertex
+				Vertex vert = (Vertex)fig;
+				// If the vertex's loc is equal to the given loc
+				if (vert.getCenter().equals(loc))
+					// Return the vertex
+					return vert;
+			}
+		}
+//		throw new NullPointerException("No vertex at given location");
+		return null;
+	}
+	
+	/*
+	 * END UTILITY METHODS
+	 */
+	
 }
