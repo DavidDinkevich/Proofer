@@ -12,6 +12,9 @@ import java.util.Collections;
 
 
 public class Diagram {
+	
+	private List<DiagramListener> listeners;
+	
 	private List<Figure> figures;
 	private List<FigureRelation> relations;
 	private FigureRelation proofGoal;
@@ -30,6 +33,11 @@ public class Diagram {
 		figures = new ArrayList<>();
 		relations = new ArrayList<>();
 		angleSynonyms = new ArrayList<>();
+		listeners = new ArrayList<>();
+	}
+	
+	public List<DiagramListener> getListeners() {
+		return listeners;
 	}
 	
 	public FigureRelation getProofGoal() {
@@ -89,6 +97,11 @@ public class Diagram {
 		figures.add(fig);
 		// Apply the reflexive postulate
 		applyReflexivePostulate(fig);
+		
+		// Notify listeners that a figure was added
+		for (DiagramListener listener : listeners) {
+			listener.figureWasAdded(fig);
+		}
 		
 		// REPEAT THIS STEP RECURSIVELY FOR ALL CHILDREN OF THIS FIGURE
 		for (Figure child : fig.getChildren()) {
