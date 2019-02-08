@@ -15,6 +15,8 @@ import geometry.Vec2;
  */
 public class VertexBuffer implements Iterable<Vertex> {
 	
+	private List<VertexBufferListener> listeners;
+	
 	private List<Vertex> vertices;
 	private VertexNameBuffer charList;
 	
@@ -29,6 +31,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 		vertices = new ArrayList<>();
 		charList = new VertexNameBuffer();
 		vshapes = new ArrayList<>();
+		listeners = new ArrayList<>();
 	}
 	
 	private void removeChar(Vertex vert) {
@@ -212,8 +215,9 @@ public class VertexBuffer implements Iterable<Vertex> {
 		// Make sure that given vertex is in list
 		validateVertexParameter(vertex);
 		
+		final char oldName = vertex.getNameChar();
 		// If there is more than one vertex with the given name
-		if (charList.getInstanceCount(vertex.getNameChar()) > 1) {
+		if (charList.getInstanceCount(oldName) > 1) {
 			// Generate new name
 			final char newName = charList.getUnusedChar();
 			// Get the index of the vertex's current name
@@ -223,6 +227,12 @@ public class VertexBuffer implements Iterable<Vertex> {
 			// Change the vertex's name
 			vertex.setName(newName);
 			updateVertexShapes();
+			
+			// Notify listeners of name change
+			for (VertexBufferListener listener : listeners) {
+				listener.vertexNameChanged(oldName, newName);
+			}
+
 			return true;
 		}
 		return false;
@@ -254,7 +264,14 @@ public class VertexBuffer implements Iterable<Vertex> {
 				if (OTHER_VERT_NAME != VERTEX_NAME && otherVertLoc.equals(vertexLoc)) {
 					// We found another vertex with the same loc as the given vertex
 					// and with a different name
-					return setVertexName(vertex, OTHER_VERT_NAME);
+					if (setVertexName(vertex, OTHER_VERT_NAME)) {
+						// Notify listeners of name change
+						for (VertexBufferListener listener : listeners) {
+							listener.vertexNameChanged(VERTEX_NAME, OTHER_VERT_NAME);
+						}
+						return true;
+					}
+					return false;
 				}
 			}
 			return false; // No vertices were modified
@@ -282,6 +299,10 @@ public class VertexBuffer implements Iterable<Vertex> {
 	 */
 	public int getInstanceCount(char ch) {
 		return charList.getInstanceCount(ch);
+	}
+	
+	public List<VertexBufferListener> getListeners() {
+		return listeners;
 	}
 	
 	private static class VertexNameBuffer implements Iterable<Character> {
