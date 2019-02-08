@@ -111,6 +111,9 @@ public class Segment extends AbstractShape implements VertexShape {
 	 */
 	public static boolean segmentsDoIntersect(Segment a, Segment b) {
 		Vec2 poi = getPointOfIntersection(a, b);
+		if (poi == null) {
+			return false;
+		}
 		return a.containsPoint(poi) && b.containsPoint(poi);
 	}
 	
