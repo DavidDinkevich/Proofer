@@ -1,6 +1,0 @@
-package ui.canvas.diagram;
-
-public enum UIDiagramLayers {
-	DEFAULT, GRID, INVISIBLE_HIDDEN_FIGURES, 
-	GRAPHICS_SHAPE, POLYGON_COMPONENT, SELECTOR, KNOB
-}
