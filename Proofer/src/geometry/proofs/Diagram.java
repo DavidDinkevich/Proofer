@@ -305,6 +305,7 @@ public class Diagram {
 						FigureRelationType.CONGRUENT, newFriend0, newFriend1);
 				newRel.setReason("Transitive Postulate");
 				newRel.addParent(iter);
+				newRel.addParent(rel);
 				// Add the new relation
 				if (!containsFigureRelation(newRel))
 					relations.add(newRel);
