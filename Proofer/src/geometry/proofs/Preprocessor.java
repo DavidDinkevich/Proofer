@@ -58,7 +58,7 @@ public final class Preprocessor {
 		
 		// Compile the figures
 		Diagram diagram = compileFigures(canvas);
-		
+				
 		// Determine given
 		for (FigureRelationPanel panel : figRelPanel.getFigureRelationPanels()) {
 			if (!panel.hasContent())
@@ -191,7 +191,7 @@ public final class Preprocessor {
 							// If we've found a hidden figure
 							if (hiddenFig != null) {
 								// If the figure was added to the diagram (it was not contained before)
-								if (diagram.addFigure(hiddenFig)) {
+								if (diagram.addHiddenFigure(hiddenFig)) {
 									figuresWereAdded = true; // Update variable
 									// If the hidden figure we found is an angle, store it
 									if (hiddenFig instanceof Angle)
@@ -206,7 +206,7 @@ public final class Preprocessor {
 			// Add hidden triangles
 			List<Triangle> hiddenTris = identifyHiddenTriangles(diagram, hiddenAngles);
 			// If hidden triangles were added to the diagram
-			if (diagram.addFigures(hiddenTris))
+			if (diagram.addHiddenFigures(hiddenTris))
 				figuresWereAdded = true; // Update variable
 		} while (figuresWereAdded);
 	}
@@ -236,7 +236,7 @@ public final class Preprocessor {
 						// Create a new vertex at the given intersection
 						Vertex newVertex = new Vertex(generateNewVertexName(diag), poi);
 						// Add the vertex
-						diag.addFigure(newVertex);
+						diag.addHiddenFigure(newVertex);
 						System.out.println("Segments: " + seg0 + ", " + seg1 + " : " + poi);
 						System.out.println("Added vertex: " + newVertex);
 					}
@@ -245,9 +245,9 @@ public final class Preprocessor {
 		}
 	}
 	
-	private static void addHiddenIntersectionSegs(Diagram diag) {
-		
-	}
+//	private static void addHiddenIntersectionSegs(Diagram diag) {
+//		
+//	}
 	
 	/**
 	 * Identify the hidden {@link Segment} or {@link Angle} between the
@@ -460,18 +460,18 @@ public final class Preprocessor {
 	 * UTILITY METHODS
 	 */
 	
-	private static boolean isSegmentEndpoint(Diagram diag, Vec2 loc) {
-		for (Figure fig : diag.getFigures()) {
-			if (fig.getClass() == Segment.class) {
-				Segment seg = (Segment) fig;
-				for (Vec2 endpt : seg.getVertexLocations()) {
-					if (endpt.equals(loc))
-						return true;
-				}
-			}
-		}
-		return false;
-	}
+//	private static boolean isSegmentEndpoint(Diagram diag, Vec2 loc) {
+//		for (Figure fig : diag.getFigures()) {
+//			if (fig.getClass() == Segment.class) {
+//				Segment seg = (Segment) fig;
+//				for (Vec2 endpt : seg.getVertexLocations()) {
+//					if (endpt.equals(loc))
+//						return true;
+//				}
+//			}
+//		}
+//		return false;
+//	}
 	
 	private static char generateNewVertexName(Diagram diag) {
 		for (char c = 'A'; c <= 'Z';) {
