@@ -496,10 +496,10 @@ public class InputManager implements Drawable {
 	}
 	
 	private void destroySelector(Selector sel) {
-		// Deselect target object of selector
-		sel.deselectTarget();
 		// Remove knobs
 		knobs.removeAll(Arrays.asList(sel.getKnobs()));
+		// Deselect target object of selector
+		sel.deselectTarget();
 		// Remove from selectors list
 		selectors.remove(sel);
 		// Remove from render list
@@ -633,6 +633,7 @@ public class InputManager implements Drawable {
 			for (GraphicsShape<?> selectable : selectables) {
 				if (!selectable.getAllowSelections())
 					continue;
+								
 				// If the object is covered by the box
 				if (selectionContainer.coversObject(selectable.getShape())) {
 					// If the object is not selected
@@ -643,7 +644,6 @@ public class InputManager implements Drawable {
 				} else { // If the object is not covered by the box
 					// If the object IS selected
 					if (selectable.isSelected()) {
-						System.out.println("Selectors: " + selectors);
 						// Deselect the object
 						Selector sel = getSelectorForFigure(selectable.getShape());
 						destroySelector(sel);
