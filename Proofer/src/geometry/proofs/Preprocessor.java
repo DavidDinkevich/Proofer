@@ -259,8 +259,8 @@ public final class Preprocessor {
 	 */
 	private static Figure identifyHiddenSegOrAngle(Segment seg0, Segment seg1) {
 //		// If we're analyzing the same segment, we can't combine it
-//		if (seg0.equals(seg1))
-//			return new Figure[0];
+		if (seg0.equals(seg1))
+			return seg0;
 		// Get the shared vertex between the two segments
 		String sharedVertex = ProofUtils.getSharedVertex(seg0.getName(), seg1.getName());
 		if (sharedVertex == null)
@@ -284,7 +284,7 @@ public final class Preprocessor {
 			segVerts.addAll(Arrays.asList(seg1.getVertices()));
 			// ---------------------
 			// Vertices of new segment--farthest apart
-			Vertex[] newSegVerts = getFarthestVertices(segVerts);
+			Vertex[] newSegVerts = ProofUtils.getFarthestVertices(segVerts);
 			
 			// The new, combined straight line
 			Segment newStraightLine = new Segment(newSegVerts);
@@ -485,33 +485,7 @@ public final class Preprocessor {
 		}
 		throw new NullPointerException("No more available vertex names.");
 	}
-	
-	private static Vertex[] getFarthestVertices(List<Vertex> vertices) {
-		// The pair of farthest vertices
-		Vertex[] pair = new Vertex[2];
-		// Distance of the previously checked pair of vertices
-		float prevDist = 0f;
-		for (int i = 0; i < vertices.size(); i++) {
-			for (int j = 0; j < vertices.size(); j++) {
-				// Don't wanna compare the same vertices
-				if (i == j)
-					continue;
-				// Distance between the two vertices currently being checked
-				final float newDist = Vec2.dist(vertices.get(i).getCenter(),
-						vertices.get(j).getCenter());
-				// If the distance of the vertices currently being checked is greater
-				// than the previously farthest recorded pair of vertices,
-				// update the pair of farthest vertices
-				if (newDist > prevDist) {
-					prevDist = newDist;
-					pair[0] = vertices.get(i);
-					pair[1] = vertices.get(j);
-				}
-			}
-		}
-		return pair;
-	}
-	
+		
 	private static Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
 		// Check for vertex in given diagram
 		for (Figure fig : diag.getFigures()) {

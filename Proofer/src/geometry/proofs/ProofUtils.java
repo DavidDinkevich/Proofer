@@ -55,6 +55,41 @@ public class ProofUtils {
 	}
 	
 	/**
+	 * Get the two vertices in the given list that are the farthest apart from each
+	 * other.
+	 * @param vertices the list of vertices
+	 * @return the two farthest vertices
+	 */
+	public static Vertex[] getFarthestVertices(List<Vertex> vertices) {
+		if (vertices.size() < 2) {
+			throw new IllegalArgumentException("List of vertices must have at least 2 elements");
+		}
+		if (vertices.size() == 2) {
+			return vertices.toArray(new Vertex[2]);
+		}
+		// The pair of farthest vertices
+		Vertex[] pair = new Vertex[2];
+		// Distance of the previously checked pair of vertices
+		float prevDist = 0f;
+		for (int i = 0; i < vertices.size()-1; i++) {
+			for (int j = i + 1; j < vertices.size(); j++) {
+				// Distance between the two vertices currently being checked
+				final float newDist = Vec2.dist(vertices.get(i).getCenter(),
+						vertices.get(j).getCenter());
+				// If the distance of the vertices currently being checked is greater
+				// than the previously farthest recorded pair of vertices,
+				// update the pair of farthest vertices
+				if (newDist > prevDist) {
+					prevDist = newDist;
+					pair[0] = vertices.get(i);
+					pair[1] = vertices.get(j);
+				}
+			}
+		}
+		return pair;
+	}
+	
+	/**
 	 * Get the name of the angle formed between two segments that share
 	 * a vertex.
 	 * @param a the first segment's name
