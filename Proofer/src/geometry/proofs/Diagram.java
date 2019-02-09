@@ -7,6 +7,7 @@ import geometry.shapes.Vertex;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -145,6 +146,7 @@ public class Diagram {
 	 * True otherwise.
 	 */
 	public boolean addFigure(Figure fig) {
+		Objects.requireNonNull(fig);
 		// No duplicates
 		if (containsFigure(fig))
 			return false;
