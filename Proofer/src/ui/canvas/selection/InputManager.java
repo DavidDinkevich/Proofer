@@ -11,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 
 import geometry.Vec2;
 import geometry.proofs.Figure;
+import geometry.proofs.Preprocessor;
 import geometry.shapes.Segment;
 import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
@@ -70,6 +71,10 @@ public class InputManager implements Drawable {
 	// Highlighting polygon children
 	
 	private List<GraphicsPolygonChild<?>> polyChildren;
+	
+	// Rendering hidden vertices
+	
+	private List<Vertex> recentHiddenVertices;
 
 	
 	public InputManager(DiagramCanvas canvas) {
@@ -99,6 +104,12 @@ public class InputManager implements Drawable {
 		 */
 		
 		polyChildren = new ArrayList<>();
+		
+		/*
+		 * Rendering hidden vertices
+		 */
+		
+		recentHiddenVertices = new ArrayList<>();
 		
 		/*
 		 * UIRelationMaker
@@ -231,7 +242,7 @@ public class InputManager implements Drawable {
 			canvas.redraw();
 		}		
 	}
-	
+		
 	private void handleMouseDragged(MouseEvent e) {
 		// No right click
 		if (e.isSecondaryButtonDown())
@@ -254,6 +265,8 @@ public class InputManager implements Drawable {
 		// Drag knob -- expand or shrink a figure
 		else if (selectedKnob != null) {
 			dragKnob(selectedKnob);
+			// Update hidden vertices
+			reloadHiddenVertices();
 			canvas.redraw(); // Redraw the canvas
 		}
 		
@@ -263,7 +276,10 @@ public class InputManager implements Drawable {
 			for (Selector sel : selectors) {
 				Vec2 newSelLoc = dragSceneObject(sel.getShape().getCenter(), false);
 				sel.setSelectorLoc(newSelLoc); // Don't snap to grid
+				// In case it gets snapped
 				updateVertexNamesInPolygon(sel.getTarget().getShape());
+				// Update hidden vertices
+				reloadHiddenVertices();
 			}
 			canvas.redraw();
 		}
@@ -371,6 +387,9 @@ public class InputManager implements Drawable {
 				GraphicsTriangle gPoly = (GraphicsTriangle)shape;
 				addPolygonChildren(gPoly);
 			}
+			
+			// Update hidden vertices
+			reloadHiddenVertices();
 			return true;
 		}
 		return false;
@@ -391,6 +410,9 @@ public class InputManager implements Drawable {
 				removePolygonChildren((GraphicsTriangle) shape);
 			}
 			
+			// Update hidden vertices
+			reloadHiddenVertices();
+			// Redraw the canvas
 			canvas.redraw();
 			return true;
 		}
@@ -399,6 +421,27 @@ public class InputManager implements Drawable {
 	
 	public List<GraphicsShape<?>> getSelectableFigures() {
 		return Collections.unmodifiableList(selectables);
+	}
+	
+	/**
+	 * Updates all hidden vertices in the {@link VertexBuffer}.
+	 */
+	private void reloadHiddenVertices() {
+		// Clear all previous hidden vertices from VertexBuffer
+		vertexBuff.removeVertices(recentHiddenVertices);
+		// Clear all previous hidden vertices from buffer
+		recentHiddenVertices.clear();
+		
+		// Create a snapshot Diagram of this canvas at this point in time
+		Diagram snapshot = Preprocessor.compileFigures(canvas);
+		// Get the hidden vertices
+		List<Vertex> newHiddenVerts = snapshot.getHiddenFigures(Vertex.class);
+		System.out.println("Hiddens: " + newHiddenVerts);
+		
+		// Add the hidden vertices to the VertexBuffer
+		vertexBuff.addVertices(newHiddenVerts);
+		// Add the hidden vertices to the buffer
+		recentHiddenVertices.addAll(newHiddenVerts);
 	}
 	
 	private void addPolygonChildren(GraphicsTriangle poly) {
