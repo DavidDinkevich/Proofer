@@ -237,8 +237,6 @@ public final class Preprocessor {
 						Vertex newVertex = new Vertex(generateNewVertexName(diag), poi);
 						// Add the vertex
 						diag.addHiddenFigure(newVertex);
-						System.out.println("Segments: " + seg0 + ", " + seg1 + " : " + poi);
-						System.out.println("Added vertex: " + newVertex);
 					}
 				}
 			}

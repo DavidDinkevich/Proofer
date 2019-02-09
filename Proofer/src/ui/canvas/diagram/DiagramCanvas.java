@@ -182,12 +182,9 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 	}
 	
 	@Override
-	public void vertexNameChanged(char oldName, char newName) {
-		System.out.println("Old name new name: " + oldName + ", " + newName);
-		
+	public void vertexNameChanged(char oldName, char newName) {		
 		// Highlight or unhighlight invisible hidden figures
 		updateInvisibleHiddenFigures();
-
 	}
 	
 	/*
@@ -437,9 +434,6 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 	 * @param whether or not to regenerate the polygon-children
 	 */
 	public void updateVertexName(Vertex vert, boolean reloadPolyChildren) {
-		char orig = vert.getNameChar();
-		System.out.println(orig + " Before: " + vertexBuff.getInstanceCount(orig));
-		
 		// Location of the vertex to be updated
 		Vec2 vertLoc = vert.getCenter();
 		
@@ -452,13 +446,13 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		// Reload hidden vertices
 		reloadHiddenVertices();
 		
-		if (vertexModified) {
+		if (vertexModified && reloadPolyChildren) {
 			// Update polygon children
 			reloadPolygonChildren();
 		}		
 	}
 	
-	public void updateVertexNamesInPolygon(VertexShape p) {
+	public void updateVertexNamesInVertexShape(VertexShape p) {
 		Vertex[] vertices = p.getVertices();
 		
 		for (int i = 0; i < p.getVertexCount(); i++) {
@@ -519,7 +513,6 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		Diagram snapshot = Preprocessor.compileFigures(this);
 		// Get the hidden vertices
 		List<Vertex> newHiddenVerts = snapshot.getHiddenFigures(Vertex.class);
-		System.out.println("Hiddens: " + newHiddenVerts);
 		
 		// Add the hidden vertices to the VertexBuffer
 		vertexBuff.addVertices(newHiddenVerts);

@@ -215,7 +215,7 @@ public class InputManager {
 				Vec2 newSelLoc = dragSceneObject(sel.getShape().getCenter(), false);
 				sel.setSelectorLoc(newSelLoc); // Don't snap to grid
 				// In case it gets snapped
-				canvas.updateVertexNamesInPolygon(sel.getTarget().getShape());
+				canvas.updateVertexNamesInVertexShape(sel.getTarget().getShape());
 				// Update hidden vertices
 				canvas.reloadHiddenVertices();
 			}
@@ -499,7 +499,7 @@ public class InputManager {
 			knob.moveKnob(nearestSnap);
 		}
 		// Update the name of the target polygon figure
-		canvas.updateVertexNamesInPolygon(sel.getTarget().getShape());
+		canvas.updateVertexNamesInVertexShape(sel.getTarget().getShape());
 		
 		// Update the name of the selector
 //		sel.getShape().setName(sel.getTarget().getShape().getName());
