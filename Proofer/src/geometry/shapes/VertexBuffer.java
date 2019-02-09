@@ -35,7 +35,9 @@ public class VertexBuffer implements Iterable<Vertex> {
 	}
 	
 	private void removeChar(Vertex vert) {
+		// Remove the given char
 		charList.removeChar(vert.getNameChar());
+		// "Refresh" all vertices and make sure their name are in sync
 		updateVertexNames();
 	}
 	
@@ -43,6 +45,8 @@ public class VertexBuffer implements Iterable<Vertex> {
 		for (int i = 0; i < vertices.size(); i++) {
 			vertices.get(i).setName(charList.getChars().get(i));
 		}
+		// Since we changed the names of the vertices, we must update all VertexShapes
+		updateVertexShapes();
 	}
 	
 	/**
@@ -109,6 +113,14 @@ public class VertexBuffer implements Iterable<Vertex> {
 			return true;
 		}
 		return false;
+//		for (int i = vertices.size() - 1; i >= 0; i--) {
+//			if (vertices.get(i).equals(vert)) {
+//				vertices.remove(i);
+//				removeChar(vert);
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 	
 	/**
@@ -352,6 +364,13 @@ public class VertexBuffer implements Iterable<Vertex> {
 			if (!isCapitalLetter(c))
 				return false;
 			return chars.remove((Character)c);
+//			for (int i = chars.size() - 1; i >= 0; i--) {
+//				if (chars.get(i) == c) {
+//					chars.remove(i);
+//					return true;
+//				}
+//			}
+//			return false;
 		}
 		
 		public boolean set(int index, char newName) {
