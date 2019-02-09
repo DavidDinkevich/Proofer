@@ -10,20 +10,14 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 import geometry.Vec2;
-import geometry.proofs.Figure;
-import geometry.proofs.Preprocessor;
 import geometry.shapes.Segment;
 import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
-import geometry.shapes.VertexBuffer;
 import geometry.shapes.VertexShape;
-import geometry.proofs.Diagram;
 
 import ui.canvas.AdvancedCanvas;
 import ui.canvas.Brush;
-import ui.canvas.Drawable;
-import ui.canvas.GraphicsPolygonChild;
 import ui.canvas.GraphicsSegment;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsTriangle;
@@ -42,14 +36,13 @@ import static javafx.scene.input.KeyEvent.KEY_PRESSED;
 import static javafx.scene.input.KeyEvent.KEY_RELEASED;
 
 
-public class InputManager implements Drawable {
+public class InputManager {
 	
 	// Ease of access
 	
 	private DiagramCanvas canvas;
 	private DiagramCanvasGrid canvasGrid;
 	private RenderList renderList;
-	private VertexBuffer vertexBuff;
 	
 	// Selection
 	
@@ -57,26 +50,7 @@ public class InputManager implements Drawable {
 	private List<Selector> selectors;
 	private List<Knob> knobs;
 	private Knob selectedKnob;
-	
-	// Selection container
-	
-	private SelectionBox selectionContainer;
-	private boolean displaySelectionContainer;
-	
-	// UIRelationMaker
-	
-	private UIRelationMaker relMaker;
-	private boolean displayRelMaker;
-	
-	// Highlighting polygon children
-	
-	private List<GraphicsPolygonChild<?>> polyChildren;
-	
-	// Rendering hidden vertices
-	
-	private List<Vertex> recentHiddenVertices;
-
-	
+		
 	public InputManager(DiagramCanvas canvas) {
 		
 		/*
@@ -85,7 +59,6 @@ public class InputManager implements Drawable {
 		this.canvas = canvas;
 		renderList = canvas.getRenderList();
 		canvasGrid = canvas.getCanvasGrid();
-		vertexBuff = canvas.getVertexBuffer();
 		
 		/*
 		 * Selection
@@ -96,26 +69,6 @@ public class InputManager implements Drawable {
 		knobs = new ArrayList<>();
 		// Null when no knob is selected
 		selectedKnob = null;
-		displaySelectionContainer = false;
-		selectionContainer = new SelectionBox();
-		
-		/*
-		 * Highlighting Polygon Children
-		 */
-		
-		polyChildren = new ArrayList<>();
-		
-		/*
-		 * Rendering hidden vertices
-		 */
-		
-		recentHiddenVertices = new ArrayList<>();
-		
-		/*
-		 * UIRelationMaker
-		 */
-		
-		relMaker = new UIRelationMaker();
 		
 		/*
 		 * EVENTS
@@ -146,21 +99,6 @@ public class InputManager implements Drawable {
 		});
 	}
 	
-	@Override
-	public void draw(AdvancedCanvas c) {
-		// Draw the selection container onto the canvas without actually
-		// adding the selection container as a graphics object.
-		// TODO: why???
-		if (displaySelectionContainer) {
-			selectionContainer.draw(c);
-		}
-
-		// Draw the UI relation maker onto the canvas without
-		// adding it as a graphics object
-		if (displayRelMaker)
-			relMaker.draw(c);
-	}
-	
 	/*
 	 * BEGIN EVENT HANDLING METHODS
 	 */
@@ -171,8 +109,8 @@ public class InputManager implements Drawable {
 			return;
 		
 		// Set the first corner of UIRelationMaker
-		if (canvas.keysAreDown(AdvancedCanvas.SHIFT) && displayUIRelationMaker()) {
-			relMaker.getShape().setVertexLoc(0, canvas.getMouseLocOnGrid());
+		if (canvas.keysAreDown(AdvancedCanvas.SHIFT) && canvas.displayUIRelationMaker()) {
+			canvas.getUIRelationMaker().getShape().setVertexLoc(0, canvas.getMouseLocOnGrid());
 			return;
 		}
 			
@@ -226,7 +164,7 @@ public class InputManager implements Drawable {
 			}
 			
 			// Disallow selection container box to be rendered to the canvas.
-			setDisplaySelectionContainer(false, true);
+			canvas.setDisplaySelectionContainer(false, true);
 		}
 		// If no objects were clicked on
 		else {
@@ -235,9 +173,9 @@ public class InputManager implements Drawable {
 
 			// Set the first corner of the selection container to the mouse loc
 			Vec2 mouseLoc = canvas.getMouseLocOnGrid();
-			selectionContainer.setCorners(mouseLoc, mouseLoc);
+			canvas.getSelectionContainer().setCorners(mouseLoc, mouseLoc);
 			// Allow selection container box to be rendered to the canvas.
-			setDisplaySelectionContainer(true, false);
+			canvas.setDisplaySelectionContainer(true, false);
 		
 			canvas.redraw();
 		}		
@@ -249,16 +187,16 @@ public class InputManager implements Drawable {
 			return;
 				
 		// Expand UI relation maker
-		if (displayUIRelationMaker()) {
-			displayRelMaker = true;
-			relMaker.getShape().setVertexLoc(1, canvas.getMouseLocOnGrid());
+		if (canvas.displayUIRelationMaker()) {
+			canvas.setDisplayUIRelationMaker(true);
+			canvas.getUIRelationMaker().getShape().setVertexLoc(1, canvas.getMouseLocOnGrid());
 			canvas.redraw();
 			return;
 		}
 		
 		// Expand/shrink selection container - ONLY IF it is being displayed (active)
-		if (displaySelectionContainer) {
-			expandSelectionContainer(canvas.getMouseLocOnGrid());
+		if (canvas.doDisplaySelectionContainer()) {
+			canvas.expandSelectionContainer(canvas.getMouseLocOnGrid());
 			canvas.redraw();
 		}
 		
@@ -266,7 +204,7 @@ public class InputManager implements Drawable {
 		else if (selectedKnob != null) {
 			dragKnob(selectedKnob);
 			// Update hidden vertices
-			reloadHiddenVertices();
+			canvas.reloadHiddenVertices();
 			canvas.redraw(); // Redraw the canvas
 		}
 		
@@ -277,9 +215,9 @@ public class InputManager implements Drawable {
 				Vec2 newSelLoc = dragSceneObject(sel.getShape().getCenter(), false);
 				sel.setSelectorLoc(newSelLoc); // Don't snap to grid
 				// In case it gets snapped
-				updateVertexNamesInPolygon(sel.getTarget().getShape());
+				canvas.updateVertexNamesInPolygon(sel.getTarget().getShape());
 				// Update hidden vertices
-				reloadHiddenVertices();
+				canvas.reloadHiddenVertices();
 			}
 			canvas.redraw();
 		}
@@ -287,13 +225,13 @@ public class InputManager implements Drawable {
 	
 	private void handleMouseReleased(MouseEvent e) {
 		// Erase the selection container (if it exists)
-		setDisplaySelectionContainer(false, true);
+		canvas.setDisplaySelectionContainer(false, true);
 		// Release UI relation maker
-		releaseUIRelationMaker(true); // true = redraw canvas
+		canvas.releaseUIRelationMaker(true); // true = redraw canvas
 	}
 	
 	private void handleMouseMoved(MouseEvent e) {
-		highlightFigures();
+		canvas.highlightFigures();
 	}
 	
 	private void handleKeyPressed(KeyEvent e) {
@@ -360,7 +298,7 @@ public class InputManager implements Drawable {
 	private void handleKeyReleased(KeyEvent e) {
 		if (e.isShiftDown()) {
 			// Erase UI relation maker
-			setDisplayUIRelationMaker(false, true);
+			canvas.setDisplayUIRelationMaker(false, true);
 		}
 	}
 
@@ -384,12 +322,12 @@ public class InputManager implements Drawable {
 			// list of selectable figures
 			if (shape instanceof GraphicsTriangle) { // TODO: change to polygon
 				// We know it's a GraphicsTriangle
-				GraphicsTriangle gPoly = (GraphicsTriangle)shape;
-				addPolygonChildren(gPoly);
+				GraphicsTriangle gPoly = (GraphicsTriangle) shape;
+				canvas.addPolygonChildren(gPoly);
 			}
 			
 			// Update hidden vertices
-			reloadHiddenVertices();
+			canvas.reloadHiddenVertices();
 			return true;
 		}
 		return false;
@@ -407,11 +345,11 @@ public class InputManager implements Drawable {
 			}
 			// If the figure is a polygon, remove its children
 			if (shape instanceof GraphicsTriangle) { // TODO: change this to polygon
-				removePolygonChildren((GraphicsTriangle) shape);
+				canvas.removePolygonChildren((GraphicsTriangle) shape);
 			}
 			
 			// Update hidden vertices
-			reloadHiddenVertices();
+			canvas.reloadHiddenVertices();
 			// Redraw the canvas
 			canvas.redraw();
 			return true;
@@ -422,84 +360,7 @@ public class InputManager implements Drawable {
 	public List<GraphicsShape<?>> getSelectableFigures() {
 		return Collections.unmodifiableList(selectables);
 	}
-	
-	/**
-	 * Updates all hidden vertices in the {@link VertexBuffer}.
-	 */
-	private void reloadHiddenVertices() {
-		// Clear all previous hidden vertices from VertexBuffer
-		vertexBuff.removeVertices(recentHiddenVertices);
-		// Clear all previous hidden vertices from buffer
-		recentHiddenVertices.clear();
 		
-		// Create a snapshot Diagram of this canvas at this point in time
-		Diagram snapshot = Preprocessor.compileFigures(canvas);
-		// Get the hidden vertices
-		List<Vertex> newHiddenVerts = snapshot.getHiddenFigures(Vertex.class);
-		System.out.println("Hiddens: " + newHiddenVerts);
-		
-		// Add the hidden vertices to the VertexBuffer
-		vertexBuff.addVertices(newHiddenVerts);
-		// Add the hidden vertices to the buffer
-		recentHiddenVertices.addAll(newHiddenVerts);
-	}
-	
-	private void addPolygonChildren(GraphicsTriangle poly) {
-		// Create a GraphicsPolygonChild for each child and add it
-		for (Figure child : poly.getShape().getChildren()) {
-			// Get the brush for the GraphicsPolygonChild
-			Brush gChildBrush = StyleManager.getHighlightedFigureBrush();			
-			// Ask the graphics polygon for the graphics child for the child's name
-			GraphicsPolygonChild<?> gChild = poly.getGraphicsChild(child.getName());
-			// Safety
-			if (gChild == null)
-				continue;
-			// Set brush
-			gChild.setBrush(gChildBrush);
-			// Add the graphics child
-			polyChildren.add(gChild);
-		}
-	}
-	
-	private void removePolygonChildren(GraphicsTriangle poly) {
-		// For each of the polygon's children
-		for (Figure child : poly.getShape().getChildren()) {
-			// For each element in the polygon-children list
-			for (int i = polyChildren.size()-1; i >= 0; i--) {
-				GraphicsPolygonChild<?> polyChild = polyChildren.get(i);
-				// If the current element in polygon-children list is one of
-				// the polygon's children
-				if (polyChild.getShape().equals(child)) {
-					// Remove it from the polygon-children list
-					polyChildren.remove(i);
-					// Remove it from the RenderList (it may not currently, be in the
-					// RenderList, but this is just to make sure
-					renderList.removeDrawable(polyChild);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * It is essential to use this after modifying the name of a
-	 * {@link GraphicsPolygon}.
-	 */
-	private void reloadPolygonChildren() {
-		// Clear the whole list in the RenderList
-		renderList.clearLayerList(UIDiagramLayers.POLYGON_COMPONENT);
-		// Delete the currently existing polygon children
-		polyChildren.clear();
-
-		// For each GraphicsPolygon
-		for (GraphicsShape<?> gShape : selectables) {
-			if (gShape instanceof GraphicsTriangle) {
-				GraphicsTriangle gPoly = (GraphicsTriangle)gShape;
-				// Add its new polygon children
-				addPolygonChildren(gPoly);
-			}
-		}
-	}
-	
 	public List<Selector> getSelectors() {
 		return selectors;
 	}
@@ -508,7 +369,7 @@ public class InputManager implements Drawable {
 	 * Get the {@link Selector} for the given {@link GraphicsShape}
 	 * @return the {@link Selector}, or null if it was not found
 	 */
-	private Selector getSelectorForFigure(Shape shape) {
+	public Selector getSelectorForFigure(Shape shape) {
 		for (Selector sel : selectors) {
 			if (sel.getTarget().getShape().equals(shape)) {
 				return sel;
@@ -536,7 +397,7 @@ public class InputManager implements Drawable {
 		selectors.clear();				
 	}
 	
-	private void destroySelector(Selector sel) {
+	public void destroySelector(Selector sel) {
 		// Remove knobs
 		knobs.removeAll(Arrays.asList(sel.getKnobs()));
 		// Deselect target object of selector
@@ -546,11 +407,11 @@ public class InputManager implements Drawable {
 		// Remove from render list
 		renderList.removeDrawable(sel);
 	}
-		
+			
 	/**
 	 * Destroy all selected objects and their selectors.
 	 */
-	private void destroyAllSelectedObjects() {
+	public void destroyAllSelectedObjects() {
 		for (int i = selectables.size()-1; i >= 0; i--) {
 			if (selectables.get(i).isSelected()) {
 				// Remove from diagram
@@ -560,7 +421,7 @@ public class InputManager implements Drawable {
 		destroyAllSelectors();
 	}
 	
-	private Selector createSelector(GraphicsShape<?> o, boolean redraw) {
+	public Selector createSelector(GraphicsShape<?> o, boolean redraw) {
 		// TODO: dangerous cast
 		@SuppressWarnings("unchecked")
 		Selector sel = new Selector((GraphicsShape<? extends VertexShape>) o);
@@ -572,126 +433,6 @@ public class InputManager implements Drawable {
 			canvas.redraw();
 		
 		return sel;
-	}
-	
-	private boolean displayUIRelationMaker() {
-		// If no figures are selected AND the user is holding shift
-//		KeyEvent e = canvas.getInputEvent(KEY_PRESSED);
-		// If e is null, then no key has been pressed yet. Thus shift is not down.
-//		return e == null ? false : selectors.isEmpty() && e.isShiftDown();
-		return selectors.isEmpty() && canvas.keysAreDown(AdvancedCanvas.SHIFT);
-	}
-	
-	/**
-	 * Set whether or not the {@link UIRelationMaker} is rendered to the
-	 * canvas.
-	 * @param render whether or not to render the {@link UIRelationMaker} box
-	 * @param redraw whether or not to redraw the canvas
-	 */
-	private void setDisplayUIRelationMaker(boolean render, boolean redraw) {
-		// If the new val is the same as the current val, there is nothing to do
-		if (displayRelMaker == render) {
-			return;
-		}
-		// Update
-		displayRelMaker = render;
-		if (redraw)
-			canvas.redraw();
-	}
-	
-	/**
-	 * "Release" the {@link UIRelationMaker}. This makes the {@link UIRelationMaker}
-	 * disappear, creates a {@link RelationPair} between the two figures
-	 * on which the end-points of the {@link UIRelationMaker} lie, and adds
-	 * the {@link RelationPair} to the {@link Diagram}.
-	 * @param redraw whether or not to redraw the canvas
-	 */
-	private void releaseUIRelationMaker(boolean redraw) {		
-		/*
-		 * After the UIRelationMaker is released, we set both end-points to [0, 0]
-		 * (this will make the length of the UIRelationMaker = 0).
-		 * Therefore, if the length of the UIRelationMaker is 0, then we can tell
-		 * that the UIRelationMaker has NOT been dragged and cannot be released.
-		 */
-		if (relMaker.getShape().getLength() == 0f)
-			return;
-		
-		// Get the end-points of the UIRelationMaker 
-		List<Vec2> endpts = Arrays.asList(relMaker.getShape().getVertexLocations());
-
-		// Compile a list of all of the figures in the diagram that can be
-		// "connected"--a RelationPair can be made between them.
-		// 	    connectables = polygon children  +  diagram figures
-		// Polygon children are added first because they are "on top"
-		List<GraphicsShape<?>> connectables = new ArrayList<>(polyChildren);
-		connectables.addAll(canvas.getDiagramFigures());
-		
-		// There is a possibility that more than 2 figures will contain the
-		// endpoints of the UIRelationMaker. We only want the first 2, and
-		// will quit the loop after the first 2 are found.
-		List<Shape> selectedShapes = new ArrayList<>(2);
-				
-		for (int i = 0; i < connectables.size(); i++) {
-			Shape shape = connectables.get(i).getShape();
-			// If the shape contains one of the endpoints
-			if (shape.containsAPointIn(endpts)) {
-				// Record the shape
-				selectedShapes.add(shape);
-			}
-			// Only want first two shapes found
-			if (selectedShapes.size() >= 2)
-				break;
-		}
-
-		// Because we're "releasing" the UIRelationMaker, we want to make it
-		// disappear
-		setDisplayUIRelationMaker(false, redraw);
-		
-		// Set vertices to center
-		for (Vertex v : relMaker.getShape().getVertices())
-			v.setCenter(Vec2.ZERO);
-	}
-	
-	/**
-	 * Set whether or not the {@link SelectionBox} is rendered to the
-	 * canvas.
-	 * @param render whether or not to render the selection container box 
-	 * @param redraw whether or not to redraw the canvas
-	 */
-	private void setDisplaySelectionContainer(boolean render, boolean redraw) {
-		if (displaySelectionContainer != render) {
-			displaySelectionContainer = render;
-			if (redraw)
-				canvas.redraw();
-		}
-	}
-	
-	private void expandSelectionContainer(Vec2 loc) {
-		// Expand box
-		selectionContainer.setCorner2(loc);
-		// Check for objects covered by the selection container
-		if (selectables.size() > 0) {
-			for (GraphicsShape<?> selectable : selectables) {
-				if (!selectable.getAllowSelections())
-					continue;
-								
-				// If the object is covered by the box
-				if (selectionContainer.coversObject(selectable.getShape())) {
-					// If the object is not selected
-					if (!selectable.isSelected()) {
-						// Select the object
-						createSelector(selectable, true);
-					}
-				} else { // If the object is not covered by the box
-					// If the object IS selected
-					if (selectable.isSelected()) {
-						// Deselect the object
-						Selector sel = getSelectorForFigure(selectable.getShape());
-						destroySelector(sel);
-					}
-				}
-			}
-		}
 	}
 	
 	/**
@@ -727,49 +468,19 @@ public class InputManager implements Drawable {
 	private void dragKnob(Knob knob) {		
 		// Drag knob
 		knob.moveKnob(dragSceneObject(knob.getShape().getCenter(), true));
-		
+
 		// If the knob is snapped to the grid, we have to refresh the polygon 
 		// children (because there is a possibility that a polygon's name was 
 		// modified)
 		Vec2 knobLoc = knob.getShape().getCenter();
 		if (canvasGrid.pointIsSnapped(knobLoc)) {
 			// Reload the polygon children
-			reloadPolygonChildren();
+			canvas.reloadPolygonChildren();
 		}
-		
-		Vertex controlledVert = knob.getControlledVertex();
-		updateVertexName(controlledVert, true);
-	}
-	
-	/**
-	 * A helper method for {@link VertexBuffer#updateVertexName(Vertex, boolean)}.
-	 * @param vert the vertex to be updated
-	 * @param whether or not to regenerate the polygon-children
-	 */
-	private void updateVertexName(Vertex vert, boolean reloadPolyChildren) {
-		// Location of the vertex to be updated
-		Vec2 vertLoc = vert.getCenter();
-		
-		// Whether to merge the vertex with another, or demerge it from another
-		final boolean mergeVert = canvasGrid.pointIsSnapped(vertLoc);
 
-		// Update the vertex in the VertexBuffer
-		final boolean vertexModified = vertexBuff.updateVertexName(vert, mergeVert);
-		
-		if (vertexModified) {
-			// Update polygon children
-			reloadPolygonChildren();
-		}
-	}
-	
-	private void updateVertexNamesInPolygon(VertexShape p) {
-		Vertex[] vertices = p.getVertices();
-		
-		for (int i = 0; i < p.getVertexCount(); i++) {
-			updateVertexName(vertices[i], false);
-		}
-		// Update polygons
-		reloadPolygonChildren();
+		// Update the name of the vertex (in case it was snapped)
+		Vertex controlledVert = knob.getControlledVertex();
+		canvas.updateVertexName(controlledVert, true);
 	}
 	
 	/**
@@ -788,7 +499,7 @@ public class InputManager implements Drawable {
 			knob.moveKnob(nearestSnap);
 		}
 		// Update the name of the target polygon figure
-		updateVertexNamesInPolygon(sel.getTarget().getShape());
+		canvas.updateVertexNamesInPolygon(sel.getTarget().getShape());
 		
 		// Update the name of the selector
 //		sel.getShape().setName(sel.getTarget().getShape().getName());
@@ -797,48 +508,9 @@ public class InputManager implements Drawable {
 		if (redraw)
 			canvas.redraw();
 	}
-		
-	/**
-	 * Handle the highlighting of figures when the mouse hovers
-	 * over them.
-	 */
-	private void highlightFigures() {
-		// Mouse position
-		Vec2 mouse = canvas.getMouseLocOnGrid();
-								
-		// For each graphics polygon child
-		for (GraphicsPolygonChild<?> child : polyChildren) {
-//			GraphicsPolygonAngle angleChild = (GraphicsPolygonAngle)child;
-			// If the mouse is hovering over the child
-			if (child.getShape().containsPoint(mouse)) {
-//			if (angleChild.getArcShape().containsPoint(mouse)) {
-				// If the child hovered over is not already in the render list
-				if (!renderList.contains(child)) {
-					// Add it to the render list
-					renderList.addDrawable(child);
-					// Redraw
-					canvas.redraw();
-				}
-				// We found the child that is hovered over by the mouse.
-				// Business is done here
-				break;
-			}
-			// If the mouse is not hovering over this child
-			else {
-				// If the child is already in the render list
-				if (renderList.contains(child)) {
-					// Remove the child from the render list
-					renderList.removeDrawable(child);
-					// Redraw
-					canvas.redraw();
-				}
-			}	
-		}
-	}
-	
+			
 	/*
 	 * END PRIVATE HELPER METHODS
 	 */
-	
 	
 }
