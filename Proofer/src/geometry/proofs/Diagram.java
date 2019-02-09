@@ -88,8 +88,8 @@ public class Diagram {
 	 * @return the list of hidden figures (of the given type)
 	 */
 	// Will crash if types don't match up
-	@SuppressWarnings({ "unchecked", "unlikely-arg-type" })
-	public <T extends Figure> List<T> getHiddenFigures(T type) {
+	@SuppressWarnings("unchecked")
+	public <T extends Figure> List<T> getHiddenFigures(Class<T> type) {
 		return Collections.unmodifiableList((List<T>) hiddenFigures.get(type));
 	}
 	
