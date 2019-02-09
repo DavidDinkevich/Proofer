@@ -474,11 +474,12 @@ public final class Preprocessor {
 //	}
 	
 	private static char generateNewVertexName(Diagram diag) {
+		outer:
 		for (char c = 'A'; c <= 'Z';) {
 			for (Figure fig : diag.getFigures()) {
 				if (fig.isValidName("" + c)) {
 					++c;
-					continue;
+					continue outer;
 				}
 			}
 			return c;
