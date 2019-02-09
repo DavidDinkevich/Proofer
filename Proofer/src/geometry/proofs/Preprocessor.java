@@ -494,7 +494,9 @@ public final class Preprocessor {
 				// Cast the shape as a vertex
 				Vertex vert = (Vertex)fig;
 				// If the vertex's loc is equal to the given loc
-				if (vert.getCenter().equals(loc))
+//				if (vert.getCenter().equals(loc))
+				// TODO: dependency below
+				if (Vec2.dist(vert.getCenter(), loc) < 1f)
 					// Return the vertex
 					return vert;
 			}
