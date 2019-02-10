@@ -22,7 +22,6 @@ import geometry.shapes.VertexShape;
 
 import ui.canvas.AdvancedCanvas;
 import ui.canvas.Brush;
-import ui.canvas.Drawable;
 import ui.canvas.GraphicsPolygonChild;
 import ui.canvas.GraphicsShape;
 import ui.canvas.GraphicsTriangle;
@@ -182,9 +181,9 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 	}
 	
 	@Override
-	public void vertexNameChanged(char oldName, char newName) {		
+	public void vertexNameChanged(char oldName, char newName) {
 		// Highlight or unhighlight invisible hidden figures
-		updateInvisibleHiddenFigures();
+//		updateInvisibleHiddenFigures();
 	}
 	
 	/*
@@ -200,22 +199,23 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		Diagram diag = Preprocessor.compileFigures(this);
 		
 		// Remove outdated figures
-		removeOutdatedHiddenInvisibleFigures(diag);
+		renderList.clearLayerList(UIDiagramLayers.INVISIBLE_HIDDEN_FIGURES);
 		
 		// Triangles
-		for (Figure fig : diag.getFigures()) {
-			// Make sure it's a triangle
-			if (fig.getClass() != Triangle.class)
-				continue;
+		for (Triangle fig : diag.getHiddenFigures(Triangle.class)) {
 			
 			// Add the hidden invisible figure
 			if (isHiddenInvisibleFigure(diag, fig.getName())) {
-				// Get the invisible triangle, and make a GraphicsShape for it
-				Triangle tri = (Triangle) fig;
+				// Get a copy of the invisible triangle, and make a GraphicsShape for it
+				Triangle tri = new Triangle((Triangle) fig);
 				GraphicsTriangle gtri = new GraphicsTriangle(tri);
 				gtri.setBrush(StyleManager.getInvisibleHiddenFigureBrush());
 				gtri.setLayer(UIDiagramLayers.INVISIBLE_HIDDEN_FIGURES);
 				renderList.addDrawable(gtri);
+//				System.out.println("ADDED INVISIBLE HIDDEN TRI: " + tri);
+//				System.out.println("Hidden triangles (diagram): " + diag.getHiddenFigures(Triangle.class));
+//				System.out.println("Hidden triangles (render list): " + 
+//						renderList.getLayerList(UIDiagramLayers.INVISIBLE_HIDDEN_FIGURES));
 			} 
 		}
 	}
@@ -227,51 +227,26 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		// "secondary triangles" (see isSecondaryTriangle() for description). Doing so
 		// would result in ugly triangles being created on top of other ones.
 		return !containsDiagramFigure(name, Triangle.class)
-		&& !containsHiddenInvisibleFigure(name)
+//		&& !containsHiddenInvisibleFigure(name)
 		&& !isSecondaryTriangle(diag, name);
 	}
 	
-	private boolean containsHiddenInvisibleFigure(String name) {
-		// Get list of invisible hidden figures
-		List<Drawable> invisFigs = renderList.
-				getLayerList(UIDiagramLayers.INVISIBLE_HIDDEN_FIGURES);
+//	private boolean containsHiddenInvisibleFigure(String name) {
+//		// Get list of invisible hidden figures
+//		List<Drawable> invisFigs = renderList.
+//				getLayerList(UIDiagramLayers.INVISIBLE_HIDDEN_FIGURES);
+//
+//		for (Drawable drawable : invisFigs) {
+//			// We know it's a GraphicsShape because we're the ones who add all the
+//			// invisible hidden figures and we only add GraphicsShapes
+//			GraphicsShape<?> invisFigure = (GraphicsShape<?>) drawable;
+//			if (invisFigure.getShape().isValidName(name))
+//				return true;
+//		}
+//		
+//		return false;
+//	}
 
-		for (Drawable drawable : invisFigs) {
-			// We know it's a GraphicsShape because we're the ones who add all the
-			// invisible hidden figures and we only add GraphicsShapes
-			GraphicsShape<?> invisFigure = (GraphicsShape<?>) drawable;
-			if (invisFigure.getShape().isValidName(name))
-				return true;
-		}
-		
-		return false;
-	}
-	
-	private void removeOutdatedHiddenInvisibleFigures(Diagram diag) {
-		// Get list of invisible hidden figures
-		List<Drawable> invisFigs = renderList.
-				getLayerList(UIDiagramLayers.INVISIBLE_HIDDEN_FIGURES);
-		
-		// Remove invisible hidden figures that may have existed in the
-		// past but no longer exist. Such figures will exist within the
-		// invisible hidden figures list but not in the diagram
-		for (int i = invisFigs.size() - 1; i >= 0; i--) {
-			// We know it's a GraphicsShape because we're the ones who add all the
-			// invisible hidden figures and we only add GraphicsShapes
-			GraphicsShape<?> invisFigure = (GraphicsShape<?>) invisFigs.get(i);
-			// Get the type of the figure--cast is safe because we know the type
-			// extends Figure
-			@SuppressWarnings("unchecked")
-			Class<? extends Figure> type = (Class<? extends Figure>) 
-					invisFigure.getShape().getClass();
-			
-			if (!diag.containsFigure(invisFigure.getShape().getName(), type)) {
-				// Remove from render list
-				renderList.removeDrawable(invisFigure);
-			}
-		}
-	}
-	
 	/**
 	 * A "secondary triangle" in this context is simply a triangle that is composed
 	 * of one or more angle synonyms.
@@ -439,23 +414,28 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		
 		// Whether to merge the vertex with another, or demerge it from another
 		final boolean mergeVert = canvasGrid.pointIsSnapped(vertLoc);
-
+		
 		// Update the vertex in the VertexBuffer
 		final boolean vertexModified = vertexBuff.updateVertexName(vert, mergeVert);
 		
 		// Reload hidden vertices
 		reloadHiddenVertices();
 		
+		// Highlight or unhighlight invisible hidden figures
+		updateInvisibleHiddenFigures();
+
 		if (vertexModified && reloadPolyChildren) {
 			// Update polygon children
 			reloadPolygonChildren();
-		}		
+		}
 	}
 	
 	public void updateVertexNamesInVertexShape(VertexShape p) {
 		Vertex[] vertices = p.getVertices();
 		
 		for (int i = 0; i < p.getVertexCount(); i++) {
+			// False bc no need to update polygon children after EACH vertex,
+			// we can do it once at the very end
 			updateVertexName(vertices[i], false);
 		}
 		// Update polygons
