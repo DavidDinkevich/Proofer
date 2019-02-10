@@ -16,6 +16,12 @@ import java.util.HashMap;
 
 public class Diagram {
 	
+	public static enum Policy {
+		FIGURES_AND_RELATIONS, FIGURES_ONLY
+	}
+	
+	private Policy policy;
+	
 	private List<DiagramListener> listeners;
 	
 	private List<Figure> figures;
@@ -37,7 +43,9 @@ public class Diagram {
 	 */
 	private Map<Class<?>, List<Figure>> hiddenFigures;
 	
-	public Diagram() {
+	public Diagram(Policy policy) {
+		this.policy = Objects.requireNonNull(policy);
+		
 		figures = new ArrayList<>();
 		relations = new ArrayList<>();
 		angleSynonyms = new ArrayList<>();
@@ -49,6 +57,14 @@ public class Diagram {
 		hiddenFigures.put(Triangle.class, new ArrayList<>());
 	}
 	
+	public Diagram() {
+		this(Policy.FIGURES_AND_RELATIONS);
+	}
+	
+	public Policy getPolicy() {
+		return policy;
+	}
+
 	public List<DiagramListener> getListeners() {
 		return listeners;
 	}
@@ -163,8 +179,11 @@ public class Diagram {
 		}
 		// Add the figure
 		figures.add(fig);
-		// Apply the reflexive postulate
-		applyReflexivePostulate(fig);
+		
+		if (policy == Policy.FIGURES_AND_RELATIONS) {
+			// Apply the reflexive postulate
+			applyReflexivePostulate(fig);
+		}
 		
 		// Notify listeners that a figure was added
 		for (DiagramListener listener : listeners) {
@@ -435,8 +454,15 @@ public class Diagram {
 	 * was successful
 	 */
 	public boolean addFigureRelation(FigureRelation pair) {
+		// Enforce policy
+		if (policy == Policy.FIGURES_ONLY) {
+			throw new IllegalStateException("Operation goes against policy: " + Policy.FIGURES_ONLY);
+		}
+		
+		// No duplicates!!
 		if (containsFigureRelation(pair))
 			return false;
+		
 		if (relations.add(pair)) {
 			// If the relation declares that an angle is a right angle,
 			// make this right angle congruent to all other right angles.
