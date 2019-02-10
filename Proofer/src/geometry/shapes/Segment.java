@@ -6,6 +6,7 @@ import java.util.List;
 
 import geometry.Vec2;
 import geometry.proofs.Figure;
+import util.Utils;
 
 public class Segment extends AbstractShape implements VertexShape {
 	
@@ -361,8 +362,11 @@ public class Segment extends AbstractShape implements VertexShape {
 			if (!(o instanceof Slope))
 				return false;
 			Slope other = (Slope) o;
-			final float slopeDecimal = getSlopeRaw();
-			final float slopeDecimal2 = other.getSlopeRaw();
+			// Rounding prevents small rounding errors
+			final float slopeDecimal = Utils.round(getSlopeRaw(), 4);
+			final float slopeDecimal2 = Utils.round(other.getSlopeRaw(), 4);
+//			final float slopeDecimal = getSlopeRaw();
+//			final float slopeDecimal2 = other.getSlopeRaw();
 			return slopeDecimal == slopeDecimal2
 					// If the line is vertical, then the slope can either be
 					// positive infinity or negative infinity (pointing up
