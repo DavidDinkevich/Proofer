@@ -379,12 +379,12 @@ public class ProofSolver {
 		// For each figure
 		for (int i = 0; i < diagram.getFigures().size()-1; i++) {
 			// Make sure figure is a triangle
-			if (!(diagram.getFigures().get(i) instanceof Triangle))
+			if (diagram.getFigures().get(i).getClass() != Triangle.class)
 				continue;
 			// For each other figure
 			for (int j = i + 1; j < diagram.getFigures().size(); j++) {
 				// The second figure must be a triangle
-				if (!(diagram.getFigures().get(j) instanceof Triangle))
+				if (diagram.getFigures().get(j).getClass() != Triangle.class)
 					continue;
 				
 				// Get the triangles

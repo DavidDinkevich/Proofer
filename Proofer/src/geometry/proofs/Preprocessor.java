@@ -130,28 +130,6 @@ public final class Preprocessor {
 	}
 	
 	/**
-	 * Get all of the shared vertices between two triangles
-	 * @param tri0 the first triangle
-	 * @param tri1 the second triangle
-	 * @return the shared vertices
-	 */
-//	private List<Vertex> getSharedVertices(Triangle tri0, Triangle tri1) {
-//		List<Vertex> commonVertices = null;
-//		outer:
-//		for (Vertex vert0 : tri0) {
-//			for (Vertex vert1 : tri1) {
-//				if (vert0.equals(vert1)) {
-//					if (commonVertices == null)
-//						commonVertices = new ArrayList<>();
-//					commonVertices.add(vert0);
-//					continue outer;
-//				}
-//			}
-//		}
-//		return commonVertices == null ? Collections.emptyList() : commonVertices;
-//	}
-	
-	/**
 	 * If I have two right triangles, ABC and DBC,
 	 *    C
 	 * A  B  D
@@ -171,40 +149,36 @@ public final class Preprocessor {
 		addHiddenVerticesAndSegments(diagram);
 		
 		do {
-
 			final int COUNT = diagram.getFigures().size();
 			figuresWereAdded = false;
 			
 			// Loop through segments
 			for (int i = 0; i < COUNT-1; i++) {
 				// If the inspected figure is a segment
-				if (diagram.getFigures().get(i) instanceof Segment) {
-					// Capture the segment
-					Segment seg0 = (Segment)diagram.getFigures().get(i);
-					
-					// Loop through figures again
-					for (int j = i + 1; j < COUNT; j++) {
-						if (diagram.getFigures().get(j) instanceof Segment) {
-							Segment seg1 = (Segment)diagram.getFigures().get(j);
-			
-							// Add hidden figures
-							Figure hiddenFig = identifyHiddenSegOrAngle(seg0, seg1);
-							// If we've found a hidden figure
-							if (hiddenFig != null) {
-								// If the figure was added to the diagram (it was not contained before)
-								if (diagram.addHiddenFigure(hiddenFig)) {
-									figuresWereAdded = true; // Update variable
-									// If the hidden figure we found is an angle, store it
-									if (hiddenFig instanceof Angle)
-										hiddenAngles.add((Angle)hiddenFig);
-								}
-							}
-						}
+				if (diagram.getFigures().get(i).getClass() != Segment.class)
+					continue;
+				// Get the segment
+				Segment seg0 = (Segment) diagram.getFigures().get(i);
+				// Loop through figures again
+				for (int j = i + 1; j < COUNT; j++) {
+					// If the inspected figure is a segment
+					if (diagram.getFigures().get(j).getClass() != Segment.class)
+						continue;
+					// Get the segment
+					Segment seg1 = (Segment) diagram.getFigures().get(j);
+					// Get the hidden figure created by the two segments (or null)
+					Figure hiddenFig = identifyHiddenSegOrAngle(seg0, seg1);
+					// If we've found a hidden figure AND it does not already exist, add it
+					if (hiddenFig != null && diagram.addHiddenFigure(hiddenFig)) {
+						figuresWereAdded = true; // Update variable
+						// If the hidden figure we found is an angle, store it
+						if (hiddenFig instanceof Angle)
+							hiddenAngles.add((Angle) hiddenFig);
 					}
 				}
 			}
-						
-			// Add hidden triangles
+	
+			// Try to find hidden triangles with the new hidden angles we found (or didn't)
 			List<Triangle> hiddenTris = identifyHiddenTriangles(diagram, hiddenAngles);
 			// If hidden triangles were added to the diagram
 			if (diagram.addHiddenFigures(hiddenTris))
@@ -316,7 +290,9 @@ public final class Preprocessor {
 		}
 		// Add hidden angles
 		else {
+			// Get the angle between the two segments
 			String angleName = ProofUtils.getAngleBetween(seg0.getName(), seg1.getName());
+			// Get the three vertices of the angle
 			String unsharedVert0 = angleName.substring(0, 1);
 			String unsharedVert1 = angleName.substring(2);
 			String sharedVert = angleName.substring(1, 2);
@@ -326,6 +302,7 @@ public final class Preprocessor {
 			third = (Vertex) (first.getNameChar() == unsharedVert0.charAt(0) ?
 					seg1.getChild(unsharedVert1) : seg1.getChild(unsharedVert0));
 			second = (Vertex) seg0.getChild(sharedVert);
+			// Create the new angle
 			Angle newAngle = new Angle(first, second, third);
 			return newAngle;
 		}
@@ -478,6 +455,30 @@ public final class Preprocessor {
 				}
 			}
 		}
+		
+		// For each figure
+		for (int i = 0; i < diagram.getFigures().size() - 1; i++) {
+			// If the figure is NOT an angle, we don't care about it
+			if (diagram.getFigures().get(i).getClass() != Angle.class)
+				continue;
+			// Get the angle
+			Angle a0 = (Angle) diagram.getFigures().get(i);
+			// For each other figure
+			for (int j = i + 1; j < diagram.getFigures().size(); j++) {
+				// Only angles
+				if (diagram.getFigures().get(j).getClass() != Angle.class)
+					continue;
+				// Get the other angle
+				Angle a1 = (Angle) diagram.getFigures().get(j);
+				// If they are vertical angles, make them congruent
+				if (ProofUtils.areVerticalAngles(a0, a1)) {
+					FigureRelation rel = new FigureRelation(CONGRUENT, a0, a1);
+					rel.setReason("Vertical Angle");
+					diagram.addFigureRelation(rel);
+				}
+			}
+		}
+
 	}
 	
 	/*
@@ -495,6 +496,28 @@ public final class Preprocessor {
 //			}
 //		}
 //		return false;
+//	}
+	
+//	/**
+//	 * Get all of the shared vertices between two triangles
+//	 * @param tri0 the first triangle
+//	 * @param tri1 the second triangle
+//	 * @return the shared vertices
+//	 */
+//	private List<Vertex> getSharedVertices(Triangle tri0, Triangle tri1) {
+//		List<Vertex> commonVertices = null;
+//		outer:
+//		for (Vertex vert0 : tri0) {
+//			for (Vertex vert1 : tri1) {
+//				if (vert0.equals(vert1)) {
+//					if (commonVertices == null)
+//						commonVertices = new ArrayList<>();
+//					commonVertices.add(vert0);
+//					continue outer;
+//				}
+//			}
+//		}
+//		return commonVertices == null ? Collections.emptyList() : commonVertices;
 //	}
 	
 	private static char generateNewVertexName(Diagram diag) {
