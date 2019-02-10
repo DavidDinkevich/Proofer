@@ -167,9 +167,10 @@ public final class Preprocessor {
 		List<Angle> hiddenAngles = new ArrayList<>();
 		boolean figuresWereAdded = false;
 		
+		// Add hidden vertices
+		addHiddenVerticesAndSegments(diagram);
+		
 		do {
-			// Add hidden vertices
-			addHiddenVertices(diagram);
 
 			final int COUNT = diagram.getFigures().size();
 			figuresWereAdded = false;
@@ -211,7 +212,19 @@ public final class Preprocessor {
 		} while (figuresWereAdded);
 	}
 	
-	private static void addHiddenVertices(Diagram diag) {
+	/**
+	 * Find and add hidden vertices (vertices created by two intersecting segments,
+	 * not including segment end-points). This method will also create and add
+	 * the new segments created by the hidden vertex (the hidden vertex "chops" the segment
+	 * into two).
+	 * @param diag the diagram
+	 */
+	private static void addHiddenVerticesAndSegments(Diagram diag) {
+		// A temporary buffer in which newly added segments are stored. When the
+		// process is finished, they will be added to the diagram.
+		// (avoids bugs that arise with concurrent modification.
+		List<Segment> buff = new ArrayList<>();
+		
 		// For each figure
 		for (int i = 0; i < diag.getFigures().size() - 1; i++) {
 			// Only segments
@@ -237,19 +250,32 @@ public final class Preprocessor {
 						Vertex newVertex = new Vertex(generateNewVertexName(diag), poi);
 						// Add the vertex
 						diag.addHiddenFigure(newVertex);
+						
+						// Add the 4 new "split" segments created by the hidden vertex
+						Vertex[] seg0Vertices = seg0.getVertices();
+						Vertex[] seg1Vertices = seg1.getVertices();
+						Segment s0 = new Segment(seg0Vertices[0], newVertex);
+						Segment s1 = new Segment(seg0Vertices[1], newVertex);
+						Segment s2 = new Segment(seg1Vertices[0], newVertex);
+						Segment s3 = new Segment(seg1Vertices[1], newVertex);
+						
+						// Store these new segments in a temporary buffer. When the
+						// process is finished, they will be added to the diagram.
+						// (avoids bugs that arise with concurrent modification.
+						buff.addAll(Arrays.asList(s0, s1, s2, s3));						
 					}
 				}
 			}
 		}
+		
+		// Add all newly added segments
+		diag.addHiddenFigures(buff);
+		
 	}
-	
-//	private static void addHiddenIntersectionSegs(Diagram diag) {
-//		
-//	}
 	
 	/**
 	 * Identify the hidden {@link Segment} or {@link Angle} between the
-	 * given segments
+	 * given segments.
 	 * @param seg0 the first segment
 	 * @param seg1 the second segment
 	 * @return the hidden segment OR figure, or null if the two given segments
@@ -489,15 +515,16 @@ public final class Preprocessor {
 		// Check for vertex in given diagram
 		for (Figure fig : diag.getFigures()) {
 			// If the shape being checked is a vertex
-			if (fig instanceof Vertex) {
+			if (fig.getClass() == Vertex.class) {
 				// Cast the shape as a vertex
 				Vertex vert = (Vertex)fig;
 				// If the vertex's loc is equal to the given loc
 //				if (vert.getCenter().equals(loc))
-				// TODO: dependency below
-				if (Vec2.dist(vert.getCenter(), loc) < 1f)
+				// This prevents minor rounding errors
+				if (Vec2.dist(vert.getCenter(), loc) < 0.05f) {
 					// Return the vertex
 					return vert;
+				}
 			}
 		}
 //		throw new NullPointerException("No vertex at given location");
