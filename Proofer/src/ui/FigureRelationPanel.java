@@ -35,12 +35,13 @@ public class FigureRelationPanel extends HBox {
 		
 		// Get vals for combo box
 		ObservableList<String> vals = FXCollections.observableArrayList();
-		for (FigureRelationType relType : FigureRelationType.values()) {
+		for (String relTypeName : ProofUtils.getUserFigureRelationTypes()) {
+			FigureRelationType relType = ProofUtils.toFigureRelationType(relTypeName);
 			// Don't add isosceles to panels of type GIVEN
 			if (type == Type.GIVEN && relType == FigureRelationType.ISOSCELES) {
 				continue;
 			}
-			vals.add(relType.toString());
+			vals.add(relTypeName);
 		}
 		
 		relationBox = new ComboBox<String>(vals);
