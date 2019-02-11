@@ -14,6 +14,7 @@ import static geometry.proofs.FigureRelationType.CONGRUENT;
 import static geometry.proofs.FigureRelationType.MIDPOINT;
 import static geometry.proofs.FigureRelationType.SIMILAR;
 import static geometry.proofs.FigureRelationType.RIGHT;
+import static geometry.proofs.FigureRelationType.ISOSCELES;
 
 
 public class ProofSolver {
@@ -322,7 +323,7 @@ public class ProofSolver {
 				// For each segment located AFTER the above segment in the list of segments
 				// (this prevents us from comparing a pair of segments twice. We don't
 				// want to compare A to B and then B to A)
-				for (int j = i + 1; j < 3; j++) {
+				for (int j = i + 1; j < 3; j++) {					
 					// Find congruent segments, make opposite angles congruent
 					FigureRelation segsRel = getCongruentRel(segs[i], segs[j]);
 					if (segsRel != null) {
@@ -330,21 +331,35 @@ public class ProofSolver {
 						String oppVert0 = ProofUtils.getOppositeVertex(triName, segs[i].getName());
 						// Get the opposite vertex from the CURRENT segment
 						String oppVert1 = ProofUtils.getOppositeVertex(triName, segs[j].getName());
+						// GET THE ANGLES OPPOSITE OF THE CONGRUENT SEGMENTS
 						// Get the angles at each of the vertices
 						Angle a0 = tri.getAngle(ProofUtils.getFullNameOfAngle(triName, oppVert0));
 						Angle a1 = tri.getAngle(ProofUtils.getFullNameOfAngle(triName, oppVert1));
 						
+						/*
+						 * MAKE THE TRIANGLE ISOSCELES
+						 */
+						FigureRelation isoscelesRel = new FigureRelation(ISOSCELES, tri, null);
+						isoscelesRel.setReason("Isosceles triangle theorem");
+						isoscelesRel.addParent(segsRel);
+						diagram.addFigureRelation(isoscelesRel);
+
+						/*
+						 * MAKE THE TWO BASE ANGLES CONGRUENT (ISOSCELES TRIANGLE THEOREM)
+						 */
 						// Make the two angles congruent
 						FigureRelation rel = new FigureRelation(
 								CONGRUENT, 
 								diagram.getPrimaryAngleSynonym(a0.getName()), 
 								diagram.getPrimaryAngleSynonym(a1.getName())
 						);
-						rel.addParent(segsRel);
-						rel.setReason("Isosceles Triangle Theorem");
+						rel.addParent(isoscelesRel);
+						rel.setReason("Angles opposite congruent segments of isosceles triangle "
+								+ "are congruent");
 						// Update Diagram
 						diagram.addFigureRelation(rel);
 					}
+
 					// Find congruent angles, make opposite segments congruent
 					FigureRelation anglesRel = getCongruentRel(angles[i], angles[j]);
 					if (anglesRel != null) {
@@ -362,16 +377,26 @@ public class ProofSolver {
 						String seg1 = oppVertex + midVertex1;
 						Segment segment0 = diagram.getFigure(seg0);
 						Segment segment1 = diagram.getFigure(seg1);
+						
+						/*
+						 * MAKE THE TRIANGLE ISOSCELES
+						 */
+						FigureRelation isoscelesRel = new FigureRelation(ISOSCELES, tri, null);
+						isoscelesRel.setReason("Base angles theorem (isosceles)");
+						isoscelesRel.addParent(anglesRel);
+						diagram.addFigureRelation(isoscelesRel);
+
+						/*
+						 * MAKE THE TWO OPPOSITE SEGMENTS CONGRUENT (ISOSCELES TRIANGLE THEOREM)
+						 */
 						// Make the segs congruent
-						FigureRelation rel = new FigureRelation(
-								CONGRUENT, segment0, segment1
-						);
-						rel.addParent(anglesRel);
-						rel.setReason("Isosceles Triangle Theorem");
+						FigureRelation rel = new FigureRelation(CONGRUENT, segment0, segment1);
+						rel.addParent(isoscelesRel);
+						rel.setReason("Opposite of Isosceles Triangle Theorem");
 						diagram.addFigureRelation(rel);
 					}
 				}
-			}
+			}			
 		}
 	}
 	
