@@ -37,7 +37,7 @@ public class ProofUtils {
 	public static String[] getUserFigureRelationTypes() {
 		return new String[] {
 			"congruent", "parallel", "perpendicular", "bisects",
-			"similar", "supplementary", "complementary", "right",
+			"similar", "isosceles", "supplementary", "complementary", "right",
 			"midpoint"
 		};
 	}

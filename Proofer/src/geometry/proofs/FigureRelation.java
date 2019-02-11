@@ -24,8 +24,8 @@ public class FigureRelation {
 		relType = type;
 		figure0 = Objects.requireNonNull(fig0);
 		
-		// Only in RIGHT relation pairs can the second figure be null
-		if (type != FigureRelationType.RIGHT) {
+		// In single figure relations, the second figure is null
+		if (!type.isSingleFigureRelation()) {
 			figure1 = Objects.requireNonNull(fig1);
 		} else {
 			figure1 = fig1;
@@ -70,6 +70,8 @@ public class FigureRelation {
 			return figure0.getClass() == Triangle.class &&
 			figure1.getClass() == Triangle.class
 			&& !figure0.equals(figure1);
+		case ISOSCELES:
+			return figure0.getClass() == Triangle.class && figure1 == null;
 		case RIGHT:
 			return figure0.getClass() == Angle.class && figure1 == null;
 		case COMPLEMENTARY:
@@ -120,6 +122,14 @@ public class FigureRelation {
 	public String toString() {
 		return relType + " ( " + figure0 + ", " + figure1 + " )"
 				+ (!reason.isEmpty() ? " -- " + reason : "");
+	}
+	
+	/**
+	 * Get whether this {@link FigureRelation} is a relation type
+	 * that only concerns one figure (such as RIGHT or ISOSCELES).
+	 */
+	public boolean isSingleFigureRelation() {
+		return relType.isSingleFigureRelation();
 	}
 	
 	public void addParents(Collection<FigureRelation> parents) {

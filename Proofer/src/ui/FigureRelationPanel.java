@@ -44,12 +44,15 @@ public class FigureRelationPanel extends HBox {
 	 * @return true if this is filled out completely, false otherwise.
 	 */
 	public boolean hasContent() {
-		// Get whether the relation declares an angle/triangle to be "right". In this case,
-		// the second text box would be left blank
-		final boolean isRightRelation = getRelationType() == FigureRelationType.RIGHT;
-		return getFigTextField0().getText().length() > 0
-				&& isRightRelation ? true : getFigTextField1().getText().length() > 0;
-				// Relation type combo box will always have a value
+		// First text field MUST have text no matter what
+		if (getFigTextField0().getText().isEmpty()) {
+			return false;
+		}
+		// If it is a single figure relation, second text field will be blank
+		if (getRelationType().isSingleFigureRelation())
+			return true;
+		// If not, make sure the second field has text
+		return !getFigTextField1().getText().isEmpty();
 	}
 
 	public FigureRelationType getRelationType() {

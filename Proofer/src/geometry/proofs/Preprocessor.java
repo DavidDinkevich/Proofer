@@ -84,7 +84,7 @@ public final class Preprocessor {
 					// Get first figure
 					searchForFigure(diagram, figText0),
 					// Get second figure
-					searchForFigure(diagram, figText1)
+					relType.isSingleFigureRelation() ? null : searchForFigure(diagram, figText1)
 			);
 			rel.setReason("Given");
 			// Add the given
@@ -101,10 +101,14 @@ public final class Preprocessor {
 			return null;
 		}
 		
+		FigureRelationType goalRelType = goalPanel.getRelationType();
 		FigureRelation proofGoal = new FigureRelation(
-				goalPanel.getRelationType(),
+				goalRelType,
+				//  First figure
 				searchForFigure(diagram, goalPanel.getFigTextField0().getText()),
-				searchForFigure(diagram, goalPanel.getFigTextField1().getText())
+				// Second figure
+				goalRelType.isSingleFigureRelation() ? null 
+						: searchForFigure(diagram, goalPanel.getFigTextField1().getText())
 		);
 		proofGoal.setReason("Proof Goal");
 		diagram.setProofGoal(proofGoal);
