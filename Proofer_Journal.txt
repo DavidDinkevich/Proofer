@@ -1,0 +1,45 @@
+Title: PROOFER JOURNAL
+Author: David Dinkevich
+Date Created: 2/10/19
+
+TODO:
+- Problem with using strings to look up figures is that I don't know if you want a triangle or angle--no way to differentiate (just right angles, but that doesn't apply in all situations). Currently attempting to get rid of this practice and see what happens.
+
+- Diagram 176 should throw NullPointerException
+- Diagram maybe make makeRightAngle() private?
+- IMPLEMENT ANGLE SYNONYMS (try isosceles example)
+
+2/6/19
+- Finish implementing new selector in InputManager--many methods still use Polygons as basis, not VertexShape
+- Figure out what to do with the Selectable interface, maybe in createSelector() and destroySelector() pass the full GraphicsShape in as opposed to just the shape
+- Retrofit VertexBuffer to work with VertexShapes and vertices, not Polygons
+
+2/7/19
+- Did all above
+- Move UIDiagramLayers to AdvancedCanvas
+- Create ProofUtils
+
+2/8/19
+- COMPLETED: Move UIDiagramLayers to AdvancedCanvas
+- COMPLETED: Create ProofUtils
+- COMPLETED: crossed off some TODOs
+- Add hidden vertices, chop segments
+2/9/19
+- COMPLETED: add hidden vertices
+- COMPLETED: Chop segments
+- Fully support iscosceles
+2/10/19
+- Got stuck on a TON of bugs: 
+- Bug 1: Slopes that should have been considered equal were not due to tiny rounding errors, thereby creating
+-            angles out of 2 parallel segments
+- Bug 2: Invisible hidden figures not being deleted when they became outdated.
+- Bug 3: Implemented Diagram Policies
+- COMPLETED: Made canvas and FigureRelationListPanel grow/shrink when the window is resized
+- FUTURE: Fully support isosceles, supplementary/complementary, parallel lines + transversals
+
+
+
+
+
+
+
