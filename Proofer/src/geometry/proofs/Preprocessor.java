@@ -31,8 +31,8 @@ public final class Preprocessor {
 	 * @param canvas the {@link DiagramCanvas}
 	 * @return the newly created {@link Diagram}
 	 */
-	public static Diagram compileFigures(DiagramCanvas canvas) {
-		Diagram diagram = new Diagram();
+	public static Diagram compileFigures(DiagramCanvas canvas, Diagram.Policy policy) {
+		Diagram diagram = new Diagram(policy);
 		
 		// Gather figures
 		for (GraphicsShape<?> shape : canvas.getDiagramFigures()) {
@@ -41,8 +41,11 @@ public final class Preprocessor {
 		
 		// Add and include all hidden figures
 		addHiddenFigures(diagram);
-		// Make vertical angles congruent
-		handleVerticalAngles(diagram);
+		
+		if (policy == Diagram.Policy.FIGURES_AND_RELATIONS) {
+			// Make vertical angles congruent
+			handleVerticalAngles(diagram);
+		}
 		
 		return diagram;
 	}
@@ -51,13 +54,13 @@ public final class Preprocessor {
 	 * Prepare a {@link Diagram} to be processed by {@link ProofSolver}.
 	 * @param canvas the {@link}
 	 * @param figRelPanel
-	 * @return
+	 * @return the diagram
 	 */
 	public static Diagram generateDiagram(DiagramCanvas canvas, 
 			FigureRelationListPanel figRelPanel) {
 		
 		// Compile the figures
-		Diagram diagram = compileFigures(canvas);
+		Diagram diagram = compileFigures(canvas, Diagram.Policy.FIGURES_AND_RELATIONS);
 				
 		// Determine given
 		for (FigureRelationPanel panel : figRelPanel.getFigureRelationPanels()) {
@@ -194,20 +197,18 @@ public final class Preprocessor {
 	 * @param diag the diagram
 	 */
 	private static void addHiddenVerticesAndSegments(Diagram diag) {
-		// A temporary buffer in which newly added segments are stored. When the
-		// process is finished, they will be added to the diagram.
-		// (avoids bugs that arise with concurrent modification.
-		List<Segment> buff = new ArrayList<>();
+		// Total number of figures before we add more
+		final int numFigures = diag.getFigures().size();
 		
 		// For each figure
-		for (int i = 0; i < diag.getFigures().size() - 1; i++) {
+		for (int i = 0; i < numFigures - 1; i++) {
 			// Only segments
 			if (diag.getFigures().get(i).getClass() != Segment.class)
 				continue;
 			// Get the segment
 			Segment seg0 = (Segment) diag.getFigures().get(i);
 			// For every other figure
-			for (int j = i + 1; j < diag.getFigures().size(); j++) {
+			for (int j = i + 1; j < numFigures; j++) {
 				// Only segments
 				if (diag.getFigures().get(j).getClass() != Segment.class)
 					continue;
@@ -233,18 +234,11 @@ public final class Preprocessor {
 						Segment s2 = new Segment(seg1Vertices[0], newVertex);
 						Segment s3 = new Segment(seg1Vertices[1], newVertex);
 						
-						// Store these new segments in a temporary buffer. When the
-						// process is finished, they will be added to the diagram.
-						// (avoids bugs that arise with concurrent modification.
-						buff.addAll(Arrays.asList(s0, s1, s2, s3));						
+						diag.addHiddenFigures(Arrays.asList(s0, s1, s2, s3));
 					}
 				}
 			}
-		}
-		
-		// Add all newly added segments
-		diag.addHiddenFigures(buff);
-		
+		}		
 	}
 	
 	/**

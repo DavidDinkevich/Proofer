@@ -66,7 +66,7 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 	private List<Vertex> recentHiddenVertices;
 	
 
-	public DiagramCanvas(int w, int h) {
+	public DiagramCanvas(float w, float h) {
 		super(w, h);
 		
 		canvasGrid = new DiagramCanvasGrid(this, new Dimension(50f));
@@ -196,16 +196,16 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		 */
 		
 		// Get list of all figures, included invisible hidden ones
-		Diagram diag = Preprocessor.compileFigures(this);
+		Diagram snapshot = Preprocessor.compileFigures(this, Diagram.Policy.FIGURES_ONLY);
 		
 		// Remove outdated figures
 		renderList.clearLayerList(UIDiagramLayers.INVISIBLE_HIDDEN_FIGURES);
 		
 		// Triangles
-		for (Triangle fig : diag.getHiddenFigures(Triangle.class)) {
+		for (Triangle fig : snapshot.getHiddenFigures(Triangle.class)) {
 			
 			// Add the hidden invisible figure
-			if (isHiddenInvisibleFigure(diag, fig.getName())) {
+			if (isHiddenInvisibleFigure(snapshot, fig.getName())) {
 				// Get a copy of the invisible triangle, and make a GraphicsShape for it
 				Triangle tri = new Triangle((Triangle) fig);
 				GraphicsTriangle gtri = new GraphicsTriangle(tri);
@@ -490,7 +490,7 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		recentHiddenVertices.clear();
 		
 		// Create a snapshot Diagram of this canvas at this point in time
-		Diagram snapshot = Preprocessor.compileFigures(this);
+		Diagram snapshot = Preprocessor.compileFigures(this, Diagram.Policy.FIGURES_ONLY);
 		// Get the hidden vertices
 		List<Vertex> newHiddenVerts = snapshot.getHiddenFigures(Vertex.class);
 		
