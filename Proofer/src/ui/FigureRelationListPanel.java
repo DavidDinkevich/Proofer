@@ -29,7 +29,7 @@ import javafx.scene.paint.Color;
 import main.MainWindow;
 
 public class FigureRelationListPanel extends VBox {
-	
+		
 	private MainWindow mainWindow;
 	
 	private List<FigureRelationPanel> panels;
@@ -43,25 +43,23 @@ public class FigureRelationListPanel extends VBox {
 	private Button addButton, removeButton, solveButton;
 	
 	private FigureRelationPanel proofPanel;
-
-	public FigureRelationListPanel(Scene scene, MainWindow win, int w, int h) {
+	
+	public FigureRelationListPanel(Scene scene, MainWindow win) {
 		mainWindow = win;
 		panels = new ArrayList<>();
 		setBackground(new Background(new BackgroundFill(
 				Color.rgb(242, 242, 242), CornerRadii.EMPTY, new Insets(0))));
 		
-		setPrefSize(w, h);
+		setMinSize(330, 600);
+		setMaxWidth(330);
 		
 		/*
 		 * PANELS LIST PANEL
 		 */
-				
+		
 		panelVBox = new VBox();
         scroller = new ScrollPane(panelVBox);
         scroller.setFitToWidth(true);
-        final double scrollerHeight = h * 0.9;
-        scroller.setPrefHeight(scrollerHeight);
-        scroller.setMaxHeight(scrollerHeight);
         TitledPane givenPane = new TitledPane("Given", scroller);
         getChildren().add(givenPane);
 
@@ -130,6 +128,19 @@ public class FigureRelationListPanel extends VBox {
 		            mainWindow.getCanvas().getCanvas().requestFocus();
 				}				
 			}
+		});
+		
+		/*
+		 * Handle resizing
+		 */
+		
+		heightProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> obs, Number oldHeight, 
+					Number newHeight) {
+				// 165 is the size of the proof panel, and button panel
+		        panelVBox.setPrefHeight(newHeight.doubleValue() - 165);
+			}	
 		});
 				
 		// Initial panel

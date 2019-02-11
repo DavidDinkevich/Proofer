@@ -49,11 +49,10 @@ public class AdvancedCanvas {
 	
 	private Brush.Builder brush;
 	
-	private Dimension size;
+	public Dimension.Mutable size;
 	
-	public AdvancedCanvas(int w, int h) {
-		
-		size = Dimension.requireNonNegative(new Dimension(w, h));
+	public AdvancedCanvas(float w, float h) {		
+		size = Dimension.Mutable.requireNonNegative(new Dimension(w, h));
 		keysDown = new ArrayList<>();
 		inputEvents = new HashMap<>();
 		brush = new Brush.Builder();
@@ -122,7 +121,7 @@ public class AdvancedCanvas {
 		gc.setFont(new Font(Font.getDefault().getName(), 15));
 		gc.setLineCap(StrokeLineCap.ROUND);
 	}
-	
+		
 	private void updateMouseLoc(MouseEvent e) {
 		final float mx = (float) e.getX();
 		final float my = (float) e.getY();
@@ -134,6 +133,8 @@ public class AdvancedCanvas {
 	public void redraw() {
 		// Background
 		clearRect(getTranslation().negated(), getSize());
+//		gc.setFill(Color.AQUA);
+//		fillRect(getTranslation().negated(), getSize());
 	}
 	
 	public boolean keysAreDown(String...keys) {
@@ -148,6 +149,24 @@ public class AdvancedCanvas {
 	@SuppressWarnings("unchecked")
 	public <T extends InputEvent> T getInputEvent(EventType<?> type) {
 		return (T) inputEvents.get(type);
+	}
+	
+	public void setSize(Dimension newSize) {
+		Dimension old = new Dimension(size);
+		Dimension diff = Dimension.sub(newSize, old);
+		
+		// Update the variable
+		size.set(newSize);
+		// Update the size of the node
+		canvas.setWidth(newSize.getWidth());
+		canvas.setHeight(newSize.getHeight());
+		// Center the canvas
+		if (!Float.isNaN(diff.getWidth()) && !Float.isNaN(diff.getHeight())) {
+			setTranslation(new Vec2(diff.getWidth() / 2f, diff.getHeight() / 2f));
+		}
+		
+		// Redraw the canvas
+		redraw();
 	}
 	
 	public Brush.Builder getBrush() {
@@ -174,9 +193,6 @@ public class AdvancedCanvas {
 	
 	/**
 	 * Default rendering point for shapes in JavaFX
-	 * @param loc
-	 * @param size
-	 * @return
 	 */
 	private Vec2 centerRect(Vec2 loc, float w, float h) {
 		return new Vec2(loc.getX() - w / 2, loc.getY() - h / 2);
@@ -357,8 +373,11 @@ public class AdvancedCanvas {
 		strokeArc(arc.getCenter(), arc.getSize(), arc.getStartAngle(), arc.getStopAngle());
 	}
 	
+	Vec2.Mutable translation = new Vec2.Mutable();
+	
 	public void setTranslation(Vec2 vec) {
 		gc.translate(vec.getX(), vec.getY());
+		translation.set(vec);
 	}
 	
 	public Vec2 getTranslation() {
