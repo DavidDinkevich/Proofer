@@ -63,9 +63,9 @@ public class ProofSolver {
 		inflateGiven();
 		
 		// Check if the proof goal is included in the inflated given
-		for (FigureRelation pair : diagram.getFigureRelations()) {
+		for (int i = diagram.getFigures().size() - 1; i >= 0; i--) {
+			FigureRelation pair = diagram.getFigureRelations().get(i);
 			if (pair.equals(diagram.getProofGoal())) {
-				
 				Deque<FigureRelation> traceback = new ArrayDeque<>();
 				traceback(pair, traceback);
 				System.out.println("-----TRACEBACK-----");
@@ -556,7 +556,6 @@ public class ProofSolver {
 					if (parents.size() == 2) {
 						// Add these congruent segments
 						parents.add(congSegs);
-						System.out.println("ASA Parents: " + parents);
 						break outer;
 					} else {
 						// If one pair of congruent angles were found
