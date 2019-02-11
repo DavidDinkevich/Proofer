@@ -66,7 +66,7 @@ public class FigureRelationListPanel extends VBox {
         /*
          * PROVE PANEL
          */
-        proofPanel = new FigureRelationPanel();
+        proofPanel = new FigureRelationPanel(FigureRelationPanel.Type.GOAL);
         proofPanel.setPadding(new Insets(10));
         TitledPane proofPane = new TitledPane("To Prove", proofPanel);
         getChildren().add(proofPane);
@@ -165,7 +165,7 @@ public class FigureRelationListPanel extends VBox {
 		if (amount < 0)
 			throw new IllegalArgumentException("Number of panels must be >= 0");
 		for (int i = 0; i < amount; i++) {
-			addFigureRelationPanel(new FigureRelationPanel());
+			addFigureRelationPanel(new FigureRelationPanel(FigureRelationPanel.Type.GIVEN));
 		}
 	}
 	

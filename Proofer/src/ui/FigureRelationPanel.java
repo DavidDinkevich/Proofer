@@ -13,11 +13,19 @@ import javafx.scene.layout.HBox;
 
 public class FigureRelationPanel extends HBox {
 	
+	public static enum Type {
+		GIVEN, GOAL
+	}
+	
+	private Type type;
+	
 	private TextField fig0TextField, fig1TextField;
 	private ComboBox<String> relationBox;
 	
-	public FigureRelationPanel() {
+	public FigureRelationPanel(Type type) {
 		super(10);
+		this.type = type;
+		
 		setPadding(new Insets(10, 2, 10, 2));
 		
 		fig0TextField = new FigureTextField();
@@ -27,8 +35,13 @@ public class FigureRelationPanel extends HBox {
 		
 		// Get vals for combo box
 		ObservableList<String> vals = FXCollections.observableArrayList();
-		for (FigureRelationType type : FigureRelationType.values())
-			vals.add(type.toString());
+		for (FigureRelationType relType : FigureRelationType.values()) {
+			// Don't add isosceles to panels of type GIVEN
+			if (type == Type.GIVEN && relType == FigureRelationType.ISOSCELES) {
+				continue;
+			}
+			vals.add(relType.toString());
+		}
 		
 		relationBox = new ComboBox<String>(vals);
 		relationBox.getSelectionModel().select(0);
@@ -53,6 +66,10 @@ public class FigureRelationPanel extends HBox {
 			return true;
 		// If not, make sure the second field has text
 		return !getFigTextField1().getText().isEmpty();
+	}
+	
+	public Type getType() {
+		return type;
 	}
 
 	public FigureRelationType getRelationType() {
