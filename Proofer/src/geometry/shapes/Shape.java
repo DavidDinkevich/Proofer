@@ -59,7 +59,6 @@ public interface Shape extends Figure {
 	default public boolean containsAPointIn(Collection<Vec2> pts) {
 		for (Vec2 point : pts) {
 			if (containsPoint(point)) {
-				System.out.println("Name: " + this + " contains point! " + point);
 				return true;
 			}
 		}
