@@ -1,5 +1,7 @@
 package ui.canvas.selection;
 
+import java.util.Arrays;
+
 import geometry.Vec2;
 import geometry.shapes.Polygon;
 import geometry.shapes.Rect;
@@ -51,6 +53,14 @@ public class SelectionBox extends GraphicsRect {
 
 		if (object instanceof Polygon) {
 			Polygon poly = (Polygon) object;
+			
+			// If the selection box contains any vertices of the polygon
+			if (getShape().containsAPointIn(Arrays.asList(poly.getVertexLocations()))) {
+				return true;
+			}
+			
+			// If any of the sides of the selection box intersects with any of the sides
+			// of the polygon
 			Segment[] polySides = poly.getSides();
 			for (Segment mySide : mySides) {
 				for (Segment theirSide : polySides) {
@@ -63,6 +73,12 @@ public class SelectionBox extends GraphicsRect {
 		else if (object instanceof Segment) {
 			Segment other = (Segment) object;
 
+			// If the selection box contains any vertices of the segment
+			if (getShape().containsAPointIn(Arrays.asList(other.getVertexLocations()))) {
+				return true;
+			}
+			
+			// If any of the sides of the selection box intersects with the segment
 			for (Segment mySide : mySides) {
 				if (Segment.segmentsDoIntersect(mySide, other)) {
 					return true;
