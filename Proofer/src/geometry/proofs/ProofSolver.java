@@ -63,7 +63,7 @@ public class ProofSolver {
 		inflateGiven();
 		
 		// Check if the proof goal is included in the inflated given
-		for (int i = diagram.getFigures().size() - 1; i >= 0; i--) {
+		for (int i = diagram.getFigureRelations().size() - 1; i >= 0; i--) {
 			FigureRelation pair = diagram.getFigureRelations().get(i);
 			if (pair.equals(diagram.getProofGoal())) {
 				Deque<FigureRelation> traceback = new ArrayDeque<>();
