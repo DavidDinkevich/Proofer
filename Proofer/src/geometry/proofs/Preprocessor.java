@@ -223,22 +223,42 @@ public final class Preprocessor {
 				if (Segment.segmentsDoIntersect(seg0, seg1)) {
 					// Get the point of intersection
 					Vec2 poi = Segment.getPointOfIntersection(seg0, seg1);
+					// Create a new vertex at the given intersection
+					Vertex newVertex = null;
 					// Skip if there already is a vertex at the given location
 					if (getVertexAtLoc(diag, poi) == null) {
-						// Create a new vertex at the given intersection
-						Vertex newVertex = new Vertex(generateNewVertexName(diag), poi);
-						// Add the vertex
-						diag.addHiddenFigure(newVertex);
-						
+						// Create the vertex at the poi
+						newVertex = new Vertex(generateNewVertexName(diag), poi);
+						// Add the vertex (since it didn't exist before)
+						diag.addHiddenFigure(newVertex);	
+					}
+					// Even if there is a vertex at the poi, it is possible that
+					// the vertex is the endpoint of one of the intersecting segments.
+					// If so, we still want to count it.
+					else {
+						// See if the vertex is a segment end point
+						newVertex = getSegmentEndpoint(diag, poi);
+					}
+					// If a vertex at the point of intersection is made/found
+					if (newVertex != null) {
 						// Add the 4 new "split" segments created by the hidden vertex
 						Vertex[] seg0Vertices = seg0.getVertices();
 						Vertex[] seg1Vertices = seg1.getVertices();
-						Segment s0 = new Segment(seg0Vertices[0], newVertex);
-						Segment s1 = new Segment(seg0Vertices[1], newVertex);
-						Segment s2 = new Segment(seg1Vertices[0], newVertex);
-						Segment s3 = new Segment(seg1Vertices[1], newVertex);
-						
-						diag.addHiddenFigures(Arrays.asList(s0, s1, s2, s3));
+						Segment[] newSegs = {
+							new Segment(seg0Vertices[0], newVertex),
+							new Segment(seg0Vertices[1], newVertex),
+							new Segment(seg1Vertices[0], newVertex),
+							new Segment(seg1Vertices[1], newVertex)
+						};
+						// Add each new segment
+						for (Segment newSeg : newSegs) {
+							// In the case where two segments intersect and the poi
+							// is one of the segment's end points, this can cause a bug
+							// where one of the segments is the poi listed twice
+							if (Segment.isValidSegmentName(newSeg.getName())) {
+								diag.addHiddenFigure(newSeg);
+							}
+						}
 					}
 				}
 			}
@@ -483,18 +503,19 @@ public final class Preprocessor {
 	 * UTILITY METHODS
 	 */
 	
-//	private static boolean isSegmentEndpoint(Diagram diag, Vec2 loc) {
-//		for (Figure fig : diag.getFigures()) {
-//			if (fig.getClass() == Segment.class) {
-//				Segment seg = (Segment) fig;
-//				for (Vec2 endpt : seg.getVertexLocations()) {
-//					if (endpt.equals(loc))
-//						return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
+	private static Vertex getSegmentEndpoint(Diagram diag, Vec2 loc) {
+		for (Figure fig : diag.getFigures()) {
+			if (fig.getClass() == Segment.class) {
+				Segment seg = (Segment) fig;
+				for (Vertex vertex : seg.getVertices()) {
+					if (vertex.getCenter().equals(loc)) {
+						return vertex;
+					}
+				}
+			}
+		}
+		return null;
+	}
 	
 //	/**
 //	 * Get all of the shared vertices between two triangles
