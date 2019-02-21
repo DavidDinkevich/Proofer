@@ -306,14 +306,15 @@ public final class Preprocessor {
 	
 	/**
 	 * Identify the hidden {@link Segment} or {@link Angle} between the
-	 * given segments.
+	 * given segments, and represent it with a new compound segment (a segment
+	 * created by two other segments).
 	 * @param seg0 the first segment
 	 * @param seg1 the second segment
 	 * @return the hidden segment OR figure, or null if the two given segments
 	 * do not connect at one vertex
 	 */
 	private static Figure identifyHiddenSegOrAngle(Segment seg0, Segment seg1) {
-//		// If we're analyzing the same segment, we can't combine it
+		// If we're analyzing the same segment, we can't combine it
 		if (seg0.equals(seg1))
 			return seg0;
 		// Get the shared vertex between the two segments
@@ -329,7 +330,7 @@ public final class Preprocessor {
 				
 		/*
 		 * Compare slopes: if the slopes are the same, add a new hidden segment.
-		 * Otherwise, add the hidden angle.z
+		 * Otherwise, add the hidden angle
 		 */
 		if (seg0Slope.equals(seg1Slope)) {
 			// Combine segments
@@ -341,9 +342,9 @@ public final class Preprocessor {
 			// Vertices of new segment--farthest apart
 			Vertex[] newSegVerts = ProofUtils.getFarthestVertices(segVerts);
 			
-			// The new, combined straight line
-			Segment newStraightLine = new Segment(newSegVerts);
-			return newStraightLine;
+			// The new, compound segment
+			Segment newCompoundSegment = new Segment(newSegVerts);
+			return newCompoundSegment;
 		}
 		// Add hidden angles
 		else {
