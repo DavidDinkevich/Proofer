@@ -36,7 +36,19 @@ TODO:
 - Bug 3: Implemented Diagram Policies
 - COMPLETED: Made canvas and FigureRelationListPanel grow/shrink when the window is resized
 - FUTURE: Fully support isosceles, supplementary/complementary, parallel lines + transversals
-
+2/19/19
+- Tons of planning for the implementation of CompoundFigureRelations and Addition Postulate
+- FUTURE: implement CompoundFigureRelations
+- FUTURE: integrate midpoint and CompoundFigureRelations
+- FUTURE: if <A is a right angle, and <A = <B, then <B is a right angle
+- FUTURE: Fully support isosceles, supplementary/complementary, parallel lines + transversals
+2/20/19
+- COMPLETED: fixed bug where when two segments intersected and the point of intersection was
+                        one of the endpoints of the segment, the new hidden segments were not added
+- FUTURE: implement CompoundFigureRelations
+- FUTURE: integrate midpoint and CompoundFigureRelations
+- FUTURE: if <A is a right angle, and <A = <B, then <B is a right angle
+- FUTURE: Fully support isosceles, supplementary/complementary, parallel lines + transversals
 
 
 
