@@ -103,24 +103,28 @@ public class VertexBuffer implements Iterable<Vertex> {
 	}
 	
 	/**
-	 * Remove the given {@link Vertex}
+	 * Removes <i>the first instance</i> of the given {@link Vertex}.
 	 * @param vert the {@link Vertex} that will be removed
 	 * @return whether or not the {@link Vertex} was successfully removed
 	 */
 	public boolean removeVertex(Vertex vert) {
-		if (vertices.remove(vert)) {
-			removeChar(vert);
-			return true;
-		}
-		return false;
+//		boolean success = false;
 //		for (int i = vertices.size() - 1; i >= 0; i--) {
 //			if (vertices.get(i).equals(vert)) {
 //				vertices.remove(i);
 //				removeChar(vert);
-//				return true;
+//				success = true;
 //			}
 //		}
-//		return false;
+//		return success;
+		for (int i = vertices.size() - 1; i >= 0; i--) {
+			if (vertices.get(i).equals(vert)) {
+				vertices.remove(i);
+				removeChar(vert);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
