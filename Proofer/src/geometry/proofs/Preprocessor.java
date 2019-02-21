@@ -262,7 +262,46 @@ public final class Preprocessor {
 					}
 				}
 			}
-		}		
+		}
+		
+		// Last thing to do is add any segments that were created by two
+		// hidden vertices
+		addConnectionSegments(diag);
+	}
+	
+	/**
+	 * Adds "connection segments". Connection Segments are segments that were created by 
+	 * two hidden vertices (i.e., whose endpoints are both hidden vertices) AND lie 
+	 * completely on top of another pre-existing segment.
+	 * @param diag the diagram
+	 */
+	private static void addConnectionSegments(Diagram diag) {
+		// Get a list of all hidden vertices
+		List<Vertex> hiddenVerts = diag.getHiddenFigures(Vertex.class);
+		
+		// For each hidden vertex
+		for (int i = 0; i < hiddenVerts.size() - 1; i++) {
+			// For each other hidden vertex
+			loop2:
+			for (int j = i + 1; j < hiddenVerts.size(); j++) {
+				// Create the hypothetical segment that would exist between the two
+				// hidden vertices
+				Segment connectingSeg = new Segment(hiddenVerts.get(i), hiddenVerts.get(j));
+				// For each segment
+				for (Figure fig : diag.getFigures()) {
+					if (fig.getClass() != Segment.class)
+						continue;
+					Segment seg = (Segment) fig;
+					// Make sure the hypothetical segment lies completely on top of a
+					// pre-existing segment
+					if (seg.containsSegment(connectingSeg)) {
+						// Add the segment
+						diag.addHiddenFigure(connectingSeg);
+						continue loop2;
+					}
+				}
+			}
+		}
 	}
 	
 	/**
