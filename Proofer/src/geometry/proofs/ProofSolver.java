@@ -317,6 +317,11 @@ public class ProofSolver {
 			Segment[] segs = tri.getSides();
 			// Get the triangle's angles
 			Angle[] angles = tri.getAngles();
+			
+			// Account for angle synonyms
+			for (int i = 0; i < angles.length; i++) {
+				angles[i] = diagram.getPrimaryAngleSynonym(angles[i].getName());
+			}
 						
 			// For each segment
 			for (int i = 0; i < 2; i++) {
