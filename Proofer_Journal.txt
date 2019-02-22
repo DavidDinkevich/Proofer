@@ -49,7 +49,17 @@ TODO:
 - FUTURE: integrate midpoint and CompoundFigureRelations
 - FUTURE: if <A is a right angle, and <A = <B, then <B is a right angle
 - FUTURE: Fully support isosceles, supplementary/complementary, parallel lines + transversals
-
+2/21/19
+- COMPLETED: fixed bug in VertexBuffer.removeVertex()
+- COMPLETED: added support for connection segments
+- COMPLETED: fixed bug where angle synonyms were not accounted for in ProofSolver.findIsoscelesTriangles()
+- COMPLETED: reorganized/cleaned Preprocessor
+- IN PROCESS: implement CompoundFigureRelations (completed = added registry for compound segments)
+- FUTURE: integrate midpoint and CompoundFigureRelations
+- FUTURE: if <A is a right angle, and <A = <B, then <B is a right angle
+- FUTURE: angle bisectors
+- FUTURE: supplementary/complementary
+- FUTURE: parallel lines + transversals
 
 
 
