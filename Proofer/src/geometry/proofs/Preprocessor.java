@@ -61,11 +61,27 @@ public final class Preprocessor {
 		
 		// Compile the figures
 		Diagram diagram = compileFigures(canvas, Diagram.Policy.FIGURES_AND_RELATIONS);
-				
+		
+		// Preprocess given
+		preprocessGiven(diagram, canvas, figRelPanel);
+		
+		// Preprocess perpendicular pair
+		preprocessPerpendicularPairs(diagram);
+		// Preprocess bisecting pairs
+		preprocessBisectingPairs(diagram);
+		
+		return diagram;
+	}
+	
+	private static void preprocessGiven(Diagram diag, DiagramCanvas canvas,
+			FigureRelationListPanel figRelPanel) {
+		
 		// Determine given
 		for (FigureRelationPanel panel : figRelPanel.getFigureRelationPanels()) {
+			// Ensure content
 			if (!panel.hasContent())
 				continue;
+			
 			// Figure relation type
 			FigureRelationType relType = panel.getRelationType();
 			// First figure name
@@ -82,38 +98,38 @@ public final class Preprocessor {
 			FigureRelation rel = new FigureRelation(
 					relType,
 					// Get first figure
-					searchForFigure(diagram, figText0),
+					searchForFigure(diag, figText0),
 					// Get second figure
-					relType.isSingleFigureRelation() ? null : searchForFigure(diagram, figText1)
+					relType.isSingleFigureRelation() ? null : searchForFigure(diag, figText1)
 			);
 			rel.setReason("Given");
 			// Add the given
-			diagram.addFigureRelation(rel);
+			diag.addFigureRelation(rel);
 		}
 		
-		preprocessGivenInfo(diagram);
+		/*
+		 * Determine proof goal (to prove)
+		 */
 		
-		// Determine proof goal (to prove)
 		FigureRelationPanel goalPanel = figRelPanel.getProofGoalPanel();
+		
 		// Check if the proof goal panel has content
 		if (!goalPanel.hasContent()) {
-			System.err.println("Diagram has no goal.");
-			return null;
+			throw new UnsupportedOperationException("Diagram has no goal.");
 		}
 		
 		FigureRelationType goalRelType = goalPanel.getRelationType();
 		FigureRelation proofGoal = new FigureRelation(
 				goalRelType,
 				//  First figure
-				searchForFigure(diagram, goalPanel.getFigTextField0().getText()),
+				searchForFigure(diag, goalPanel.getFigTextField0().getText()),
 				// Second figure
-				goalRelType.isSingleFigureRelation() ? null 
-						: searchForFigure(diagram, goalPanel.getFigTextField1().getText())
+				goalRelType.isSingleFigureRelation() ? null : 
+					searchForFigure(diag, goalPanel.getFigTextField1().getText())
 		);
 		proofGoal.setReason("Proof Goal");
-		diagram.setProofGoal(proofGoal);
-		
-		return diagram;
+		diag.setProofGoal(proofGoal);
+
 	}
 	
 	private static Figure searchForFigure(Diagram diagram, String name) {
@@ -406,24 +422,6 @@ public final class Preprocessor {
 		return hiddenTriangles == null ? Collections.emptyList() : hiddenTriangles;
 	}
 	
-	private static void preprocessGivenInfo(Diagram diagram) {
-		// To avoid a ConcurrentModificationException
-		List<FigureRelation> buff = new ArrayList<>(diagram.getFigureRelations());
-		// For each figure relation pair
-		for (FigureRelation pair : buff) {
-			switch (pair.getRelationType()) {
-			case BISECTS:
-				preprocessBisectingPairs(diagram, pair);
-				break;
-			case PERPENDICULAR:
-				preprocessPerpendicularPairs(diagram, pair);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-		
 	/**
 	 * The primary goal of this method is to convert all standard 
 	 * {@link FigureRelation}s of type {@link FigureRelationType#BISECTS}
@@ -431,32 +429,38 @@ public final class Preprocessor {
 	 * {@link ProofSolver} requires and assumes that all bisects FigureRelations
 	 * will be of this type.
 	 * @param diagram the diagram
-	 * @param pair the {@link FigureRelation} to be handled
 	 */
-	private static void preprocessBisectingPairs(Diagram diagram, FigureRelation pair) {
-		// Get the segment being bisecTED
-		Segment bisectedSeg = pair.getFigure1();
-		// Get the midpoint loc of the second segment (segment being bisecTED)
-		Vec2 midptLoc = bisectedSeg.getCenter();
-		// Get the vertex at that position
-		Vertex midpt = getVertexAtLoc(diagram, midptLoc);
+	private static void preprocessBisectingPairs(Diagram diagram) {
+		// Total number of FigureRelations before modification
+		final int relCount = diagram.getFigureRelations().size();
+		for (int i = 0; i < relCount; i++) {
+			FigureRelation pair = diagram.getFigureRelations().get(i);
+			if (pair.getRelationType() == FigureRelationType.BISECTS) {
+				// Get the segment being bisecTED
+				Segment bisectedSeg = pair.getFigure1();
+				// Get the midpoint loc of the second segment (segment being bisecTED)
+				Vec2 midptLoc = bisectedSeg.getCenter();
+				// Get the vertex at that position
+				Vertex midpt = getVertexAtLoc(diagram, midptLoc);
+				
+				if (midpt == null)
+					throw new NullPointerException("No vertex at midpoint");
 		
-		if (midpt == null)
-			throw new NullPointerException("No vertex at midpoint");
-
-		// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPIVE 
-		// BisectsFigureRelation
-
-		BisectsFigureRelation bisectsRel = new BisectsFigureRelation(
-				pair.getFigure0(),
-				bisectedSeg,
-				midpt.getNameChar()
-		);
-		bisectsRel.addParents(pair.getParents());
-		bisectsRel.setReason(pair.getReason());
+				// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPIVE 
+				// BisectsFigureRelation
 		
-		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
-		diagram.getFigureRelations().set(REL_INDEX, bisectsRel);
+				BisectsFigureRelation bisectsRel = new BisectsFigureRelation(
+						pair.getFigure0(),
+						bisectedSeg,
+						midpt.getNameChar()
+				);
+				bisectsRel.addParents(pair.getParents());
+				bisectsRel.setReason(pair.getReason());
+				
+				final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
+				diagram.getFigureRelations().set(REL_INDEX, bisectsRel);
+			}
+		}
 	}
 	
 	/**
@@ -466,29 +470,35 @@ public final class Preprocessor {
 	 * {@link ProofSolver} requires and assumes that all perpendicular FigureRelations
 	 * will be of this type.
 	 * @param diagram the diagram
-	 * @param pair the {@link FigureRelation} to be handled
 	 */
-	private static void preprocessPerpendicularPairs(Diagram diagram, FigureRelation pair) {
-		// The two segments in the given figure relation pair
-		Segment seg0 = pair.getFigure0(); // The intersectING segment
-		Segment seg1 = pair.getFigure1(); // The intersectED segment
-		
-		// Get the vertex at the location at which the two segments intersect
-		Vertex poi = getVertexAtLoc(diagram, Segment.getPointOfIntersection(seg0, seg1));
-		
-		// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPIVE 
-		// PerpendicularFigureRelation
-		
-		PerpendicularFigureRelation perpRel = new PerpendicularFigureRelation(
-			pair.getFigure0(),
-			pair.getFigure1(),
-			poi.getNameChar()
-		);
-		perpRel.addParents(pair.getParents());
-		perpRel.setReason(pair.getReason());
-		
-		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
-		diagram.getFigureRelations().set(REL_INDEX, perpRel);
+	private static void preprocessPerpendicularPairs(Diagram diagram) {
+		// Total number of FigureRelations before modification
+		final int relCount = diagram.getFigureRelations().size();
+		for (int i = 0; i < relCount; i++) {
+			FigureRelation pair = diagram.getFigureRelations().get(i);
+			if (pair.getRelationType() == FigureRelationType.PERPENDICULAR) {			
+				// The two segments in the given figure relation pair
+				Segment seg0 = pair.getFigure0(); // The intersectING segment
+				Segment seg1 = pair.getFigure1(); // The intersectED segment
+				
+				// Get the vertex at the location at which the two segments intersect
+				Vertex poi = getVertexAtLoc(diagram, Segment.getPointOfIntersection(seg0, seg1));
+				
+				// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPIVE 
+				// PerpendicularFigureRelation
+				
+				PerpendicularFigureRelation perpRel = new PerpendicularFigureRelation(
+					pair.getFigure0(),
+					pair.getFigure1(),
+					poi.getNameChar()
+				);
+				perpRel.addParents(pair.getParents());
+				perpRel.setReason(pair.getReason());
+				
+				final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
+				diagram.getFigureRelations().set(REL_INDEX, perpRel);
+			}
+		}
 	}
 		
 	private static void handleVerticalAngles(Diagram diagram) {
