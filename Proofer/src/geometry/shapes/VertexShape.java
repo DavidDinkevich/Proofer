@@ -1,5 +1,9 @@
 package geometry.shapes;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import geometry.Vec2;
 
 /**
@@ -78,6 +82,14 @@ public interface VertexShape extends Shape {
 	 * @return the list of vertices
 	 */
 	public Vertex[] getVertices();
+	
+	/**
+	 * Get an unmodifiable {@link List} of this {@link VertexShape}'s vertices
+	 * @return the list of vertices
+	 */
+	default public List<Vertex> getVerticesList() {
+		return Collections.unmodifiableList(Arrays.asList(getVertices()));
+	}
 	
 	/**
 	 * Get the {@link Vertex} with the given name
