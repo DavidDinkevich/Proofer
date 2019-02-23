@@ -60,6 +60,13 @@ TODO:
 - FUTURE: angle bisectors
 - FUTURE: supplementary/complementary
 - FUTURE: parallel lines + transversals
+2/22/19
+- IN PROCESS: implement CompoundFigureRelations (completed = added registry for compound segments)
+- FUTURE: integrate halves/doubles postulates and CompoundFigureRelations
+- FUTURE: if <A is a right angle, and <A = <B, then <B is a right angle
+- FUTURE: angle bisectors
+- FUTURE: supplementary/complementary
+- FUTURE: parallel lines + transversals
 
 
 
