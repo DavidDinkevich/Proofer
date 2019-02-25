@@ -1,7 +1,6 @@
 package geometry.proofs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public final class Preprocessor {
 		
 		// Add and include all hidden figures
 		addHiddenFigures(diagram);
-		
+				
 		if (policy == Diagram.Policy.FIGURES_AND_RELATIONS) {
 			// Make vertical angles congruent
 			handleVerticalAngles(diagram);
@@ -189,13 +188,13 @@ public final class Preprocessor {
 						continue;
 					// Get the segment
 					Segment seg1 = (Segment) diagram.getFigures().get(j);
-					// Get the hidden figure created by the two segments (or null)
-					Figure hiddenFig = identifyHiddenSegOrAngle(seg0, seg1);
-					// If we've found a hidden figure AND it does not already exist, add it
-					if (hiddenFig != null && diagram.addHiddenFigure(hiddenFig)) {
+					// Get/add the hidden figure created by the two segments (or null)
+					Figure hiddenFig = addHiddenSegmentOrAngle(diagram, seg0, seg1);
+					// If we've found a new hidden figure
+					if (hiddenFig != null) {
 						figuresWereAdded = true; // Update variable
 						// If the hidden figure we found is an angle, store it
-						if (hiddenFig instanceof Angle)
+						if (hiddenFig.getClass() == Angle.class)
 							hiddenAngles.add((Angle) hiddenFig);
 					}
 				}
@@ -207,6 +206,58 @@ public final class Preprocessor {
 			if (diagram.addHiddenFigures(hiddenTris))
 				figuresWereAdded = true; // Update variable
 		} while (figuresWereAdded);
+	}
+	
+	/**
+	 * Identify the hidden {@link Segment} or {@link Angle} between the
+	 * given segments, and, if a segment, represent it with a new compound segment (a segment
+	 * created by two other segments).
+	 * @param seg0 the first segment
+	 * @param seg1 the second segment
+	 * @return the hidden segment OR angle, or null if the two given segments
+	 * do not connect at one vertex, or if the hidden figure is already contained in
+	 * the {@link Diagram}
+	 */
+	private static Figure addHiddenSegmentOrAngle(Diagram diag, Segment seg0, Segment seg1) {
+		// If we're analyzing the same segment, we can't combine it
+		if (seg0.equals(seg1))
+			return seg0;
+		// Get the shared vertex between the two segments
+		Vertex sharedVertex = ProofUtils.getSharedVertex(seg0, seg1);
+		if (sharedVertex == null)
+			return null;
+		
+		// Check if the two segments are parallel
+		// Get slope of segment 0
+		Slope seg0Slope = seg0.getSlope();
+		// Get slope of segment 1
+		Slope seg1Slope = seg1.getSlope();
+		
+		/*
+		 * Compare slopes: if the slopes are the same, add a new hidden segment.
+		 * Otherwise, add the hidden angle
+		 */	
+		if (seg0Slope.equals(seg1Slope)) {
+			// Combine segments		
+			// The new, compound segment
+			Segment newCompoundSegment = ProofUtils.getCompoundSegment(seg0, seg1);
+			// Add the new segment as a hidden figure
+			if (diag.addHiddenFigure(newCompoundSegment)) {
+				return newCompoundSegment;
+			}
+		}
+		// Add hidden angles
+		else {
+			// Create the new angle
+			Angle newAngle = ProofUtils.getAngleBetween(seg0, seg1);
+			// Add the new angle as a hidden figure
+			if (diag.addHiddenFigure(newAngle)) {
+				return newAngle;
+			}
+		}
+		
+		// No figure found
+		return null;
 	}
 	
 	/**
@@ -317,68 +368,6 @@ public final class Preprocessor {
 					}
 				}
 			}
-		}
-	}
-	
-	/**
-	 * Identify the hidden {@link Segment} or {@link Angle} between the
-	 * given segments, and represent it with a new compound segment (a segment
-	 * created by two other segments).
-	 * @param seg0 the first segment
-	 * @param seg1 the second segment
-	 * @return the hidden segment OR figure, or null if the two given segments
-	 * do not connect at one vertex
-	 */
-	private static Figure identifyHiddenSegOrAngle(Segment seg0, Segment seg1) {
-		// If we're analyzing the same segment, we can't combine it
-		if (seg0.equals(seg1))
-			return seg0;
-		// Get the shared vertex between the two segments
-		String sharedVertex = ProofUtils.getSharedVertex(seg0.getName(), seg1.getName());
-		if (sharedVertex == null)
-			return null;
-		
-		// Check if the two segments are parallel
-		// Get slope of segment 0
-		Slope seg0Slope = seg0.getSlope();
-		// Get slope of segment 1
-		Slope seg1Slope = seg1.getSlope();
-				
-		/*
-		 * Compare slopes: if the slopes are the same, add a new hidden segment.
-		 * Otherwise, add the hidden angle
-		 */
-		if (seg0Slope.equals(seg1Slope)) {
-			// Combine segments
-			
-			// Vertices of both segments in one list
-			List<Vertex> segVerts = new ArrayList<>(Arrays.asList(seg0.getVertices()));
-			segVerts.addAll(Arrays.asList(seg1.getVertices()));
-			// ---------------------
-			// Vertices of new segment--farthest apart
-			Vertex[] newSegVerts = ProofUtils.getFarthestVertices(segVerts);
-			
-			// The new, compound segment
-			Segment newCompoundSegment = new Segment(newSegVerts);
-			return newCompoundSegment;
-		}
-		// Add hidden angles
-		else {
-			// Get the angle between the two segments
-			String angleName = ProofUtils.getAngleBetween(seg0.getName(), seg1.getName());
-			// Get the three vertices of the angle
-			String unsharedVert0 = angleName.substring(0, 1);
-			String unsharedVert1 = angleName.substring(2);
-			String sharedVert = angleName.substring(1, 2);
-			Vertex first, second, third;
-			first = (Vertex) (seg0.containsChild(unsharedVert0) ?
-					seg0.getChild(unsharedVert0) : seg0.getChild(unsharedVert1));
-			third = (Vertex) (first.getNameChar() == unsharedVert0.charAt(0) ?
-					seg1.getChild(unsharedVert1) : seg1.getChild(unsharedVert0));
-			second = (Vertex) seg0.getChild(sharedVert);
-			// Create the new angle
-			Angle newAngle = new Angle(first, second, third);
-			return newAngle;
 		}
 	}
 	
