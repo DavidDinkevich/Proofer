@@ -123,13 +123,12 @@ public class ProofUtils {
 	}
 	
 	/**
-	 * Get a list of {@link Vertex}es that form the angle
-	 * between the two given segments
+	 * Get the angle formed between the two given segments
 	 * @param a the first segment
 	 * @param b the second segment
-	 * @return the list of vertices that compose the angle
+	 * @return the angle
 	 */
-	public static List<Vertex> getAngleBetween(Segment a, Segment b) {
+	public static Angle getAngleBetween(Segment a, Segment b) {
 		String name = getAngleBetween(a.getName(), b.getName());
 		if (name == null)
 			throw new NullPointerException();
@@ -146,7 +145,7 @@ public class ProofUtils {
 			unshared1 = (Vertex)b.getChild(unshared1Name);
 			unshared0 = (Vertex)a.getChild(unshared0Name);
 		}
-		return Arrays.asList(unshared0, shared, unshared1);
+		return new Angle(Arrays.asList(unshared0, shared, unshared1));
 	}
 	
 	/**
@@ -165,6 +164,44 @@ public class ProofUtils {
 				return String.valueOf(seg1.charAt(sharedCharIndex));
 		}
 		return null;
+	}
+	
+	/**
+	 * Get the vertex shared between the given two segments.
+	 * Example of valid parameters: "AB", "BC"
+	 * @param seg0 the first segment
+	 * @param seg1 the second segment
+	 * @return the shared vertex
+	 */
+	public static Vertex getSharedVertex(Segment seg0, Segment seg1) {
+		String shared = getSharedVertex(seg0.getName(), seg1.getName());
+		if (shared != null) {
+			return seg0.getVertex(shared.charAt(0));
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the compound segment (a segment formed by two other segments) of the
+	 * two given segments. THE SEGMENTS MUST SHARE A VERTEX AND HAVE THE SAME SLOPE.
+	 * @param seg0 the first segment
+	 * @param seg1 the second segment
+	 * @return the compound segment, or null if the segments do not share one common vertex
+	 * or do not have the same slope
+	 */
+	public static Segment getCompoundSegment(Segment seg0, Segment seg1) {
+		// Must form a straight line and share ONE vertex
+		if (!seg0.getSlope().equals(seg1.getSlope()) 
+				|| getSharedVertex(seg0.getName(), seg1.getName()) == null)
+			return null;
+		
+		// Vertices of both segments in one list
+		List<Vertex> segVerts = new ArrayList<>(Arrays.asList(seg0.getVertices()));
+		segVerts.addAll(Arrays.asList(seg1.getVertices()));
+		// ---------------------
+		// Vertices of new segment--farthest apart
+		Vertex[] newSegVerts = ProofUtils.getFarthestVertices(segVerts);
+		return new Segment(newSegVerts);
 	}
 	
 	/**
@@ -516,7 +553,7 @@ public class ProofUtils {
 	 * @return the {@link Arc}
 	 */
 	public static Arc getArc(Segment a, Segment b, Dimension arcSize) {
-		List<Vertex> verts = getAngleBetween(a, b);
+		List<Vertex> verts = getAngleBetween(a, b).getVertices();
 		return getArc(verts, arcSize);
 	}
 
