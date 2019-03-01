@@ -103,7 +103,16 @@ public final class Utils {
 		}
 		return min;
 	}
-		
+	
+	/**
+	 * Add the given element to the given list UNLESS it is already contained in the list.
+	 */
+	public static <T> boolean addNoDuplicates(List<T> list, T el) {
+		if (list.contains(el))
+			return list.contains(el);
+		return false;
+	}
+	
 	/**
 	 * Get whether the given string (first string param) contains all
 	 * of the chars in the second string parameter.
@@ -120,43 +129,31 @@ public final class Utils {
 		}
 		return containsAllChars;
 	}
-		
+	
 	/**
-	 * Get whether the given array contains the given element
-	 * @param array the array
-	 * @param element the element
-	 * @return whether or not the array contains the element
+	 * Get whether the two lists are equal in size and contain all of the same elements
+	 * (regardless of order).
+	 * @param list0 the first list
+	 * @param list1 the second list
 	 */
-	public static <T> boolean arrayContains(T[] array, T element) {
-		for (T el : array) {
-			if (el.equals(element))
-				return true;
+	public static <T> boolean equalsNoOrder(List<T> list0, List<T> list1) {
+		if (list0 == list1)
+			return true;
+		if (list0.size() == list1.size()) {
+			for (T el : list0) {
+				if (!list1.contains(el))
+					return false;
+			}
+			return true;
 		}
 		return false;
 	}
 	
 	/**
-	 * Get whether the given array contains all of the elements in the second
-	 * array
-	 * @param array the first array
-	 * @param array2 the second array
-	 * @return whether the given array contains all of the elements in the second
-	 * array
+	 * Combine the given lists into one list.
+	 * @param lists the lists to be combined
+	 * @return the combined list
 	 */
-	public static <T> boolean arrayContainsAll(T[] array, T[] array2) {
-		int count = 0;
-		outer:
-		for (T el : array2) {
-			for (T el2 : array) {
-				if (el.equals(el2)) {
-					++count;
-					continue outer;
-				}
-			}
-		}
-		return count == array2.length;
-	}
-	
 	@SafeVarargs
 	public static <T> List<T> combineLists(List<T>... lists) {
 		if (lists.length == 1)
