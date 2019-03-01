@@ -40,6 +40,12 @@ public final class Preprocessor {
 		
 		// Add and include all hidden figures
 		addHiddenFigures(diagram);
+		
+//		for (Segment hiddenSeg : diagram.getHiddenFigures(Segment.class)) {
+//			System.out.println(diagram.getComponentVertices(hiddenSeg.getName()));
+//			System.out.println(Arrays.toString(diagram.getComponentSegments(hiddenSeg.getName())));
+//		}
+//		System.out.println("---------------");
 				
 		if (policy == Diagram.Policy.FIGURES_AND_RELATIONS) {
 			// Make vertical angles congruent
@@ -243,6 +249,9 @@ public final class Preprocessor {
 			Segment newCompoundSegment = ProofUtils.getCompoundSegment(seg0, seg1);
 			// Add the new segment as a hidden figure
 			if (diag.addHiddenFigure(newCompoundSegment)) {
+				// Mark as a compound segment
+				diag.markAsCompoundSegment(newCompoundSegment);
+				diag.addComponentVertex(newCompoundSegment.getName(), sharedVertex);
 				return newCompoundSegment;
 			}
 		}
@@ -297,7 +306,15 @@ public final class Preprocessor {
 						// Create the vertex at the poi
 						newVertex = new Vertex(generateNewVertexName(diag), poi);
 						// Add the vertex (since it didn't exist before)
-						diag.addHiddenFigure(newVertex);	
+						diag.addHiddenFigure(newVertex);
+						
+						// Since there is now a vertex at the poi that is NOT a segment
+						// end point, the two intersecting segments have now become
+						// compound segments.
+						diag.markAsCompoundSegment(seg0);
+						diag.markAsCompoundSegment(seg1);
+						diag.addComponentVertex(seg0.getName(), newVertex);
+						diag.addComponentVertex(seg1.getName(), newVertex);
 					}
 					// Even if there is a vertex at the poi, it is possible that
 					// the vertex is the endpoint of one of the intersecting segments.
@@ -311,12 +328,14 @@ public final class Preprocessor {
 						// Add the 4 new "split" segments created by the hidden vertex
 						Vertex[] seg0Vertices = seg0.getVertices();
 						Vertex[] seg1Vertices = seg1.getVertices();
+						
 						Segment[] newSegs = {
 							new Segment(seg0Vertices[0], newVertex),
 							new Segment(seg0Vertices[1], newVertex),
 							new Segment(seg1Vertices[0], newVertex),
 							new Segment(seg1Vertices[1], newVertex)
 						};
+
 						// Add each new segment
 						for (Segment newSeg : newSegs) {
 							// In the case where two segments intersect and the poi
