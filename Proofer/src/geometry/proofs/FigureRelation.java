@@ -43,6 +43,10 @@ public class FigureRelation {
 		reason = "";
 	}
 	
+	protected FigureRelation(FigureRelationType type) {
+		relType = type;
+	}
+	
 	public boolean isCongruentAndReflexive() {
 		return isCongruentAndReflexive;
 	}
