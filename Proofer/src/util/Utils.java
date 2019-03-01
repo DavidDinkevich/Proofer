@@ -1,5 +1,8 @@
 package util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import geometry.Vec2;
 
 public final class Utils {
@@ -154,6 +157,17 @@ public final class Utils {
 		return count == array2.length;
 	}
 	
+	@SafeVarargs
+	public static <T> List<T> combineLists(List<T>... lists) {
+		if (lists.length == 1)
+			return lists[0];
+		List<T> sum = new ArrayList<>(lists[0]);
+		for (List<T> list : lists) {
+			sum.addAll(list);
+		}
+		return sum;
+	}
+		
 	/**
 	 * Replaces the original String with the new String, under the following
 	 * conditions: <p>

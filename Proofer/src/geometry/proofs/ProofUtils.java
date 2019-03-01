@@ -90,6 +90,46 @@ public class ProofUtils {
 	}
 	
 	/**
+	 * Add the given vertex to the given list of vertices--the vertex will be placed in a position
+	 * such that the distance between it and the first vertex in the list will be shorter than
+	 * the distance between the first vertex and the next vertex in the list.
+	 * @param vert the vertex to add
+	 * @param vertices the list to add the vertex to
+	 * @return the index at which the vertex was added, or -1 if the vertex is already contained
+	 * in the list
+	 */
+	public static int addLeastToGreatestDist(Vertex vert, List<Vertex> vertices) {
+		if (vertices.isEmpty()) {
+			vertices.add(vert);
+			return 0;
+		}
+		
+		// No duplicates
+		if (!vertices.contains(vert)) {
+			// Location of the first vertex
+			Vec2 startLoc = vertices.get(0).getCenter();
+			// For each vertex (start at 2nd element because we will compare each vertex
+			// to the first element which is an end-point)
+			for (int i = 1; i < vertices.size(); i++) {
+				Vertex v = vertices.get(i);
+				// Measure the distance from first vertex to the vertex at i
+				final float startToNextVertex = Vec2.dist(startLoc, v.getCenter());
+				// Measure the distance from the first vertex to the given vertex
+				final float startToNewVertex = Vec2.dist(startLoc, vert.getCenter());
+				// If the distance to the given vertex is LESS than the distance to the
+				// vertex at i, add the new vertex BEFORE the vertex at i
+				if (startToNewVertex <= startToNextVertex) {
+					vertices.add(i, vert);
+					return i;
+				}
+			}
+			// Add the vertex to the end of the list (will not happen if the for loop fires)
+			vertices.add(vert);
+		}
+		return -1;
+	}
+	
+	/**
 	 * Get the name of the angle formed between two segments that share
 	 * a vertex.
 	 * @param a the first segment's name
@@ -202,6 +242,16 @@ public class ProofUtils {
 		// Vertices of new segment--farthest apart
 		Vertex[] newSegVerts = ProofUtils.getFarthestVertices(segVerts);
 		return new Segment(newSegVerts);
+	}
+	
+	/**
+	 * Get the opposite vertex of the given vertex in the given segment.
+	 * @param seg the segment
+	 * @param vert the vertex whose opposite will be returned
+	 * @return the opposite vertex of the given vertex
+	 */
+	public static String getOtherVertex(String seg, String vert) {
+		return seg.charAt(0) == vert.charAt(0) ? seg.substring(1) : seg.substring(0, 1);
 	}
 	
 	/**
