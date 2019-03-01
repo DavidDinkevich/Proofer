@@ -5,6 +5,8 @@ import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
+import util.Node;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,12 +45,18 @@ public class Diagram {
 	 */
 	private Map<Class<?>, List<Figure>> hiddenFigures;
 	
+	/**
+	 * Map of all compound segments and their respective component vertices
+	 */
+	public List<Node<Segment, Vertex>> compoundSegments;
+	
 	public Diagram(Policy policy) {
 		this.policy = Objects.requireNonNull(policy);
 		
 		figures = new ArrayList<>();
 		relations = new ArrayList<>();
 		angleSynonyms = new ArrayList<>();
+		compoundSegments = new ArrayList<>();
 		listeners = new ArrayList<>();
 		hiddenFigures = new HashMap<>();
 		hiddenFigures.put(Vertex.class, new ArrayList<>());
@@ -344,8 +352,126 @@ public class Diagram {
 	}
 	
 	/*
-	 * FIGURE RELATIONS
+	 * COMPOUND FIGURES
 	 */
+	
+	/**
+	 * Designate the given Segment as a compound segment. This stores it in a buffer and
+	 * allows component vertices to be added to it in the future.
+	 * @param seg the segment to mark as a compound segment
+	 * @return false if the given segment is already a compound segment, true otherwise
+	 */
+	public boolean markAsCompoundSegment(Segment seg) {
+		if (getCompoundSegmentNode(seg.getName()) == null) {
+			Node<Segment, Vertex> newNode = new Node<Segment, Vertex>(seg);
+			// End points are automatically added
+			newNode.getChildren().addAll(seg.getVerticesList());
+			return compoundSegments.add(newNode);
+		}
+		return false;
+	}
+	
+	/**
+	 * Add a component {@link Vertex} to the given compound segment. The list of
+	 * component vertices will be sorted in the order they lie on the {@link Segment}.
+	 * @param seg the compound segment
+	 * @param vertex the new component vertex
+	 * @return false if the given segment is not designated as a compound segment, or if
+	 * the given component vertex is already contained
+	 */
+	public boolean addComponentVertex(String seg, Vertex vertex) {
+		// Get the corresponding node
+		Node<Segment, Vertex> node = getCompoundSegmentNode(seg);
+		if (node == null)
+			return false;
+		return ProofUtils.addLeastToGreatestDist(vertex, node.getChildren()) >= 0;
+	}
+	
+	/**
+	 * Add the given vertices as component vertices to the given compound segment
+	 * @param seg the compound segment
+	 * @param vertices the component vertices
+	 * @return true if ALL the vertices were added
+	 */
+	public boolean addComponentVertices(String seg, List<Vertex> vertices) {
+		boolean success = true;
+		for (Vertex vert : vertices) {
+			if (!addComponentVertex(seg, vert)) {
+				success = false;
+			}
+		}
+		return success;
+	}
+	
+	/**
+	 * Get a list of all the {@link Vertex}es lying on the given
+	 * compound segment (including the compound segment's end-points).
+	 * @return the vertices, or null if the given segment was not designated as a compound segment
+	 */
+	public List<Vertex> getComponentVertices(String seg) {
+		Node<Segment, Vertex> node = getCompoundSegmentNode(seg);
+		if (node == null)
+			return null;
+		return breakToUnitComponentVertices(node, new ArrayList<>());
+	}
+		
+	/**
+	 * Get the component segments of the given compound segment.
+	 * @return the list of component segments, or null if the given compound segment
+	 * is not <i>marked</i> as a compound segment in this {@link Diagram}
+	 * @see Diagram#markAsCompoundSegment(Segment)
+	 */
+	public Segment[] getComponentSegments(String seg) {
+		List<Vertex> componentVertices = getComponentVertices(seg);
+		Segment[] segs = new Segment[componentVertices.size() - 1];
+		for (int i = 0; i < componentVertices.size() - 1; i++) {
+			Segment segment = new Segment(componentVertices.get(i), componentVertices.get(i + 1));
+			segs[i] = segment;
+		}
+		return segs;
+	}
+	
+	/**
+	 * Get the corresponding {@link Node} entry for the given {@link Segment}
+	 * @return the entry, or null if there is no entry for the given segment
+	 */
+	protected Node<Segment, Vertex> getCompoundSegmentNode(String seg) {
+		for (Node<Segment, Vertex> node : compoundSegments) {
+			if (node.getObject().isValidName(seg))
+				return node;
+		}
+		return null;
+	}
+	
+	/**
+	 * Return ALL the component vertices of the given segment, not just the "top-level" ones.
+	 * (The children vertices stored in the compound segment nodes are only the most direct
+	 * children of the segment, and we want THEIR children, and grandchildren, and so on).
+	 */
+	public List<Vertex> breakToUnitComponentVertices(Node<Segment, Vertex> node, 
+			List<Vertex> all) {
+		
+		if (node == null)
+			return all;
+		
+		// Add all children
+		for (Vertex v : node.getChildren()) {
+			ProofUtils.addLeastToGreatestDist(v, all);
+		}
+		// Do the same for each component segment
+		for (int i = 0; i < node.getChildren().size() - 1; i++) {
+			Vertex first = node.getChildren().get(i);
+			Vertex second = node.getChildren().get(i + 1);
+			Segment segment = new Segment(first, second);
+			breakToUnitComponentVertices(getCompoundSegmentNode(segment.getName()), all);
+		}
+		
+		return all;
+	}
+		
+	/*
+	 * FIGURE RELATIONS
+	 */	
 	
 	/**
 	 * Apply the reflexive postulate
