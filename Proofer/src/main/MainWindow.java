@@ -16,8 +16,10 @@ import ui.canvas.diagram.DiagramCanvas;
 
 public class MainWindow extends Application {
 	
-	public static final float WIDTH = 1000f;
-	public static final float HEIGHT = 600f;
+	public static final double DEF_WIDTH = 1050;
+	public static final double DEF_HEIGHT = 600;
+	
+	private static final double DEF_FIG_REL_PANEL_WIDTH = 360;
 	
 	private DiagramCanvas canvas;
 	
@@ -32,24 +34,25 @@ public class MainWindow extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// MIN SIZE FOR WINDOW
-		primaryStage.setMinWidth(WIDTH);
-		primaryStage.setMinHeight(HEIGHT + 40); // +40 to account for window toolbar
+		primaryStage.setMinWidth(DEF_WIDTH);
+		primaryStage.setMinHeight(DEF_HEIGHT + 45); // +40 to account for window toolbar
 		
 		Group group = new Group();
-		Scene scene = new Scene(group, WIDTH, HEIGHT);
+		Scene scene = new Scene(group, DEF_WIDTH, DEF_HEIGHT);
 		
 		// Create FigureRelationListPanel
-		FigureRelationListPanel relListPanel = new FigureRelationListPanel(scene, this);
-		
+		FigureRelationListPanel relListPanel = 
+				new FigureRelationListPanel(scene, this, DEF_FIG_REL_PANEL_WIDTH);
+
 		// Create canvas
 		// Width is left-over space from the FigureRelationListPanel
-		final float canvasWidth = (float) (WIDTH - relListPanel.getWidth());
-		canvas = new DiagramCanvas(canvasWidth, HEIGHT);
+		final float canvasWidth = (float) (DEF_WIDTH - DEF_FIG_REL_PANEL_WIDTH);
+		canvas = new DiagramCanvas(canvasWidth, (float) DEF_HEIGHT);
 		
 		// Add to hbox
 		HBox hbox = new HBox();
+		hbox.getChildren().add(relListPanel);
 		hbox.getChildren().add(canvas.getCanvas());
-		hbox.getChildren().add(relListPanel);		
 		
 		// Add to group
 		group.getChildren().add(hbox);
@@ -57,11 +60,11 @@ public class MainWindow extends Application {
 		primaryStage.setScene(scene);
 		//Setting the title to Stage. 
 		primaryStage.setTitle("Proofer (alpha)");
-		
+				
 		/*
 		 * RESIZING
 		 */
-		
+
 		primaryStage.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, 
@@ -73,19 +76,25 @@ public class MainWindow extends Application {
 				canvas.setSize(newSize);
 			};
 		});
-				
+		
 		primaryStage.heightProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, 
 					Number newValue) {
 				Dimension newSize = new Dimension(
 						canvas.getSize().getWidth(), 
-						newValue.floatValue()
+						newValue.floatValue() - 50
 				);
-				canvas.setSize(newSize);				
+				canvas.setSize(newSize);
+				relListPanel.setPrefHeight(newValue.doubleValue());
 			};
 		});
+		
+		primaryStage.sizeToScene();
 
+		// Initial drawing of canvas
+		canvas.redraw();
+		
 		//Displaying the stage 
 		primaryStage.show();
 	}

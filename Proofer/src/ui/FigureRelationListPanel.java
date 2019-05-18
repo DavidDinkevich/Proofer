@@ -14,6 +14,7 @@ import geometry.proofs.ProofSolver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -25,7 +26,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-
+import javafx.stage.Stage;
 import main.MainWindow;
 
 public class FigureRelationListPanel extends VBox {
@@ -35,7 +36,7 @@ public class FigureRelationListPanel extends VBox {
 	private List<FigureRelationPanel> panels;
 	
 //	private BorderPane borderPane;
-	private ScrollPane scroller;
+	private ScrollPane panelVBoxScroller;
 	private VBox panelVBox;
 //	private HBox buttonPanel;
 	private FlowPane buttonPanel;
@@ -44,23 +45,22 @@ public class FigureRelationListPanel extends VBox {
 	
 	private FigureRelationPanel proofPanel;
 	
-	public FigureRelationListPanel(Scene scene, MainWindow win) {
+	public FigureRelationListPanel(Scene scene, MainWindow win, double defWidth) {
 		mainWindow = win;
 		panels = new ArrayList<>();
 		setBackground(new Background(new BackgroundFill(
 				Color.rgb(242, 242, 242), CornerRadii.EMPTY, new Insets(0))));
 		
-		setMinSize(330, 600);
-		setMaxWidth(330);
+		setMaxWidth(defWidth);
 		
 		/*
 		 * PANELS LIST PANEL
 		 */
 		
 		panelVBox = new VBox();
-        scroller = new ScrollPane(panelVBox);
-        scroller.setFitToWidth(true);
-        TitledPane givenPane = new TitledPane("Given", scroller);
+        panelVBoxScroller = new ScrollPane(panelVBox);
+        panelVBoxScroller.setFitToWidth(true);
+        TitledPane givenPane = new TitledPane("Given", panelVBoxScroller);
         getChildren().add(givenPane);
 
         /*
@@ -103,6 +103,12 @@ public class FigureRelationListPanel extends VBox {
 				@Override
 				public void onRequestCompleted(ProofSolver solver) {
 					System.out.println(solver.getResult());
+		            Stage stage = new Stage();
+		            stage.setTitle("My New Stage Title");
+		            Group group = new Group();
+		            group.getChildren().add(new ProofResultsPanel(solver.getTraceback()));
+		            stage.setScene(new Scene(group));
+		            stage.show();
 				}
 			});
 
@@ -138,8 +144,9 @@ public class FigureRelationListPanel extends VBox {
 			@Override
 			public void changed(ObservableValue<? extends Number> obs, Number oldHeight, 
 					Number newHeight) {
-				// 165 is the size of the proof panel, and button panel
-		        panelVBox.setPrefHeight(newHeight.doubleValue() - 165);
+				final double defPanelVBoxHeight = 400;
+				final double diff = newHeight.doubleValue() - MainWindow.DEF_HEIGHT;
+				panelVBoxScroller.setPrefHeight(defPanelVBoxHeight + diff);
 			}	
 		});
 				
@@ -149,7 +156,7 @@ public class FigureRelationListPanel extends VBox {
 	
 	public void addFigureRelationPanel(FigureRelationPanel panel) {
 		if (panels.add(panel)) {
-	        panel.setPadding(new Insets(10, 5, 10, 5));
+	        panel.setPadding(new Insets(10, 7, 10, 7));
 			panelVBox.getChildren().add(panel);
 			removeButton.setDisable(panels.isEmpty());
 		}
