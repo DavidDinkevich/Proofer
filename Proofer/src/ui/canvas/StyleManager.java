@@ -69,7 +69,7 @@ public final class StyleManager {
 		brushBuilder.getStroke().set(255);
 		brushBuilder.setStrokeWeight(1f);
 		knobBody = new GraphicsEllipse(
-				brushBuilder.buildBrush(), new Ellipse(new Dimension(12f))
+				brushBuilder.buildBrush(), new Ellipse(new Dimension(17f))
 		);
 		
 		brushBuilder.getStroke().set(Brush.LIGHT_BLUE);

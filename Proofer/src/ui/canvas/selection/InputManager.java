@@ -258,7 +258,7 @@ public class InputManager {
 			final int SIDE = 100;
 
 			Vertex[] tpoints = new Vertex[] {
-					new Vertex(new Vec2(0f, SIDE)),
+					new Vertex(new Vec2(0f, SIDE*1.5f)),
 					new Vertex(new Vec2(SIDE*2, -SIDE)),
 					new Vertex(new Vec2(0f, -SIDE))
 			};
