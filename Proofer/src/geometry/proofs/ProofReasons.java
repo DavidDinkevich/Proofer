@@ -1,8 +1,11 @@
 package geometry.proofs;
 
 public enum ProofReasons {
+	NONE("none"),
 	GIVEN("Given"),
-	REFLEXIVE("Reflexive Postulate"),
+	REFLEXIVE("Reflexive Postulate"), TRANSITIVE("Transitive Postulate"),
+	RIGHT_ANGLES_CONGRUENT("All right angles are congruent"),
+	VERTICAL_ANGLES_CONGRUENT("Vertical angles are congruent"),
 	SSS("SSS"), SAS("SAS"), ASA("ASA"),
 	PERPENDICULAR("Perpendicular segments make right angles"),
 	BISECTS("A segment bisector divides a segment into two congruent halves"),
