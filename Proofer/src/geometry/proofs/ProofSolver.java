@@ -130,10 +130,10 @@ public class ProofSolver {
 				}
 			}
 			
-			// Discover isosceles triangles
-			findIsoscelesTriangles();
 			// Discover congruent triangles
 			findCongruentTriangles();
+			// Discover isosceles triangles
+			findIsoscelesTriangles();
 			// Discover similar triangles
 			findSimilarTriangles();
 			
