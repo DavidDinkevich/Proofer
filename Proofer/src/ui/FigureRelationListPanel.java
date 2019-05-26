@@ -103,12 +103,15 @@ public class FigureRelationListPanel extends VBox {
 				@Override
 				public void onRequestCompleted(ProofSolver solver) {
 					System.out.println(solver.getResult());
-		            Stage stage = new Stage();
-		            stage.setTitle("My New Stage Title");
-		            Group group = new Group();
-		            group.getChildren().add(new ProofResultsPanel(solver.getTraceback()));
-		            stage.setScene(new Scene(group));
-		            stage.show();
+					// Launch proof-result window
+					if (solver.getResult()) {
+			            Stage stage = new Stage();
+			            stage.setTitle("Result");
+			            Group group = new Group();
+			            group.getChildren().add(new ProofResultsPanel(solver.getTraceback()));
+			            stage.setScene(new Scene(group));
+			            stage.show();
+					}
 				}
 			});
 
