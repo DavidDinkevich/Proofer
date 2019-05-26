@@ -115,6 +115,15 @@ public class AdvancedCanvas {
 			}
 		});
 		
+		/*
+		 * END EVENTS
+		 */
+		
+		// REQUESTS FOCUS WHEN CANVAS IS CLICKED
+		canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
+			canvas.requestFocus();
+		});
+		
 		// BY DEFAULT
 		canvas.setScaleY(-1);
 		setTranslation(getCenterLocRaw());
