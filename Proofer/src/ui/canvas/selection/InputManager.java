@@ -228,6 +228,8 @@ public class InputManager {
 		canvas.setDisplaySelectionContainer(false, true);
 		// Release UI relation maker
 		canvas.releaseUIRelationMaker(true); // true = redraw canvas
+		// Snap all selectors when mouse is released
+		snapAllSelectors(true);
 	}
 	
 	private void handleMouseMoved(MouseEvent e) {
@@ -242,9 +244,7 @@ public class InputManager {
 		
 		// If the user clicks space, snap selected object(s) to the grid
 		else if (e.getCode().equals(KeyCode.SPACE)) {
-			for (Selector sel : selectors) {
-				snapSelector(sel, true);
-			}
+			snapAllSelectors(true);
 		}
 
 		else if (e.getCode().equals(KeyCode.N)) {
@@ -507,6 +507,16 @@ public class InputManager {
 		// Redraw if instructed to
 		if (redraw)
 			canvas.redraw();
+	}
+	
+	/**
+	 * Snap all selectors to the canvas grid
+	 */
+	private void snapAllSelectors(boolean redraw) {
+		for (Selector sel : selectors) {
+			snapSelector(sel, false);
+		}
+		canvas.redraw();
 	}
 			
 	/*
