@@ -9,6 +9,7 @@ import geometry.proofs.ProofUtils;
 public class FormattedFigureRelation {
 	
 	private FigureRelation rel;
+	/** Position in a proof */
 	private int index;
 	
 	public FormattedFigureRelation(FigureRelation rel, int index) {
@@ -23,13 +24,14 @@ public class FormattedFigureRelation {
 		if (!(o instanceof FormattedFigureRelation))
 			return false;
 		FormattedFigureRelation other = (FormattedFigureRelation) o;
-		return rel.equals(other.rel);
+		return index == other.index && rel.equals(other.rel);
 	}
 	
 	@Override
 	public int hashCode() {
 		int result = 17;
 		result = 31 * result + rel.hashCode();
+		result = 31 * result + index;
 		return result;
 	}
 	
@@ -38,7 +40,6 @@ public class FormattedFigureRelation {
 	}
 	
 	public String getStatement() {
-		System.out.println("Happening");
 		return ProofUtils.formatFigureRelationStatement(rel);
 	}
 	
