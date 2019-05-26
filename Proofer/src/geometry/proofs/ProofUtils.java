@@ -11,7 +11,19 @@ import geometry.shapes.Arc;
 import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
+
 import util.Utils;
+
+import static geometry.proofs.FigureRelationType.CONGRUENT;
+import static geometry.proofs.FigureRelationType.RIGHT;
+import static geometry.proofs.FigureRelationType.ISOSCELES;
+import static geometry.proofs.FigureRelationType.MIDPOINT;
+import static geometry.proofs.FigureRelationType.PERPENDICULAR;
+import static geometry.proofs.FigureRelationType.PARALLEL;
+import static geometry.proofs.FigureRelationType.SIMILAR;
+import static geometry.proofs.FigureRelationType.COMPLEMENTARY;
+import static geometry.proofs.FigureRelationType.SUPPLEMENTARY;
+
 
 public class ProofUtils {
 	
@@ -52,6 +64,31 @@ public class ProofUtils {
 				return type;
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns a formatted String version of the statement of the given {@link FigureRelation}
+	 * @param rel the relation whose statement will be formatted
+	 * @return the formatted String
+	 */
+	public static String formatFigureRelationStatement(FigureRelation rel) {
+		FigureRelationType type = rel.getRelationType();
+		
+		if (type == CONGRUENT || type == PERPENDICULAR || type == PARALLEL || type == SIMILAR
+				|| type == SUPPLEMENTARY || type == COMPLEMENTARY) {
+			return rel.getFigure0() + " is " + type + " to " + rel.getFigure1();
+		}
+		else if (type == RIGHT) {
+			return rel.getFigure0() + " is a right angle";
+		}
+		else if (type == ISOSCELES) {
+			return rel.getFigure0() + " is an isosceles triangle";
+		}
+		else if (type == MIDPOINT) {
+			return rel.getFigure0() + " is the midpoint of " + rel.getFigure1();
+		}
+				
+		return rel.getStatement();
 	}
 	
 	/**
