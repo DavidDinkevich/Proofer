@@ -16,6 +16,7 @@ public class ProofResultsPanel extends TableView<FormattedFigureRelation> {
 	private TableColumn<FormattedFigureRelation, String> stepNumCol;
 	private TableColumn<FormattedFigureRelation, String> statementsCol, reasonsCol;
 	
+	@SuppressWarnings("unchecked")
 	public ProofResultsPanel(FigureRelation[] data) {
 		this.formattedData = formatData(data);
 		
@@ -37,7 +38,6 @@ public class ProofResultsPanel extends TableView<FormattedFigureRelation> {
 		reasonsCol.setCellValueFactory(new PropertyValueFactory<FormattedFigureRelation, String>("reason"));
 		
 		// Fill up columns
-		System.out.println(getColumns().size());
 		getColumns().addAll(stepNumCol, statementsCol, reasonsCol);
 		setItems(formattedData);
 	}
@@ -52,13 +52,18 @@ public class ProofResultsPanel extends TableView<FormattedFigureRelation> {
 		ObservableList<FormattedFigureRelation> formatted = FXCollections.observableArrayList();
 		
 		int index = 1; // Index of statement/reason in proof
+		outer:
 		for (FigureRelation rel : data) {
-			FormattedFigureRelation formattedRel = new FormattedFigureRelation(rel, index);
 			// No duplicates
-			if (!formatted.contains(formattedRel)) {
-				formatted.add(formattedRel);
-				++index;
+			for (FormattedFigureRelation other : formatted) {
+				if (other.getFigureRelation().equals(rel)) {
+					continue outer;
+				}
 			}
+			// Add
+			FormattedFigureRelation formattedRel = new FormattedFigureRelation(rel, index);
+			formatted.add(formattedRel);
+			++index;
 		}
 		return formatted;
 	}
