@@ -172,6 +172,10 @@ public class FigureRelation {
 		return parents;
 	}
 	
+	public String getStatement() {
+		return getFigure0() + " " + relType + " " + getFigure1();
+	}
+	
 	public void setReason(String reason) {
 		this.reason = Objects.requireNonNull(reason);
 	}
