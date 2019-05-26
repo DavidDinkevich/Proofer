@@ -15,7 +15,7 @@ public enum ProofReasons {
 	ISOSCELES("Isosceles triangle theorem"),
 	ISOSCELES_OPP_ANGLES("Angles opposite the congruent segments of an isosceles triangle "
 			+ "are congruent"),
-	OPP_ISOSCELES("Base angle theorem (isosceles)"),
+	OPP_ISOSCELES("Opposite of the isosceles triangle theorem"),
 	ISOSCELES_OPP_SEGMENTS("Sides opposite of the base angles of an isosceles triangle "
 			+ "are congruent");
 	
