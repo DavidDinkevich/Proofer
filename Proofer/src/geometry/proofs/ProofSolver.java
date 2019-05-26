@@ -133,7 +133,9 @@ public class ProofSolver {
 			// Discover isosceles triangles
 			findIsoscelesTriangles();
 			// Discover congruent triangles
-			findCongruentTriangles();			
+			findCongruentTriangles();
+			// Discover similar triangles
+			findSimilarTriangles();
 			
 			// Update
 			totalRelsAdded = diagram.getFigureRelations().size() - relCountBefore;
@@ -309,6 +311,46 @@ public class ProofSolver {
 			rel.setReason(ProofReasons.CORR_ANGLES_SIMILAR_TRIANGLES);
 			rel.addParent(pair);
 			diagram.addFigureRelation(rel);
+		}
+	}
+	
+	private void findSimilarTriangles() {
+		// For each figure
+		for (int i = 0; i < diagram.getFigures().size()-1; i++) {
+			// Make sure figure is a triangle
+			if (diagram.getFigures().get(i).getClass() != Triangle.class)
+				continue;
+			// For each other figure
+			for (int j = i + 1; j < diagram.getFigures().size(); j++) {
+				// The second figure must be a triangle
+				if (diagram.getFigures().get(j).getClass() != Triangle.class)
+					continue;
+				
+				// Get the triangles
+				Triangle tri0 = (Triangle) diagram.getFigures().get(i);
+				Triangle tri1 = (Triangle) diagram.getFigures().get(j);
+				
+				// List of parents
+				List<FigureRelation> parents = new ArrayList<>();
+				
+				// Must find at least two congruent pairs of angles
+				for (Angle a : tri0.getAngles()) {
+					for (Angle b : tri1.getAngles()) {
+						FigureRelation query = getCongruentRel(a, b);
+						if (query != null) {
+							parents.add(query);
+						}
+					}
+				}
+				
+				// Make the two triangles similar
+				if (parents.size() >= 2) {
+					FigureRelation rel = new FigureRelation(SIMILAR, tri0, tri1);
+					rel.addParents(parents);
+					rel.setReason(ProofReasons.NONE);
+					diagram.addFigureRelation(rel);
+				}
+			}
 		}
 	}
 	
