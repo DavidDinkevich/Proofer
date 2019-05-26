@@ -20,6 +20,7 @@ import static geometry.proofs.FigureRelationType.ISOSCELES;
 public class ProofSolver {
 	private boolean proofWasSolved = false;
 	private boolean result = false;
+	private FigureRelation[] traceback;
 	private Diagram diagram;
 	
 	public ProofSolver(Diagram diagram) {
@@ -41,7 +42,14 @@ public class ProofSolver {
 	}
 	
 	public boolean getResult() {
+		if (!proofWasSolved) {
+			throw new RuntimeException("Proof was not yet solved");
+		}
 		return result;
+	}
+	
+	public FigureRelation[] getTraceback() {
+		return traceback;
 	}
 	
 	public boolean proofWasSolved() {
@@ -66,11 +74,13 @@ public class ProofSolver {
 		for (int i = diagram.getFigureRelations().size() - 1; i >= 0; i--) {
 			FigureRelation pair = diagram.getFigureRelations().get(i);
 			if (pair.equals(diagram.getProofGoal())) {
+				// TRACEBACK PROCESS
 				Deque<FigureRelation> traceback = new ArrayDeque<>();
 				traceback(pair, traceback);
+				// Store traceback
+				this.traceback = traceback.toArray(new FigureRelation[traceback.size()]);
 				System.out.println("-----TRACEBACK-----");
 				traceback.forEach(System.out::println);
-				
 				return proofWasSolved = result = true;
 			}
 		}
