@@ -35,8 +35,12 @@ public class FormattedFigureRelation {
 		return result;
 	}
 	
+	public FigureRelation getFigureRelation() {
+		return rel;
+	}
+	
 	public String getReason() {
-		return rel.getReason();
+		return rel.getReason().getText();
 	}
 	
 	public String getStatement() {
