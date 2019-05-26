@@ -24,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -204,6 +205,14 @@ public class FigureRelationListPanel extends VBox {
 	        panel.setPadding(new Insets(10, 7, 10, 7));
 			panelVBox.getChildren().add(panel);
 			removeButton.setDisable(panels.isEmpty());
+			
+			// When tab key is pressed in the second textfield in the last panel in the list, 
+			// a new empty panel is automatically added
+			panel.getFigTextField1().addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+				if (e.getCode() == KeyCode.TAB && panels.get(panels.size()-1).equals(panel)) {
+					addEmptyFigureRelationPanels(1);
+				}
+			});
 		}
 	}
 	
