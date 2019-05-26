@@ -1,6 +1,8 @@
 package ui;
 
 import geometry.proofs.FigureRelation;
+import geometry.proofs.ProofSolver;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
@@ -22,7 +24,6 @@ public class ProofResultsPanel extends TableView<FormattedFigureRelation> {
 		 */
 		
 		stepNumCol = new TableColumn<FormattedFigureRelation, String>("Step");
-		stepNumCol.setSortable(false);
 		stepNumCol.setCellValueFactory(
 				new PropertyValueFactory<FormattedFigureRelation, String>("index"));
 
@@ -41,12 +42,19 @@ public class ProofResultsPanel extends TableView<FormattedFigureRelation> {
 		setItems(formattedData);
 	}
 	
+	/**
+	 * Converts the raw traceback from a {@link ProofSolver} into a presentable user-friendly
+	 * format.
+	 * @param data raw taceback from a {@link ProofSolver}
+	 * @return an {@link ObservableList} of the formatted traceback
+	 */
 	private ObservableList<FormattedFigureRelation> formatData(FigureRelation[] data) {
 		ObservableList<FormattedFigureRelation> formatted = FXCollections.observableArrayList();
 		
-		int index = 1;
+		int index = 1; // Index of statement/reason in proof
 		for (FigureRelation rel : data) {
 			FormattedFigureRelation formattedRel = new FormattedFigureRelation(rel, index);
+			// No duplicates
 			if (!formatted.contains(formattedRel)) {
 				formatted.add(formattedRel);
 				++index;
@@ -56,30 +64,3 @@ public class ProofResultsPanel extends TableView<FormattedFigureRelation> {
 	}
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
