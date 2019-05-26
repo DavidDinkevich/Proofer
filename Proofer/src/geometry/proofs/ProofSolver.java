@@ -222,7 +222,7 @@ public class ProofSolver {
 				Angle angle = diagram.getFigure(angleName, Angle.class);
 				FigureRelation rel = new FigureRelation(RIGHT, angle, null);
 				rel.addParent(perpRel);
-				rel.setReason("Perpendicular");
+				rel.setReason(ProofReasons.PERPENDICULAR);
 				diagram.addFigureRelation(rel);
 			}
 		}
@@ -262,7 +262,7 @@ public class ProofSolver {
 				diagram.getFigure(newSeg1)
 		);
 		rel.addParent(pair);
-		rel.setReason("Bisects");
+		rel.setReason(ProofReasons.BISECTS);
 		diagram.addFigureRelation(rel);
 		
 	}
@@ -283,7 +283,7 @@ public class ProofSolver {
 				diagram.getFigure(vert.getName() + seg.getName().substring(1));
 		
 		FigureRelation rel = new FigureRelation(CONGRUENT, newSeg0, newSeg1);
-		rel.setReason("Midpoint");
+		rel.setReason(ProofReasons.MIDPOINT);
 		rel.addParent(pair);
 		diagram.addFigureRelation(rel);
 	}
@@ -306,7 +306,7 @@ public class ProofSolver {
 			FigureRelation rel = new FigureRelation(
 					CONGRUENT, corrAngles.get(i)[0], corrAngles.get(i)[1]
 			);
-			rel.setReason("Corresponding angles congruent");
+			rel.setReason(ProofReasons.CORR_ANGLES);
 			rel.addParent(pair);
 			diagram.addFigureRelation(rel);
 		}
@@ -355,7 +355,7 @@ public class ProofSolver {
 						 * MAKE THE TRIANGLE ISOSCELES
 						 */
 						FigureRelation isoscelesRel = new FigureRelation(ISOSCELES, tri, null);
-						isoscelesRel.setReason("Isosceles triangle theorem");
+						isoscelesRel.setReason(ProofReasons.ISOSCELES);
 						isoscelesRel.addParent(segsRel);
 						diagram.addFigureRelation(isoscelesRel);
 
@@ -369,8 +369,7 @@ public class ProofSolver {
 								diagram.getPrimaryAngleSynonym(a1.getName())
 						);
 						rel.addParent(isoscelesRel);
-						rel.setReason("Angles opposite congruent segments of isosceles triangle "
-								+ "are congruent");
+						rel.setReason(ProofReasons.ISOSCELES_OPP_ANGLES);
 						// Update Diagram
 						diagram.addFigureRelation(rel);
 					}
@@ -397,7 +396,7 @@ public class ProofSolver {
 						 * MAKE THE TRIANGLE ISOSCELES
 						 */
 						FigureRelation isoscelesRel = new FigureRelation(ISOSCELES, tri, null);
-						isoscelesRel.setReason("Base angles theorem (isosceles)");
+						isoscelesRel.setReason(ProofReasons.OPP_ISOSCELES);
 						isoscelesRel.addParent(anglesRel);
 						diagram.addFigureRelation(isoscelesRel);
 
@@ -407,7 +406,7 @@ public class ProofSolver {
 						// Make the segs congruent
 						FigureRelation rel = new FigureRelation(CONGRUENT, segment0, segment1);
 						rel.addParent(isoscelesRel);
-						rel.setReason("Opposite of Isosceles Triangle Theorem");
+						rel.setReason(ProofReasons.ISOSCELES_OPP_SEGMENTS);
 						diagram.addFigureRelation(rel);
 					}
 				}
@@ -440,7 +439,7 @@ public class ProofSolver {
 				if (corrSegs.size() == 3) {
 					FigureRelation rel = new FigureRelation(CONGRUENT, tri0, tri1);
 					rel.addParents(corrSegs);
-					rel.setReason("SSS");
+					rel.setReason(ProofReasons.SSS);
 					diagram.addFigureRelation(rel);
 					continue;
 				}
@@ -451,7 +450,7 @@ public class ProofSolver {
 				if (sasRels.size() == 3) {
 					FigureRelation rel = new FigureRelation(CONGRUENT, tri0, tri1);
 					rel.addParents(sasRels);
-					rel.setReason("SAS");
+					rel.setReason(ProofReasons.SAS);
 					diagram.addFigureRelation(rel);
 					continue;
 				}
@@ -462,7 +461,7 @@ public class ProofSolver {
 				if (asaRels.size() == 3) {
 					FigureRelation rel = new FigureRelation(CONGRUENT, tri0, tri1);
 					rel.addParents(asaRels);
-					rel.setReason("ASA");
+					rel.setReason(ProofReasons.ASA);
 					diagram.addFigureRelation(rel);
 					continue;
 				}

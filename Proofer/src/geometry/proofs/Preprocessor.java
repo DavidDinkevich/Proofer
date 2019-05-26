@@ -107,7 +107,7 @@ public final class Preprocessor {
 					// Get second figure
 					relType.isSingleFigureRelation() ? null : searchForFigure(diag, figText1)
 			);
-			rel.setReason("Given");
+			rel.setReason(ProofReasons.GIVEN);
 			// Add the given
 			diag.addFigureRelation(rel);
 		}
@@ -132,7 +132,7 @@ public final class Preprocessor {
 				goalRelType.isSingleFigureRelation() ? null : 
 					searchForFigure(diag, goalPanel.getFigTextField1().getText())
 		);
-		proofGoal.setReason("Proof Goal");
+		proofGoal.setReason(ProofReasons.NONE);
 		diag.setProofGoal(proofGoal);
 
 	}
@@ -526,7 +526,7 @@ public final class Preprocessor {
 				
 				if (ProofUtils.areVerticalAngles(a0, a1)) {
 					FigureRelation rel = new FigureRelation(CONGRUENT, a0, a1);
-					rel.setReason("Vertical Angle");
+					rel.setReason(ProofReasons.VERTICAL_ANGLES_CONGRUENT);
 					diagram.addFigureRelation(rel);
 				}
 			}
@@ -549,7 +549,7 @@ public final class Preprocessor {
 				// If they are vertical angles, make them congruent
 				if (ProofUtils.areVerticalAngles(a0, a1)) {
 					FigureRelation rel = new FigureRelation(CONGRUENT, a0, a1);
-					rel.setReason("Vertical Angle");
+					rel.setReason(ProofReasons.VERTICAL_ANGLES_CONGRUENT);
 					diagram.addFigureRelation(rel);
 				}
 			}

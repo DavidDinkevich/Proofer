@@ -481,7 +481,7 @@ public class Diagram {
 		if (fig.getClass() == Vertex.class)
 			return false;
 		FigureRelation rel = new FigureRelation(FigureRelationType.CONGRUENT, fig, fig);
-		rel.setReason("Reflexive Postulate");
+		rel.setReason(ProofReasons.REFLEXIVE);
 		return addFigureRelation(rel);
 	}
 	
@@ -529,7 +529,7 @@ public class Diagram {
 								
 				FigureRelation newRel = new FigureRelation(
 						FigureRelationType.CONGRUENT, newFriend0, newFriend1);
-				newRel.setReason("Transitive Postulate");
+				newRel.setReason(ProofReasons.TRANSITIVE);
 				newRel.addParent(iter);
 				newRel.addParent(rel);
 				// Add the new relation
@@ -562,7 +562,7 @@ public class Diagram {
 						FigureRelationType.CONGRUENT, angle, pair.getFigure0());
 				newPair.addParent(rightAngleRel);
 				newPair.addParent(pair);
-				newPair.setReason("Right angles congruent");
+				newPair.setReason(ProofReasons.RIGHT_ANGLES_CONGRUENT);
 
 				// Ensure that we're not adding a duplicate
 				if (!containsFigureRelation(newPair)) {
@@ -617,7 +617,7 @@ public class Diagram {
 								anglePair[1]
 						);
 						newPair.addParent(pair);
-						newPair.setReason("Corresponding angles");
+						newPair.setReason(ProofReasons.CORR_ANGLES);
 						addFigureRelation(newPair);
 					}
 					// For all corresponding segments
@@ -629,7 +629,7 @@ public class Diagram {
 								segPair[1]
 						);
 						newPair.addParent(pair);
-						newPair.setReason("Corresponding segments");
+						newPair.setReason(ProofReasons.CORR_SEGMENTS);
 						addFigureRelation(newPair);
 					}
 				}

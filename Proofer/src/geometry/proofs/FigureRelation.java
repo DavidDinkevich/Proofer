@@ -18,7 +18,7 @@ public class FigureRelation {
 	private Figure figure1;
 	private boolean isCongruentAndReflexive;
 	private List<FigureRelation> parents;
-	private String reason;
+	private ProofReasons reason;
 	
 	public FigureRelation(FigureRelationType type, Figure fig0, Figure fig1) {
 		relType = type;
@@ -40,7 +40,7 @@ public class FigureRelation {
 				&& figure0.equals(figure1);
 		
 		parents = new ArrayList<>();
-		reason = "";
+		reason = null;
 	}
 	
 	protected FigureRelation(FigureRelationType type) {
@@ -125,7 +125,7 @@ public class FigureRelation {
 	@Override
 	public String toString() {
 		return relType + " ( " + figure0 + ", " + figure1 + " )"
-				+ (!reason.isEmpty() ? " -- " + reason : "");
+				+ (reason == null ? " -- " + reason : "");
 	}
 	
 	/**
@@ -176,11 +176,11 @@ public class FigureRelation {
 		return getFigure0() + " " + relType + " " + getFigure1();
 	}
 	
-	public void setReason(String reason) {
+	public void setReason(ProofReasons reason) {
 		this.reason = Objects.requireNonNull(reason);
 	}
 	
-	public String getReason() {
+	public ProofReasons getReason() {
 		return reason;
 	}
 }
