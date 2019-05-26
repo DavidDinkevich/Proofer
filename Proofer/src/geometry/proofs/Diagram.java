@@ -617,7 +617,7 @@ public class Diagram {
 								anglePair[1]
 						);
 						newPair.addParent(pair);
-						newPair.setReason(ProofReasons.CORR_ANGLES);
+						newPair.setReason(ProofReasons.CORR_ANGLES_CONG_TRIANGLES);
 						addFigureRelation(newPair);
 					}
 					// For all corresponding segments

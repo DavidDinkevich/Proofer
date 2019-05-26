@@ -306,7 +306,7 @@ public class ProofSolver {
 			FigureRelation rel = new FigureRelation(
 					CONGRUENT, corrAngles.get(i)[0], corrAngles.get(i)[1]
 			);
-			rel.setReason(ProofReasons.CORR_ANGLES);
+			rel.setReason(ProofReasons.CORR_ANGLES_SIMILAR_TRIANGLES);
 			rel.addParent(pair);
 			diagram.addFigureRelation(rel);
 		}
