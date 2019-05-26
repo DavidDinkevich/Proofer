@@ -13,13 +13,18 @@ import geometry.proofs.ProofSolver;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -32,6 +37,7 @@ import main.MainWindow;
 public class FigureRelationListPanel extends VBox {
 		
 	private MainWindow mainWindow;
+	private Scene scene;
 	
 	private List<FigureRelationPanel> panels;
 	
@@ -43,39 +49,62 @@ public class FigureRelationListPanel extends VBox {
 	
 	private Button addButton, removeButton, solveButton;
 	
-	private FigureRelationPanel proofPanel;
+	private FigureRelationPanel proofObjectivePanel;
 	
 	public FigureRelationListPanel(Scene scene, MainWindow win, double defWidth) {
 		mainWindow = win;
+		this.scene = scene;
 		panels = new ArrayList<>();
 		setBackground(new Background(new BackgroundFill(
 				Color.rgb(242, 242, 242), CornerRadii.EMPTY, new Insets(0))));
-		
+
 		setMaxWidth(defWidth);
-		
-		/*
-		 * PANELS LIST PANEL
-		 */
-		
+
+		// Create panel vbox
+		createPanelVBox();
+		// Create proof objective panel
+		createObjectivePanel();
+		// Create button panel
+		createButtonPanel();
+
+		// Window maintenance
+        handleWindowMaintenance();
+        
+		// Initial panel
+		addEmptyFigureRelationPanels(1);
+	}
+	
+	/*
+	 * INITIALIZATION METHODS
+	 */
+	
+	private void createPanelVBox() {
 		panelVBox = new VBox();
         panelVBoxScroller = new ScrollPane(panelVBox);
         panelVBoxScroller.setFitToWidth(true);
         TitledPane givenPane = new TitledPane("Given", panelVBoxScroller);
         getChildren().add(givenPane);
-
-        /*
-         * PROVE PANEL
-         */
-        proofPanel = new FigureRelationPanel(FigureRelationPanel.Type.GOAL);
-        proofPanel.setPadding(new Insets(10));
-        TitledPane proofPane = new TitledPane("To Prove", proofPanel);
+	}
+	
+	private void createObjectivePanel() {
+		proofObjectivePanel = new FigureRelationPanel(FigureRelationPanel.Type.GOAL);
+        proofObjectivePanel.setPadding(new Insets(10));
+        
+        // Enable solve button if the proof objective panel is partially filled out
+        EventHandler<KeyEvent> handler = e-> {
+        	final boolean disable = proofObjectivePanel.getFigTextField0().getText().isEmpty()
+        			|| proofObjectivePanel.getFigTextField1().getText().isEmpty();
+        	solveButton.setDisable(disable);
+        };
+        proofObjectivePanel.getFigTextField0().addEventHandler(KeyEvent.KEY_RELEASED, handler);
+        proofObjectivePanel.getFigTextField1().addEventHandler(KeyEvent.KEY_RELEASED, handler);
+        /////
+        
+        TitledPane proofPane = new TitledPane("To Prove", proofObjectivePanel);
         getChildren().add(proofPane);
-        
-        /*
-         * BUTTON PANEL
-         */
-        
-//		buttonPanel = new HBox(10);
+	}
+	
+	private void createButtonPanel() {
         buttonPanel = new FlowPane();
         buttonPanel.setHgap(2);
 //		buttonPanel.setPadding(new Insets(5, 10, 5, 10));
@@ -95,29 +124,41 @@ public class FigureRelationListPanel extends VBox {
 		});
 		buttonPanel.getChildren().add(removeButton);
 		
+		// SOLVE BUTTON
+		createSolveButton();
+		buttonPanel.getChildren().add(solveButton);
+	}
+	
+	private void createSolveButton() {
 		solveButton = new Button("Solve");
+		// Disabled by default (proof objective panel is empty
+		solveButton.setDisable(true);
 //		solveButton.setStyle("-fx-background-color: green");
 		solveButton.setOnAction(e -> {
 			Diagram diagram = Preprocessor.generateDiagram(mainWindow.getCanvas(), this);
 			ProofSolveRequestManager.requestSolveProof(new Request(diagram) {
 				@Override
 				public void onRequestCompleted(ProofSolver solver) {
-					System.out.println(solver.getResult());
-					// Launch proof-result window
 					if (solver.getResult()) {
+						// Launch proof-result window
 			            Stage stage = new Stage();
 			            stage.setTitle("Result");
 			            Group group = new Group();
 			            group.getChildren().add(new ProofResultsPanel(solver.getTraceback()));
 			            stage.setScene(new Scene(group));
 			            stage.show();
+					} else {
+						// Display dialog showing that proof is not solvable
+						Alert alert = new Alert(AlertType.INFORMATION, "The given proof is not "
+								+ "solvable", ButtonType.OK);
+						alert.showAndWait();
 					}
 				}
 			});
-
 		});
-		buttonPanel.getChildren().add(solveButton);
-		
+	}
+	
+	private void handleWindowMaintenance() {
 		/*
 		 * Prevents canvas from not being able to regain focus after it
 		 * is lost
@@ -151,11 +192,12 @@ public class FigureRelationListPanel extends VBox {
 				final double diff = newHeight.doubleValue() - MainWindow.DEF_HEIGHT;
 				panelVBoxScroller.setPrefHeight(defPanelVBoxHeight + diff);
 			}	
-		});
-				
-		// Initial panel
-		addEmptyFigureRelationPanels(1);
+		});				
 	}
+	
+	/*
+	 * END INITIALIZATION METHODS
+	 */
 	
 	public void addFigureRelationPanel(FigureRelationPanel panel) {
 		if (panels.add(panel)) {
@@ -193,7 +235,7 @@ public class FigureRelationListPanel extends VBox {
 	}
 	
 	public FigureRelationPanel getProofGoalPanel() {
-		return proofPanel;
+		return proofObjectivePanel;
 	}
 
 	
