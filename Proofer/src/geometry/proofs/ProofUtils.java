@@ -584,6 +584,52 @@ public class ProofUtils {
 	}
 	
 	/**
+	 * Get whether the given point lies within the given arc, within <code>maxDist</code>.
+	 * Alternatively, one can input -1 for <code>maxDist</code> indicating that distance
+	 * from the arc does not matter.
+	 * @param a the arc
+	 * @param point the point
+	 * @param maxDist the maximum distance away from the center of the arc that the point can
+	 * be to be considered within the arc
+	 * @return whether the given point lies within the arc within <code>maxDist</code>
+	 */
+	public static boolean arcContainsPoint(Arc a, Vec2 point, float maxDist) {
+		// Center of arc
+		Vec2 center = a.getCenter();
+		// Vector FROM center of arc TO point
+		Vec2 pointFromCenter = Vec2.sub(point, center);
+		
+		// DETERMINE THE HEADING OF THE MOUSE
+		// Raw heading of pointFromCenter vector (raw = directly from getHeading() method)
+		final float pointHeadingRaw = pointFromCenter.getHeading();
+		// Convert the raw heading to angle-scale that the arc uses
+		final float pointHeadingCorrected = pointHeadingRaw < 0f ?
+				Utils.TWO_PI + pointHeadingRaw : pointHeadingRaw;
+		
+		// Minimum and maximum boundaries of the arc, within which the mouse must be
+	
+		// If the start angle is greater than the stop angle, we need to convert
+		// the start angle to its raw value (a negative value)
+		final float min = a.getStartAngle() >= a.getStopAngle() ? a.getStartAngle()-Utils.TWO_PI 
+				: a.getStartAngle();
+		final float max = a.getStopAngle();
+		
+		// Choose which heading to use--the corrected version or the raw version
+		final float finalHeading = a.getStartAngle() >= a.getStopAngle() ? 
+				pointHeadingRaw : pointHeadingCorrected;
+		
+		// Get if point is within radius of arc (user can make maxDist -1 to signify that
+		// distance does not matter
+		final boolean pointCloseEnough = (maxDist < 0) || (pointFromCenter.getMag() <= maxDist);
+	
+		/*
+		 * Vector is <= arc radius  AND  startAngle <= heading <= stopAngle
+		 */
+		return pointCloseEnough && finalHeading >= min && finalHeading <= max;
+
+	}
+	
+	/**
 	 * Get the {@link Arc} formed in the given {@link Angle}.
 	 * <p>
 	 * The size of the arc is the length of the shorter side of the

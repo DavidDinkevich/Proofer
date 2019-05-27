@@ -2,10 +2,9 @@ package geometry.shapes;
 
 import geometry.Dimension;
 import geometry.Vec2;
-
+import geometry.proofs.ProofUtils;
 import javafx.scene.shape.ArcType;
 
-import util.Utils;
 
 public class Arc extends Vertex {
 	
@@ -68,36 +67,7 @@ public class Arc extends Vertex {
 	
 	@Override
 	public boolean containsPoint(Vec2 point) {
-		// Center of arc
-		Vec2 center = getCenter();
-		// Vector FROM center of arc TO point
-		Vec2 pointFromCenter = Vec2.sub(point, center);
-		
-		// DETERMINE THE HEADING OF THE MOUSE
-		// Raw heading of pointFromCenter vector (raw = directly from getHeading() method)
-		final float pointHeadingRaw = pointFromCenter.getHeading();
-		// Convert the raw heading to angle-scale that the arc uses
-		final float pointHeadingCorrected = pointHeadingRaw < 0f ?
-				Utils.TWO_PI + pointHeadingRaw : pointHeadingRaw;
-		
-		// Minimum and maximum boundaries of the arc, within which the mouse must be
-	
-		// If the start angle is greater than the stop angle, we need to convert
-		// the start angle to its raw value (a negative value)
-		final float min = startAngle >= stopAngle ? startAngle-Utils.TWO_PI : startAngle;
-		final float max = stopAngle;
-		
-		// Choose which heading to use--the corrected version or the raw version
-		final float finalHeading = startAngle >= stopAngle ? 
-				pointHeadingRaw : pointHeadingCorrected;
-		
-		// Get if point is within radius of arc
-		final boolean pointCloseEnough = pointFromCenter.getMag() <= size.getHeight()/2f;
-	
-		/*
-		 * Vector is <= arc radius  AND  startAngle <= heading <= stopAngle
-		 */
-		return pointCloseEnough && finalHeading >= min && finalHeading <= max;
+		return ProofUtils.arcContainsPoint(this, point, getSize().getHeight() / 2f);
 	}
 
 	public float getStartAngle() {
