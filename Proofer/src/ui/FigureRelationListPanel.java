@@ -33,6 +33,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
 import main.MainWindow;
 
 public class FigureRelationListPanel extends VBox {
@@ -209,7 +210,10 @@ public class FigureRelationListPanel extends VBox {
 			// When tab key is pressed in the second textfield in the last panel in the list, 
 			// a new empty panel is automatically added
 			panel.getFigTextField1().addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-				if (e.getCode() == KeyCode.TAB && panels.get(panels.size()-1).equals(panel)) {
+				// Tab + shift is not down + this is the last panel in the list
+				if (e.getCode() == KeyCode.TAB && !e.isShiftDown()
+					&& panels.get(panels.size()-1).equals(panel)) {
+					
 					addEmptyFigureRelationPanels(1);
 				}
 			});
