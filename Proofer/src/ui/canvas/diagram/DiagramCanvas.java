@@ -93,7 +93,15 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		}
 		
 		// Add a GraphicsVertexBuffer to render the VertexBuffer
-		renderList.addDrawable(new GraphicsVertexBuffer(vertexBuff));		
+		renderList.addDrawable(new GraphicsVertexBuffer(vertexBuff));
+		
+		// DESTROY SELECTORS WHEN FOCUS IS LOST
+		getCanvas().focusedProperty().addListener(e -> {
+			if (!getCanvas().isFocused()) {
+				inputManager.destroyAllSelectors();
+				redraw();
+			}
+		});
 	}
 
 	@Override
