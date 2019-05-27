@@ -131,7 +131,7 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 	public void addDiagramFigure(GraphicsShape<?> shape) {
 		// Add to list to diagram figures list
 		diagramFigures.add(shape);
-		
+				
 		// Add to render list
 		renderList.addDrawable(shape);
 		
@@ -144,6 +144,9 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		if (inputManager != null) {
 			inputManager.addSelectableFigure(shape);
 		}
+		
+		// Find/remove/update invisible hidden figures
+		updateInvisibleHiddenFigures();
 	}
 	
 	public void addDiagramFigures(Collection<GraphicsShape<?>> elements) {
@@ -155,16 +158,19 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 	public boolean removeDiagramFigure(GraphicsShape<?> shape) {
 		// Remove from diagram figures list
 		if (diagramFigures.remove(shape)) {
+			// Find/remove/update invisible hidden figures
+			updateInvisibleHiddenFigures();
+			
 			// Remove from RenderList
 			renderList.removeDrawable(shape);
-			// Remove from list of selectables
-			if (inputManager != null) {
-				inputManager.removeSelectableFigure(shape);
-			}
-			
 			// Remove VertexShapes from the VertexBuffer
 			if (shape.getShape() instanceof VertexShape) {
 				vertexBuff.removeVertexShape((VertexShape) shape.getShape());
+			}
+			
+			// Remove from list of selectables
+			if (inputManager != null) {
+				inputManager.removeSelectableFigure(shape);
 			}
 			
 			return true;
