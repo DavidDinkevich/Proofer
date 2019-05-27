@@ -5,11 +5,12 @@ import geometry.Dimension;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
+import javafx.stage.WindowEvent;
 import ui.FigureRelationListPanel;
 import ui.canvas.diagram.DiagramCanvas;
 
@@ -60,6 +61,14 @@ public class MainWindow extends Application {
 		primaryStage.setScene(scene);
 		//Setting the title to Stage. 
 		primaryStage.setTitle("Proofer (alpha)");
+		
+		// KILL PROGRAM WHEN THIS WINDOW IS CLOSED
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+		    @Override
+		    public void handle(WindowEvent event) {
+		        System.exit(0);
+		    }
+		});
 				
 		/*
 		 * RESIZING
