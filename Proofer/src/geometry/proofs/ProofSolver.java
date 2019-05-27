@@ -233,7 +233,7 @@ public class ProofSolver {
 	/**
 	 * <i>This method, and the {@link ProofSolver} in general, assumes that
 	 * the given {@link FigureRelation} is of type 
-	 * {@link BisectsFigureRelation}</i>
+	 * {@link BisectingSegsFigureRelation}</i>
 	 * <p>
 	 * DEFINITIONS
 	 * <ul>
@@ -246,11 +246,11 @@ public class ProofSolver {
 	 * {@link Segment}, <i>given that it is not the Point of Intersection</i>
 	 * </li>
 	 * </ul>
-	 * @param pair the {@link BisectsFigureRelation} to be handled
+	 * @param pair the {@link BisectingSegsFigureRelation} to be handled
 	 * @see ProofSolver#handlePerpendicularPair(FigureRelation)
 	 */
 	private void handleBisectPair(FigureRelation pair) {
-		BisectsFigureRelation bisectsRel = (BisectsFigureRelation) pair;
+		BisectingSegsFigureRelation bisectsRel = (BisectingSegsFigureRelation) pair;
 		
 		String intersectedSeg = bisectsRel.getFigure1().getName();
 		final char intersectVert = bisectsRel.getIntersectVert();
