@@ -145,7 +145,7 @@ public class FigureRelationListPanel extends VBox {
 			            Stage stage = new Stage();
 			            stage.setTitle("Result");
 			            Group group = new Group();
-			            group.getChildren().add(new ProofResultsPanel(solver.getTraceback()));
+			            group.getChildren().add(new ProofTable(solver.getTraceback()));
 			            stage.setScene(new Scene(group));
 			            stage.show();
 					} else {

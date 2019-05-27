@@ -15,7 +15,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 
-public class ProofResultsPanel extends TableView<FormattedFigureRelation> {
+public class ProofTable extends TableView<FormattedFigureRelation> {
 	
 	private static final String[] BRANCH_COLORS = {
 		// Pink
@@ -35,7 +35,7 @@ public class ProofResultsPanel extends TableView<FormattedFigureRelation> {
 	private TableColumn<FormattedFigureRelation, String> statementsCol, reasonsCol;
 	
 	@SuppressWarnings("unchecked")
-	public ProofResultsPanel(FigureRelation[] data) {
+	public ProofTable(FigureRelation[] data) {
 		branches = new ArrayList<>();
 		colorBranches = true; // Color branches by default
 		// FORMAT DATA
