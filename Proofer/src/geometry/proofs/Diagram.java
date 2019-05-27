@@ -448,7 +448,7 @@ public class Diagram {
 	 * (The children vertices stored in the compound segment nodes are only the most direct
 	 * children of the segment, and we want THEIR children, and grandchildren, and so on).
 	 */
-	public List<Vertex> breakToUnitComponentVertices(Node<Segment, Vertex> node, 
+	private List<Vertex> breakToUnitComponentVertices(Node<Segment, Vertex> node, 
 			List<Vertex> all) {
 		
 		if (node == null)
