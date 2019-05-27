@@ -2,11 +2,11 @@ package geometry.proofs;
 
 import geometry.shapes.Segment;
 
-public class BisectingSegsFigureRelation extends FigureRelation {
+public class SegmentBisectorFigureRelation extends FigureRelation {
 
 	private char intersectVert;
 	
-	public BisectingSegsFigureRelation(Segment fig0, Segment fig1, char intersectVert) {
+	public SegmentBisectorFigureRelation(Segment fig0, Segment fig1, char intersectVert) {
 		super(FigureRelationType.BISECTS, fig0, fig1);
 		this.intersectVert = intersectVert;
 	}
@@ -15,9 +15,9 @@ public class BisectingSegsFigureRelation extends FigureRelation {
 	public boolean equals(Object o) {
 		if (!super.equals(o))
 			return false;
-		if (!(o instanceof BisectingSegsFigureRelation))
+		if (!(o instanceof SegmentBisectorFigureRelation))
 			return false;
-		BisectingSegsFigureRelation other = (BisectingSegsFigureRelation) o;
+		SegmentBisectorFigureRelation other = (SegmentBisectorFigureRelation) o;
 		return other.intersectVert == intersectVert;
 	}
 	
