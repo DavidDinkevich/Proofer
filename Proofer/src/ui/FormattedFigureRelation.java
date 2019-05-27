@@ -47,7 +47,7 @@ public class FormattedFigureRelation {
 		return ProofUtils.formatFigureRelationStatement(rel);
 	}
 	
-	public int getIndex() {
-		return index;
+	public String getIndex() {
+		return "" + index;
 	}
 }
