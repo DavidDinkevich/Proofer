@@ -6,6 +6,7 @@ import java.util.List;
 
 import geometry.Vec2;
 import geometry.shapes.Angle;
+import geometry.shapes.Arc;
 import geometry.shapes.Segment;
 import geometry.shapes.Segment.Slope;
 import javafx.scene.control.Alert;
@@ -18,6 +19,7 @@ import ui.FigureRelationListPanel;
 import ui.FigureRelationPanel;
 import ui.canvas.GraphicsShape;
 import ui.canvas.diagram.DiagramCanvas;
+
 
 import static geometry.proofs.FigureRelationType.CONGRUENT;
 
@@ -445,7 +447,7 @@ public final class Preprocessor {
 	/**
 	 * The primary goal of this method is to convert all standard 
 	 * {@link FigureRelation}s of type {@link FigureRelationType#BISECTS}
-	 * to {@link BisectsFigureRelation}s, which are more detailed. The
+	 * to {@link SegmentBisectorFigureRelation}s, which are more detailed. The
 	 * {@link ProofSolver} requires and assumes that all bisects FigureRelations
 	 * will be of this type.
 	 * @param diagram the diagram
@@ -456,31 +458,90 @@ public final class Preprocessor {
 		for (int i = 0; i < relCount; i++) {
 			FigureRelation pair = diagram.getFigureRelations().get(i);
 			if (pair.getRelationType() == FigureRelationType.BISECTS) {
-				// Get the segment being bisecTED
-				Segment bisectedSeg = pair.getFigure1();
-				// Get the midpoint loc of the second segment (segment being bisecTED)
-				Vec2 midptLoc = bisectedSeg.getCenter();
-				// Get the vertex at that position
-				Vertex midpt = getVertexAtLoc(diagram, midptLoc);
-				
-				if (midpt == null)
-					throw new NullPointerException("No vertex at midpoint");
-		
-				// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPIVE 
-				// BisectsFigureRelation
-		
-				BisectsFigureRelation bisectsRel = new BisectsFigureRelation(
-						pair.getFigure0(),
-						bisectedSeg,
-						midpt.getNameChar()
-				);
-				bisectsRel.addParents(pair.getParents());
-				bisectsRel.setReason(pair.getReason());
-				
-				final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
-				diagram.getFigureRelations().set(REL_INDEX, bisectsRel);
+				if (pair.getFigure1() instanceof Segment) {
+					handleSegmentBisector(diagram, pair);
+				} else {
+					handleAngleBisector(diagram, pair);
+				}
 			}
 		}
+	}
+	
+	private static void handleSegmentBisector(Diagram diagram, FigureRelation pair) {
+		// Get the segment being bisecTED
+		Segment bisectedSeg = pair.getFigure1();
+		// Get the midpoint loc of the second segment (segment being bisecTED)
+		Vec2 midptLoc = bisectedSeg.getCenter();
+		// Get the vertex at that position
+		Vertex midpt = getVertexAtLoc(diagram, midptLoc);
+		
+		if (midpt == null)
+			throw new NullPointerException("No vertex at midpoint");
+
+		// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPTIVE type of figure relation
+
+		SegmentBisectorFigureRelation bisectsRel = new SegmentBisectorFigureRelation(
+				pair.getFigure0(),
+				bisectedSeg,
+				midpt.getNameChar()
+		);
+		bisectsRel.addParents(pair.getParents());
+		bisectsRel.setReason(pair.getReason());
+		
+		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
+		diagram.getFigureRelations().set(REL_INDEX, bisectsRel);
+	}
+	
+	private static void handleAngleBisector(Diagram diagram, FigureRelation pair) {
+		// Retrieve both figures involved
+		Segment bisectingSeg = pair.getFigure0();
+		Angle angle = pair.getFigure1();
+		
+		// Get the largest bisector (largest compound segment)
+		Segment largestBisector = diagram.getLargestCompoundSegmentOf(bisectingSeg.getName());
+		// Point of intersection between angle and segment
+		String pointOfIntersection = angle.getNameShort();
+		// Get the second endpoint of the smallest bisector (the first is the point of 
+		// intersection)
+		List<Vertex> vertsOfCompoundSeg = diagram.getComponentVertices(largestBisector.getName());
+		// Get the index of the point of intersection in the list of the largest bisector's
+		// component vertices
+		int indexOfPOI = 0;
+		for (; !vertsOfCompoundSeg.get(indexOfPOI).isValidName(pointOfIntersection); indexOfPOI++);
+		// There are two options: the second endpoint is the vertex BEFORE the POI, or
+		// the one afterward. Whichever one lies inside the main angle is the second endpoint.
+		String endpoint;
+		// If the index of the POI is 0, then there is no vertex before it, 
+		// so the endpoint is after the POI, at index 1
+		if (indexOfPOI == 0) {
+			endpoint = vertsOfCompoundSeg.get(indexOfPOI + 1).getName(); // index = 1
+		}
+		// If the index of the POI is the last index in the array, then there is no vertex after
+		// it, so the endpoint is before the POI, at indexOfPOI-1
+		else if (indexOfPOI == vertsOfCompoundSeg.size() - 1) {
+			endpoint = vertsOfCompoundSeg.get(indexOfPOI - 1).getName();
+		} else {
+			Vertex before = vertsOfCompoundSeg.get(indexOfPOI - 1);
+			Vertex after = vertsOfCompoundSeg.get(indexOfPOI + 1);
+//			endpoint = angle.containsPoint(before.getCenter()) ? before.getName() 
+//					: after.getName();
+			Arc angleArc = ProofUtils.getArc(angle);
+			endpoint = ProofUtils.arcContainsPoint(angleArc, before.getCenter(), -1f) 
+					? before.getName() : after.getName();
+		}
+		
+		// Construct the name of the smallest bisector
+		String smallestBisector = pointOfIntersection + endpoint;
+		
+		// Create the new, more detailed type of figure relation
+		AngleBisectorFigureRelation newRel = new AngleBisectorFigureRelation(
+				largestBisector, angle, smallestBisector, endpoint);
+		newRel.addParents(pair.getParents());
+		newRel.setReason(pair.getReason());
+
+		// Replace the original figure relation
+		final int REL_INDEX = diagram.getFigureRelations().indexOf(pair);
+		diagram.getFigureRelations().set(REL_INDEX, newRel);
 	}
 	
 	/**

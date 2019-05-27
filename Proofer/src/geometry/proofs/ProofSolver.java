@@ -230,11 +230,16 @@ public class ProofSolver {
 		}
 	}
 	
+	private void handleBisectPair(FigureRelation pair) {
+		// DETERMINE WHETHER THIS IS A SEGMENT OR ANGLE BISECTOR
+		if (pair instanceof SegmentBisectorFigureRelation) {
+			handleSegmentBisector((SegmentBisectorFigureRelation) pair);
+		} else {
+			handleAngleBisector((AngleBisectorFigureRelation) pair);
+		}
+	}
+	
 	/**
-	 * <i>This method, and the {@link ProofSolver} in general, assumes that
-	 * the given {@link FigureRelation} is of type 
-	 * {@link BisectingSegsFigureRelation}</i>
-	 * <p>
 	 * DEFINITIONS
 	 * <ul>
 	 * <li>
@@ -246,12 +251,10 @@ public class ProofSolver {
 	 * {@link Segment}, <i>given that it is not the Point of Intersection</i>
 	 * </li>
 	 * </ul>
-	 * @param pair the {@link BisectingSegsFigureRelation} to be handled
+	 * @param pair the {@link SegmentBisectorFigureRelation} to be handled
 	 * @see ProofSolver#handlePerpendicularPair(FigureRelation)
 	 */
-	private void handleBisectPair(FigureRelation pair) {
-		BisectingSegsFigureRelation bisectsRel = (BisectingSegsFigureRelation) pair;
-		
+	private void handleSegmentBisector(SegmentBisectorFigureRelation bisectsRel) {		
 		String intersectedSeg = bisectsRel.getFigure1().getName();
 		final char intersectVert = bisectsRel.getIntersectVert();
 		
@@ -263,10 +266,29 @@ public class ProofSolver {
 				diagram.getFigure(newSeg0),
 				diagram.getFigure(newSeg1)
 		);
-		rel.addParent(pair);
-		rel.setReason(ProofReasons.BISECTS);
+		rel.addParent(bisectsRel);
+		rel.setReason(ProofReasons.SEGMENT_BISECTOR);
 		diagram.addFigureRelation(rel);
+	}
+	
+	private void handleAngleBisector(AngleBisectorFigureRelation pair) {
+		// Angle being bisected
+		Angle mainAngle = pair.getFigure1();
+		// Name of the angle being bisected
+		String mainAngleName = mainAngle.getName();
+		// Get the two angles (halves of the original bisected angle)
+		String angle0 = mainAngleName.substring(0, 2) + pair.getSmallestBisectorEndpoint();
+		String angle1 = pair.getSmallestBisectorEndpoint() + mainAngleName.substring(1);
 		
+		// Create the new relation making the two halves congruent
+		FigureRelation rel = new FigureRelation(
+				CONGRUENT,
+				diagram.getFigure(angle0, Angle.class),
+				diagram.getFigure(angle1, Angle.class)
+		);
+		rel.addParent(pair);
+		rel.setReason(ProofReasons.ANGLE_BISECTOR);
+		diagram.addFigureRelation(rel);
 	}
 	
 	private void handleMidpoint(FigureRelation pair) {

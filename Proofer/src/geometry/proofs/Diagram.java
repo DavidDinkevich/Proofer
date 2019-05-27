@@ -432,6 +432,35 @@ public class Diagram {
 	}
 	
 	/**
+	 * Get the largest compound segment that the given segment lies on.
+	 */
+	public Segment getLargestCompoundSegmentOf(String seg) {
+		// Stats of the largest segment
+		Segment largestSeg = null;
+		int mostComponentVerts = 0;
+		// For each compound segment
+		for (Node<Segment, Vertex> node : compoundSegments) {
+			// Check that this compound segment contains both endpoints of the query segment
+			int count = 0;
+			List<Vertex> componentVertices = getComponentVertices(node.getObject().getName());
+			for (Vertex v : componentVertices) {
+				if (v.getNameChar() == seg.charAt(0) || v.getNameChar() == seg.charAt(1)) {
+					++count;
+				}
+			}
+			// Size of the candidate compound segment
+			final int candidate = componentVertices.size();
+			// If the candidate compound segment contains the query AND is larger
+			// than the previous largest compound segment, replace it
+			if (count == 2 && candidate > mostComponentVerts) {
+				largestSeg = node.getObject();
+				mostComponentVerts = candidate;
+			}
+		}
+		return largestSeg;
+	}
+	
+	/**
 	 * Get the corresponding {@link Node} entry for the given {@link Segment}
 	 * @return the entry, or null if there is no entry for the given segment
 	 */
