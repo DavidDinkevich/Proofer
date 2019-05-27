@@ -8,6 +8,9 @@ import geometry.Vec2;
 import geometry.shapes.Angle;
 import geometry.shapes.Segment;
 import geometry.shapes.Segment.Slope;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
@@ -150,10 +153,19 @@ public final class Preprocessor {
 			}
 		}
 		// Not triangle or angle
-		else
+		else {
 			fig = diagram.getFigure(name);
-		if (fig == null)
+		}
+		
+		if (fig == null) {
 			System.err.println("Could not find figure with name: " + name);
+			// Display dialog showing that the figure was not found
+			Alert alert = new Alert(AlertType.ERROR, "\"" + name + "\" does not exist", 
+					ButtonType.OK);
+			alert.showAndWait();
+			// As of now, this thread will proceed to crash, but the program will be able
+			// to continue.
+		}
 		return fig;
 	}
 	
