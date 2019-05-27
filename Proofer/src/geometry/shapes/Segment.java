@@ -362,17 +362,20 @@ public class Segment extends AbstractShape implements VertexShape {
 			if (!(o instanceof Slope))
 				return false;
 			Slope other = (Slope) o;
+			
+			// If the line is vertical, then the slope can either be
+			// positive infinity or negative infinity (pointing up
+			// or down). For our purposes, these slopes are equal
+			if (Float.isInfinite(getSlopeRaw()) && Float.isInfinite(other.getSlopeRaw())) {
+				return true;
+			}
+			
 			// Rounding prevents small rounding errors
 			final float slopeDecimal = Utils.round(getSlopeRaw(), 4);
 			final float slopeDecimal2 = Utils.round(other.getSlopeRaw(), 4);
 //			final float slopeDecimal = getSlopeRaw();
 //			final float slopeDecimal2 = other.getSlopeRaw();
-			return slopeDecimal == slopeDecimal2
-					// If the line is vertical, then the slope can either be
-					// positive infinity or negative infinity (pointing up
-					// or down). For our purposes, these slopes are equal
-					|| (Float.isInfinite(slopeDecimal) 
-							&& Float.isInfinite(slopeDecimal2));
+			return slopeDecimal == slopeDecimal2;
 		}
 
 		@Override
