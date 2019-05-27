@@ -381,7 +381,7 @@ public class InputManager {
 	/**
 	 * Destroys all existing selectors. Selected objects are deselected.
 	 */
-	private void destroyAllSelectors() {
+	public void destroyAllSelectors() {
 		// Deselect all selected objects
 		for (int i = selectors.size()-1; i >= 0; i--) {
 			Selector sel = selectors.get(i);
