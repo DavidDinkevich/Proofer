@@ -3,6 +3,7 @@ package main;
 import geometry.Dimension;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -66,7 +67,7 @@ public class MainWindow extends Application {
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 		    @Override
 		    public void handle(WindowEvent event) {
-		        System.exit(0);
+		        Platform.exit();
 		    }
 		});
 				
