@@ -151,7 +151,7 @@ public class FigureRelationListPanel extends VBox {
 			            stage.show();
 					} else {
 						// Display dialog showing that proof is not solvable
-						Alert alert = new Alert(AlertType.INFORMATION, "The given proof is not "
+						Alert alert = new Alert(AlertType.ERROR, "The given proof is not "
 								+ "solvable", ButtonType.OK);
 						alert.showAndWait();
 					}
