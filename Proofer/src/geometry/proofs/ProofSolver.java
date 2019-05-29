@@ -221,7 +221,7 @@ public class ProofSolver {
 					// Secondary non-intersecting vertex
 					String.valueOf(secVert);
 				// Make the angle a right angle in the Diagram
-				Angle angle = diagram.getFigure(angleName, Angle.class);
+				Angle angle = diagram.getPrimaryAngleSynonym(angleName);
 				FigureRelation rel = new FigureRelation(RIGHT, angle, null);
 				rel.addParent(perpRel);
 				rel.setReason(ProofReasons.PERPENDICULAR);
