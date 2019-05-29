@@ -177,12 +177,17 @@ public class VertexBuffer implements Iterable<Vertex> {
 	 * @param vshape the {@link VertexShape}
 	 */
 	public void removeVertexShape(VertexShape vshape) {
-		// Remove the VertexShape from the list
+		// Remove all vertices belonging to the given vshape
+		for (Vertex vshapeVert : vshape.getVertices()) {
+			for (int i = vertices.size() - 1; i >= 0; i--) {
+				if (vshapeVert.equals(vertices.get(i))) {
+					vertices.remove(i);
+					break;
+				}
+			}
+		}
+		// Remove the vshape
 		vshapes.remove(vshape);
-		// Remove the VertexShape's vertices
-		removeVertices(vshape.getVertices());
-		// Update all of the VertexShapes' names
-		updateVertexShapes();
 	}
 	
 	/**
