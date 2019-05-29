@@ -45,12 +45,6 @@ public final class Preprocessor {
 		
 		// Add and include all hidden figures
 		addHiddenFigures(diagram);
-		
-//		for (Segment hiddenSeg : diagram.getHiddenFigures(Segment.class)) {
-//			System.out.println(diagram.getComponentVertices(hiddenSeg.getName()));
-//			System.out.println(Arrays.toString(diagram.getComponentSegments(hiddenSeg.getName())));
-//		}
-//		System.out.println("---------------");
 				
 		if (policy == Diagram.Policy.FIGURES_AND_RELATIONS) {
 			// Make vertical angles congruent
@@ -355,7 +349,7 @@ public final class Preprocessor {
 							// In the case where two segments intersect and the poi
 							// is one of the segment's end points, this can cause a bug
 							// where one of the segments is the poi listed twice
-							if (Segment.isValidSegmentName(newSeg.getName())) {
+							if (!newSeg.getVertexLoc(0).equals(newSeg.getVertexLoc(1))) {
 								diag.addHiddenFigure(newSeg);
 							}
 						}
@@ -514,7 +508,7 @@ public final class Preprocessor {
 		// If the index of the POI is 0, then there is no vertex before it, 
 		// so the endpoint is after the POI, at index 1
 		if (indexOfPOI == 0) {
-			endpoint = vertsOfCompoundSeg.get(indexOfPOI + 1).getName(); // index = 1
+			endpoint = vertsOfCompoundSeg.get(indexOfPOI + 1).getName(); // indexOfPOI = 1
 		}
 		// If the index of the POI is the last index in the array, then there is no vertex after
 		// it, so the endpoint is before the POI, at indexOfPOI-1
