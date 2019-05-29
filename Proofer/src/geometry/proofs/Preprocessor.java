@@ -578,28 +578,6 @@ public final class Preprocessor {
 		
 	private static void handleVerticalAngles(Diagram diagram) {
 		// For each figure
-		for (int i = 0; i < diagram.getFigures().size(); i++) {
-			// If the figure is NOT an angle, we don't care about it
-			if (!(diagram.getFigures().get(i) instanceof Angle))
-				continue;
-			Angle a0 = (Angle)diagram.getFigures().get(i);
-			// For each other figure
-			for (int j = 0; j < diagram.getFigures().size(); j++) {
-				// If we're looking at the same figure OR the figure we're looking
-				// at is NOT an angle
-				if (i == j || !(diagram.getFigures().get(j) instanceof Angle))
-					continue;
-				Angle a1 = (Angle)diagram.getFigures().get(j);
-				
-				if (ProofUtils.areVerticalAngles(a0, a1)) {
-					FigureRelation rel = new FigureRelation(CONGRUENT, a0, a1);
-					rel.setReason(ProofReasons.VERTICAL_ANGLES_CONGRUENT);
-					diagram.addFigureRelation(rel);
-				}
-			}
-		}
-		
-		// For each figure
 		for (int i = 0; i < diagram.getFigures().size() - 1; i++) {
 			// If the figure is NOT an angle, we don't care about it
 			if (diagram.getFigures().get(i).getClass() != Angle.class)
@@ -621,7 +599,6 @@ public final class Preprocessor {
 				}
 			}
 		}
-
 	}
 	
 	/*
