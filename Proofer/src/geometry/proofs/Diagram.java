@@ -333,7 +333,11 @@ public class Diagram {
 				// If the angle is SMALLER than the existing smallest angle 
 				// (for this set of synonyms), then insert the angle to the front of the set.
 				// It will become the new primary angle synonym
+				// ALSO, remove the old primary angle synonym from the list of figures, as
+				// now it is a secondary angle synonym, and SASs are not included in the list
+				// of figures
 				if (result == -1) {
+					figures.remove(subList.get(0));
 					subList.add(0, angle);
 				} 
 				// Otherwise, if result = 0 or 1, just append it to the end
