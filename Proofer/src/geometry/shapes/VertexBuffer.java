@@ -2,7 +2,6 @@ package geometry.shapes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,22 +32,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 		vshapes = new ArrayList<>();
 		listeners = new ArrayList<>();
 	}
-	
-	private void removeChar(Vertex vert) {
-		// Remove the given char
-		charList.removeChar(vert.getNameChar());
-		// "Refresh" all vertices and make sure their name are in sync
-		updateVertexNames();
-	}
-	
-	private void updateVertexNames() {
-		for (int i = 0; i < vertices.size(); i++) {
-			vertices.get(i).setName(charList.getChars().get(i));
-		}
-		// Since we changed the names of the vertices, we must update all VertexShapes
-		updateVertexShapes();
-	}
-	
+		
 	/**
 	 * Ensure that the given vertex is contained in this list. If
 	 * it's not, throw an {@link IllegalArgumentException}.
@@ -92,35 +76,17 @@ public class VertexBuffer implements Iterable<Vertex> {
 	}
 	
 	/**
-	 * Remove the {@link Vertex} at the given index
-	 * @param index the index at which the {@link Vertex} will be removed
-	 * @return the {@link Vertex} that was removed
-	 */
-	public Vertex removeVertex(int index) {
-		Vertex vert = vertices.remove(index);
-		removeChar(vert);
-		return vert;
-	}
-	
-	/**
 	 * Removes <i>the first instance</i> of the given {@link Vertex}.
 	 * @param vert the {@link Vertex} that will be removed
 	 * @return whether or not the {@link Vertex} was successfully removed
 	 */
 	public boolean removeVertex(Vertex vert) {
-//		boolean success = false;
-//		for (int i = vertices.size() - 1; i >= 0; i--) {
-//			if (vertices.get(i).equals(vert)) {
-//				vertices.remove(i);
-//				removeChar(vert);
-//				success = true;
-//			}
-//		}
-//		return success;
 		for (int i = vertices.size() - 1; i >= 0; i--) {
 			if (vertices.get(i).equals(vert)) {
+				// Remove from list of vertices
 				vertices.remove(i);
-				removeChar(vert);
+				// Remove from char list
+				charList.removeChar(vert.getNameChar());
 				return true;
 			}
 		}
@@ -178,14 +144,7 @@ public class VertexBuffer implements Iterable<Vertex> {
 	 */
 	public void removeVertexShape(VertexShape vshape) {
 		// Remove all vertices belonging to the given vshape
-		for (Vertex vshapeVert : vshape.getVertices()) {
-			for (int i = vertices.size() - 1; i >= 0; i--) {
-				if (vshapeVert.equals(vertices.get(i))) {
-					vertices.remove(i);
-					break;
-				}
-			}
-		}
+		removeVertices(vshape.getVertices());
 		// Remove the vshape
 		vshapes.remove(vshape);
 	}
@@ -409,10 +368,6 @@ public class VertexBuffer implements Iterable<Vertex> {
 					return i;
 			}
 			return -1;
-		}
-		
-		public List<Character> getChars() {
-			return Collections.unmodifiableList(chars);
 		}
 	}	
 }
