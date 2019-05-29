@@ -502,7 +502,7 @@ public class InputManager {
 		canvas.updateVertexNamesInVertexShape(sel.getTarget().getShape());
 		
 		// Update the name of the selector
-//		sel.getShape().setName(sel.getTarget().getShape().getName());
+		sel.getShape().setName(sel.getTarget().getShape().getName());
 		
 		// Redraw if instructed to
 		if (redraw)
