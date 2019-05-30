@@ -240,9 +240,8 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		// case we don't want duplicates). Finally, we don't want to add
 		// "secondary triangles" (see isSecondaryTriangle() for description). Doing so
 		// would result in ugly triangles being created on top of other ones.
-		return !containsDiagramFigure(name, Triangle.class)
+		return !containsDiagramFigure(name, Triangle.class);
 //		&& !containsHiddenInvisibleFigure(name)
-		&& !isSecondaryTriangle(diag, name);
 	}
 	
 //	private boolean containsHiddenInvisibleFigure(String name) {
@@ -260,26 +259,6 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 //		
 //		return false;
 //	}
-
-	/**
-	 * A "secondary triangle" in this context is simply a triangle that is composed
-	 * of one or more angle synonyms.
-	 * @param diag the diagram in which the triangle lies
-	 * @param name the name of the triangle
-	 * @return whether or not it is a "secondary triangle"
-	 */
-	private boolean isSecondaryTriangle(Diagram diag, String name) {
-		Triangle tri = diag.getFigure(name, Triangle.class);
-		if (tri == null) {
-			return false;
-		}
-		
-		for (Angle angle : tri.getAngles()) {
-			if (diag.isSecondaryAngleSynonym(angle.getName()))
-				return true;
-		}
-		return false;
-	}
 	
 	public boolean displayUIRelationMaker() {
 		// If no figures are selected AND the user is holding shift
