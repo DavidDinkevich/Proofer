@@ -93,13 +93,10 @@ public class FigureRelationListPanel extends VBox {
         proofObjectivePanel.setPadding(new Insets(10));
         
         // Enable solve button if the proof objective panel is partially filled out
-        EventHandler<KeyEvent> handler = e-> {
-        	final boolean disable = proofObjectivePanel.getFigTextField0().getText().isEmpty()
-        			|| proofObjectivePanel.getFigTextField1().getText().isEmpty();
-        	solveButton.setDisable(disable);
-        };
+        EventHandler<KeyEvent> handler = e-> updateSolveButton();
         proofObjectivePanel.getFigTextField0().addEventHandler(KeyEvent.KEY_RELEASED, handler);
         proofObjectivePanel.getFigTextField1().addEventHandler(KeyEvent.KEY_RELEASED, handler);
+        proofObjectivePanel.getRelationBox().valueProperty().addListener(e -> updateSolveButton());
         /////
         
         TitledPane proofPane = new TitledPane("To Prove", proofObjectivePanel);
@@ -200,6 +197,16 @@ public class FigureRelationListPanel extends VBox {
 	/*
 	 * END INITIALIZATION METHODS
 	 */
+	
+	private void updateSolveButton() {
+		final boolean firstFieldEmpty = proofObjectivePanel.getFigTextField0().getText()
+    			.isEmpty();
+    	final boolean secondFieldEmpty = proofObjectivePanel.getFigTextField1().getText()
+    			.isEmpty();
+    	final boolean disable = firstFieldEmpty || (secondFieldEmpty && 
+    			!proofObjectivePanel.getRelationType().isSingleFigureRelation());
+    	solveButton.setDisable(disable);
+	}
 	
 	public void addFigureRelationPanel(FigureRelationPanel panel) {
 		if (panels.add(panel)) {
