@@ -541,8 +541,9 @@ public final class Preprocessor {
 				// PerpendicularFigureRelation
 				
 				PerpendicularFigureRelation perpRel = new PerpendicularFigureRelation(
-					pair.getFigure0(),
-					pair.getFigure1(),
+					// Make sure segments are the largest compound segments
+					diagram.getLargestCompoundSegmentOf(pair.getFigure0().getName()),
+					diagram.getLargestCompoundSegmentOf(pair.getFigure1().getName()),
 					poi.getNameChar()
 				);
 				perpRel.addParents(pair.getParents());
