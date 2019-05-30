@@ -181,7 +181,7 @@ public class Diagram {
 			// If the angle is NOT a primary angle synonym, then we don't want to add it
 			if (!isPrimaryAngleSynonym(fig.getName())) {
 				// Return false because the figure was not added (the fact that the angle was
-				// added to the angle synonyms list is irrelevant
+				// added to the angle synonyms list is irrelevant)
 				return false;
 			}
 		}
@@ -247,6 +247,14 @@ public class Diagram {
 		return true;
 	}
 	
+	public boolean containsFigures(String[] figs) {
+		for (String fig : figs) {
+			if (!containsFigure(fig))
+				return false;
+		}
+		return true;
+	}
+	
 	public boolean containsFigures(Collection<String> figs, Class<? extends Figure> c) {
 		for (String fig : figs) {
 			if (!containsFigure(fig, c))
@@ -274,9 +282,18 @@ public class Diagram {
 		return null;
 	}
 	
+	public List<Angle> getAllAnglesAndSynonyms() {
+		List<Angle> all = new ArrayList<>();
+		for (List<Angle> subList : angleSynonyms) {
+			all.addAll(subList);
+		}
+		return all;
+	}
+	
 	public boolean containsAngleSynonym(String angle) {
-		List<Angle> subList = getAngleSynonyms(angle);
-		return subList != null;
+//		List<Angle> subList = getAngleSynonyms(angle);
+//		return subList != null;
+		return isPrimaryAngleSynonym(angle) || isSecondaryAngleSynonym(angle);
 	}
 	
 	public boolean isPrimaryAngleSynonym(String a) {
