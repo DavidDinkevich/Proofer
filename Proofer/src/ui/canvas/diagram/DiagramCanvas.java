@@ -12,7 +12,6 @@ import geometry.Vec2;
 import geometry.proofs.Diagram;
 import geometry.proofs.Figure;
 import geometry.proofs.Preprocessor;
-import geometry.shapes.Angle;
 import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
