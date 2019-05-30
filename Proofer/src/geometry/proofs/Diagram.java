@@ -485,6 +485,15 @@ public class Diagram {
 	}
 	
 	/**
+	 * Get whether the given segment is a compound segment
+	 */
+	public boolean isCompoundSegment(String seg) {
+		if (!Segment.isValidSegmentName(seg))
+			throw new IllegalArgumentException(seg + " is not a segment");
+		return getCompoundSegmentNode(seg) != null;
+	}
+	
+	/**
 	 * Get the corresponding {@link Node} entry for the given {@link Segment}
 	 * @return the entry, or null if there is no entry for the given segment
 	 */
