@@ -549,8 +549,12 @@ public class ProofSolver {
 		// For each angle in the first triangle
 		outer:
 		for (Angle a0 : tri0Angles) {
-			// For each angle in the second triangle
+			// Make sure this is a primary angle synonym
+			a0 = diagram.getPrimaryAngleSynonym(a0.getName());
+//			 For each angle in the second triangle
 			for (Angle a1 : tri1Angles) {
+				// Make sure this is a primary angle synonym
+				a1 = diagram.getPrimaryAngleSynonym(a1.getName());
 				// Try to find if these angles are congruent
 				FigureRelation congAngles = getCongruentRel(a0, a1);
 				// If they are congruent
@@ -621,9 +625,11 @@ public class ProofSolver {
 					// angles are congruent. If so, add them to the list
 					// of parents
 					for (String angle0 : adjacentAngles0) {
-						Angle a0 = tri0.getAngle(angle0);
+						// Make sure this is a primary angle synonym
+						Angle a0 = diagram.getPrimaryAngleSynonym(angle0);
 						for (String angle1 : adjacentAngles1) {
-							Angle a1 = tri1.getAngle(angle1);
+							// Make sure this is a primary angle synonym
+							Angle a1 = diagram.getPrimaryAngleSynonym(angle1);
 							FigureRelation anglesRel = getCongruentRel(a0, a1);
 							if (anglesRel != null)
 								parents.add(anglesRel);
