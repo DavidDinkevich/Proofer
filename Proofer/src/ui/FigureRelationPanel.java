@@ -2,7 +2,8 @@ package ui;
 
 import geometry.proofs.FigureRelationType;
 import geometry.proofs.ProofUtils;
-
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -45,8 +46,27 @@ public class FigureRelationPanel extends HBox {
 		}
 		
 		relationBox = new ComboBox<String>(vals);
+		relationBox.setMinWidth(150);
 		relationBox.getSelectionModel().select(0);
-		
+		relationBox.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, 
+					String oldValue, String newValue) {
+				// If we've changed to a single-figure relation, get rid of the
+				// second figure field and expand the first figure field
+				if (getRelationType().isSingleFigureRelation()) {
+					getChildren().remove(fig1TextField);
+					fig0TextField.setPrefColumnCount(15);
+				}
+				// If we're changing back from a single-figure relation, add the second
+				// figure field
+				else if (FigureRelationType.valueOf(oldValue.toUpperCase())
+						.isSingleFigureRelation()) {
+					getChildren().add(fig1TextField);
+					fig0TextField.setPrefColumnCount(5);
+				}
+			}
+		});
 		
 		getChildren().addAll(fig0TextField, relationBox, fig1TextField);
 	}
