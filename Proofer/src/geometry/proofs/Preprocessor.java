@@ -1,7 +1,5 @@
 package geometry.proofs;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import geometry.Vec2;
@@ -9,17 +7,17 @@ import geometry.shapes.Angle;
 import geometry.shapes.Arc;
 import geometry.shapes.Segment;
 import geometry.shapes.Segment.Slope;
+import geometry.shapes.Triangle;
+import geometry.shapes.Vertex;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
-import geometry.shapes.Triangle;
-import geometry.shapes.Vertex;
 
 import ui.FigureRelationListPanel;
 import ui.FigureRelationPanel;
 import ui.canvas.GraphicsShape;
 import ui.canvas.diagram.DiagramCanvas;
-
 
 import static geometry.proofs.FigureRelationType.CONGRUENT;
 
@@ -178,7 +176,6 @@ public final class Preprocessor {
 	 * @param diagram the diagram that contains the hidden figures.
 	 */
 	private static void addHiddenFigures(Diagram diagram) {		
-		List<Angle> hiddenAngles = new ArrayList<>();
 		boolean figuresWereAdded = false;
 		
 		// Add hidden vertices
@@ -206,20 +203,14 @@ public final class Preprocessor {
 					Figure hiddenFig = addHiddenSegmentOrAngle(diagram, seg0, seg1);
 					// If we've found a new hidden figure
 					if (hiddenFig != null) {
-						figuresWereAdded = true; // Update variable
-						// If the hidden figure we found is an angle, store it
-						if (hiddenFig.getClass() == Angle.class)
-							hiddenAngles.add((Angle) hiddenFig);
+						figuresWereAdded = true;
 					}
 				}
 			}
-	
-			// Try to find hidden triangles with the new hidden angles we found (or didn't)
-			List<Triangle> hiddenTris = identifyHiddenTriangles(diagram, hiddenAngles);
-			// If hidden triangles were added to the diagram
-			if (diagram.addHiddenFigures(hiddenTris))
-				figuresWereAdded = true; // Update variable
 		} while (figuresWereAdded);
+		
+		// Add hidden triangles
+		addHiddenTriangles(diagram);
 	}
 	
 	/**
@@ -401,41 +392,28 @@ public final class Preprocessor {
 	/**
 	 * Identify hidden triangles in a diagram
 	 * @param diag the diagram
-	 * @param hiddenAngles the List of hidden angles to use
-	 * to find the hidden triangles
-	 * @return a List of hidden triangles
 	 */
-	private static List<Triangle> identifyHiddenTriangles(Diagram diag, List<Angle> hiddenAngles) {
-		List<Triangle> hiddenTriangles = null;
-		
-		// Add hidden triangles
-		for (Figure a : hiddenAngles) {
-			String originalAngleName = a.getName();
+	private static void addHiddenTriangles(Diagram diagram) {
+		for (Angle angle : diagram.getAllAnglesAndSynonyms()) {
+			String originalAngleName = angle.getName();
 			// Vertices
 			String sharedVert = originalAngleName.substring(1, 2);
 			String v0 = originalAngleName.substring(0, 1);
 			String v1 = originalAngleName.substring(2); 
-			// Derive two hypothetical angles that WOULD exist if there was a hidden triangle
-			String secondAngle = sharedVert + v0 + v1;
-			String thirdAngle = sharedVert + v1 + v0;
+			// Derive three hypothetical segments that WOULD exist if there was a hidden triangle
+			String[] hypoSegs = { v0 + sharedVert, sharedVert + v1, v0 + v1 };
 			
-			// Check if the two derived angles (secondAngle, thirdAngle) exist in the diagram
-			if (!(diag.containsAngleSynonym(secondAngle) 
-				&& diag.containsAngleSynonym(thirdAngle))) {
+			// Check if the three derived segments exist in the diagram
+			if (!diagram.containsFigures(hypoSegs))
 				continue;
-			}
+			
 			// New triangle
-			Angle originalAngle = (Angle)a;
-			Vertex vertex0 = (Vertex) originalAngle.getChild(v0);
-			Vertex vertex1 = (Vertex) originalAngle.getChild(v1);
-			Vertex shared = (Vertex) originalAngle.getChild(sharedVert);
+			Vertex vertex0 = (Vertex) angle.getChild(v0);
+			Vertex vertex1 = (Vertex) angle.getChild(v1);
+			Vertex shared = (Vertex) angle.getChild(sharedVert);
 			Triangle triangle = new Triangle(vertex0, shared, vertex1);
-			if (hiddenTriangles == null)
-				hiddenTriangles = new ArrayList<>();
-			hiddenTriangles.add(triangle);
+			diagram.addHiddenFigure(triangle);
 		}
-		
-		return hiddenTriangles == null ? Collections.emptyList() : hiddenTriangles;
 	}
 	
 	/**
