@@ -473,33 +473,40 @@ public final class Preprocessor {
 		Segment largestBisector = diagram.getLargestCompoundSegmentOf(bisectingSeg.getName());
 		// Point of intersection between angle and segment
 		String pointOfIntersection = angle.getNameShort();
-		// Get the second endpoint of the smallest bisector (the first is the point of 
-		// intersection)
-		List<Vertex> vertsOfCompoundSeg = diagram.getComponentVertices(largestBisector.getName());
-		// Get the index of the point of intersection in the list of the largest bisector's
-		// component vertices
-		int indexOfPOI = 0;
-		for (; !vertsOfCompoundSeg.get(indexOfPOI).isValidName(pointOfIntersection); indexOfPOI++);
-		// There are two options: the second endpoint is the vertex BEFORE the POI, or
-		// the one afterward. Whichever one lies inside the main angle is the second endpoint.
+		/*
+		 * Get the 2nd endpoint of the SMALLEST bisector (the first is the point of intersection)
+		 */
 		String endpoint;
-		// If the index of the POI is 0, then there is no vertex before it, 
-		// so the endpoint is after the POI, at index 1
-		if (indexOfPOI == 0) {
-			endpoint = vertsOfCompoundSeg.get(indexOfPOI + 1).getName(); // indexOfPOI = 1
+		// If the bisector is NOT a compound segment, we just have to get it's other vertex
+		if (!diagram.isCompoundSegment(largestBisector.getName())) {
+			endpoint = ProofUtils.getOtherVertex(largestBisector.getName(), pointOfIntersection);
 		}
-		// If the index of the POI is the last index in the array, then there is no vertex after
-		// it, so the endpoint is before the POI, at indexOfPOI-1
-		else if (indexOfPOI == vertsOfCompoundSeg.size() - 1) {
-			endpoint = vertsOfCompoundSeg.get(indexOfPOI - 1).getName();
-		} else {
-			Vertex before = vertsOfCompoundSeg.get(indexOfPOI - 1);
-			Vertex after = vertsOfCompoundSeg.get(indexOfPOI + 1);
-//			endpoint = angle.containsPoint(before.getCenter()) ? before.getName() 
-//					: after.getName();
-			Arc angleArc = ProofUtils.getArc(angle);
-			endpoint = ProofUtils.arcContainsPoint(angleArc, before.getCenter(), -1f) 
-					? before.getName() : after.getName();
+		// If it is a compound segment, we need to do some more stuff
+		else {
+			List<Vertex> compSegVerts = diagram.getComponentVertices(largestBisector.getName());
+			// Get the index of the point of intersection in the list of the largest bisector's
+			// component vertices
+			int indexOfPOI = 0;
+			for (; !compSegVerts.get(indexOfPOI).isValidName(pointOfIntersection); indexOfPOI++);
+			// There are two options: the second endpoint is the vertex BEFORE the POI, or
+			// the one afterward. Whichever one lies inside the main angle is the second endpoint.
+			
+			// If the index of the POI is 0, then there is no vertex before it, 
+			// so the endpoint is after the POI, at index 1
+			if (indexOfPOI == 0) {
+				endpoint = compSegVerts.get(indexOfPOI + 1).getName(); // indexOfPOI = 1
+			}
+			// If the index of the POI is the last index in the array, then there is no vertex after
+			// it, so the endpoint is before the POI, at indexOfPOI-1
+			else if (indexOfPOI == compSegVerts.size() - 1) {
+				endpoint = compSegVerts.get(indexOfPOI - 1).getName();
+			} else {
+				Vertex before = compSegVerts.get(indexOfPOI - 1);
+				Vertex after = compSegVerts.get(indexOfPOI + 1);
+				Arc angleArc = ProofUtils.getArc(angle);
+				endpoint = ProofUtils.arcContainsPoint(angleArc, before.getCenter(), -1f) 
+						? before.getName() : after.getName();
+			}
 		}
 		
 		// Construct the name of the smallest bisector
