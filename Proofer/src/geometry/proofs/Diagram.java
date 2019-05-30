@@ -663,8 +663,8 @@ public class Diagram {
 						// Make congruent pair
 						FigureRelation newPair = new FigureRelation(
 								FigureRelationType.CONGRUENT,
-								anglePair[0],
-								anglePair[1]
+								getPrimaryAngleSynonym(anglePair[0].getName()),
+								getPrimaryAngleSynonym(anglePair[1].getName())
 						);
 						newPair.addParent(pair);
 						newPair.setReason(ProofReasons.CORR_ANGLES_CONG_TRIANGLES);

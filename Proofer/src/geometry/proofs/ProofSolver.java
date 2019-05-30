@@ -328,7 +328,9 @@ public class ProofSolver {
 		// Length of corrAngles should always be 3
 		for (int i = 0; i < corrAngles.size(); i++) {
 			FigureRelation rel = new FigureRelation(
-					CONGRUENT, corrAngles.get(i)[0], corrAngles.get(i)[1]
+					CONGRUENT,
+					diagram.getPrimaryAngleSynonym(corrAngles.get(i)[0].getName()),
+					diagram.getPrimaryAngleSynonym(corrAngles.get(i)[1].getName())
 			);
 			rel.setReason(ProofReasons.CORR_ANGLES_SIMILAR_TRIANGLES);
 			rel.addParent(pair);
