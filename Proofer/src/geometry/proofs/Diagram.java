@@ -478,7 +478,10 @@ public class Diagram {
 				mostComponentVerts = candidate;
 			}
 		}
-		return largestSeg;
+		
+		// If largestSeg = null, then it is likely the largest existing compound segment.
+		// Therefore, we will just return it instead of null.
+		return largestSeg == null ? getFigure(seg) : largestSeg;
 	}
 	
 	/**
