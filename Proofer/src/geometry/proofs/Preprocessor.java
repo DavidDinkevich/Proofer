@@ -464,10 +464,14 @@ public final class Preprocessor {
 		if (midpt == null)
 			throw new NullPointerException("No vertex at midpoint");
 
+		// Convert bisector to largest compound segment (for standardization)
+		Segment largestCompSegBisector = diagram
+				.getLargestCompoundSegmentOf(pair.getFigure0().getName());
+		
 		// REPLACE THE GIVEN FigureRelation WITH A MORE DESCRIPTIVE type of figure relation
 
 		SegmentBisectorFigureRelation bisectsRel = new SegmentBisectorFigureRelation(
-				pair.getFigure0(),
+				largestCompSegBisector == null ? pair.getFigure0() : largestCompSegBisector,
 				bisectedSeg,
 				midpt.getNameChar()
 		);
