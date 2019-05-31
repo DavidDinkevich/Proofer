@@ -280,6 +280,8 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		}
 		// Update
 		displayRelMaker = render;
+		// Stop displaying the selection box (both cannot coexist)
+		setDisplaySelectionContainer(false, false);
 		if (redraw)
 			redraw();
 	}

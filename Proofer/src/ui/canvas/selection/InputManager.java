@@ -236,6 +236,12 @@ public class InputManager {
 	}
 	
 	private void handleKeyPressed(KeyEvent e) {
+		// If we need to display the UIRelationMaker, make starting point where the mouse
+		// is currently
+		if (canvas.displayUIRelationMaker()) {
+			canvas.getUIRelationMaker().getShape().setVertexLoc(0, canvas.getMouseLocOnGrid());
+		}
+		
 		if (e.getCode().equals(KeyCode.BACK_SPACE)) {
 			destroyAllSelectedObjects();
 			canvas.redraw();
@@ -245,7 +251,7 @@ public class InputManager {
 		else if (e.getCode().equals(KeyCode.SPACE)) {
 			snapAllSelectors(true);
 		}
-
+		
 		else if (e.getCode().equals(KeyCode.N)) {
 			/*
 			 * EVERYTHING BELLOW IS TEMPORARY, FOR TESTING PURPOSES.
