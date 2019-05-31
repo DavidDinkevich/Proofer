@@ -1,5 +1,6 @@
 package ui;
 
+import geometry.proofs.FigureRelation;
 import geometry.proofs.FigureRelationType;
 import geometry.proofs.ProofUtils;
 import javafx.beans.value.ChangeListener;
@@ -10,6 +11,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+
+import static geometry.proofs.FigureRelationType.CONGRUENT;
 
 
 public class FigureRelationPanel extends HBox {
@@ -23,23 +26,23 @@ public class FigureRelationPanel extends HBox {
 	private TextField fig0TextField, fig1TextField;
 	private ComboBox<String> relationBox;
 	
-	public FigureRelationPanel(Type type) {
+	public FigureRelationPanel(Type type, FigureRelationType relType, String f0, String f1) {
 		super(10);
 		this.type = type;
 		
 		setPadding(new Insets(10, 2, 10, 2));
 		
-		fig0TextField = new FigureTextField();
+		fig0TextField = new FigureTextField(f0);
 		fig0TextField.setPrefColumnCount(5);
-		fig1TextField = new FigureTextField();
+		fig1TextField = new FigureTextField(f1);
 		fig1TextField.setPrefColumnCount(5);
 		
 		// Get vals for combo box
 		ObservableList<String> vals = FXCollections.observableArrayList();
 		for (String relTypeName : ProofUtils.getUserFigureRelationTypes()) {
-			FigureRelationType relType = ProofUtils.toFigureRelationType(relTypeName);
+			FigureRelationType t = ProofUtils.toFigureRelationType(relTypeName);
 			// Don't add isosceles to panels of type GIVEN
-			if (type == Type.GIVEN && relType == FigureRelationType.ISOSCELES) {
+			if (type == Type.GIVEN && t == FigureRelationType.ISOSCELES) {
 				continue;
 			}
 			vals.add(relTypeName);
@@ -47,7 +50,7 @@ public class FigureRelationPanel extends HBox {
 		
 		relationBox = new ComboBox<String>(vals);
 		relationBox.setMinWidth(150);
-		relationBox.getSelectionModel().select(0);
+		relationBox.getSelectionModel().select(relType.toString());
 		relationBox.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, 
@@ -69,6 +72,10 @@ public class FigureRelationPanel extends HBox {
 		});
 		
 		getChildren().addAll(fig0TextField, relationBox, fig1TextField);
+	}
+	
+	public FigureRelationPanel(Type type) {
+		this(type, CONGRUENT, "", "");
 	}
 	
 	/**

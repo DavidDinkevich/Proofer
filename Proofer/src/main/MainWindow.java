@@ -49,7 +49,7 @@ public class MainWindow extends Application {
 		// Create canvas
 		// Width is left-over space from the FigureRelationListPanel
 		final float canvasWidth = (float) (DEF_WIDTH - DEF_FIG_REL_PANEL_WIDTH);
-		canvas = new DiagramCanvas(canvasWidth, (float) DEF_HEIGHT);
+		canvas = new DiagramCanvas(relListPanel, canvasWidth, (float) DEF_HEIGHT);
 		
 		// Add to hbox
 		HBox hbox = new HBox();

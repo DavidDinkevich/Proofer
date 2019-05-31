@@ -11,14 +11,17 @@ import geometry.Dimension;
 import geometry.Vec2;
 import geometry.proofs.Diagram;
 import geometry.proofs.Figure;
+import geometry.proofs.FigureRelation;
 import geometry.proofs.Preprocessor;
+import geometry.proofs.ProofReasons;
 import geometry.shapes.Shape;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 import geometry.shapes.VertexBuffer;
 import geometry.shapes.VertexBufferListener;
 import geometry.shapes.VertexShape;
-
+import ui.FigureRelationListPanel;
+import ui.FigureRelationPanel;
 import ui.canvas.AdvancedCanvas;
 import ui.canvas.Brush;
 import ui.canvas.GraphicsPolygonChild;
@@ -30,6 +33,8 @@ import ui.canvas.selection.InputManager;
 import ui.canvas.selection.SelectionBox;
 import ui.canvas.selection.Selector;
 import ui.canvas.selection.UIRelationMaker;
+
+import static geometry.proofs.FigureRelationType.CONGRUENT;
 
 
 public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListener {
@@ -45,6 +50,7 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 	private RenderList renderList;
 	private VertexBuffer vertexBuff;
 	private InputManager inputManager;
+	private FigureRelationListPanel figRelListPanel;
 	
 	// Selection container
 	
@@ -65,7 +71,7 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 	private List<Vertex> recentHiddenVertices;
 	
 
-	public DiagramCanvas(float w, float h) {
+	public DiagramCanvas(FigureRelationListPanel figRelListPanel, float w, float h) {
 		super(w, h);
 		
 		canvasGrid = new DiagramCanvasGrid(this, new Dimension(50f));
@@ -74,6 +80,7 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		vertexBuff = new VertexBuffer();
 		vertexBuff.getListeners().add(this);
 		inputManager = new InputManager(this);
+		this.figRelListPanel = figRelListPanel;
 		
 		/*
 		 * RENDERING TOOLS
@@ -329,7 +336,7 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 			if (selectedShapes.size() >= 2)
 				break;
 		}
-
+		
 		// Because we're "releasing" the UIRelationMaker, we want to make it
 		// disappear
 		setDisplayUIRelationMaker(false, redraw);
@@ -337,6 +344,21 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		// Set vertices to center
 		for (Vertex v : relMaker.getShape().getVertices())
 			v.setCenter(Vec2.ZERO);
+		
+		// Create the figure relation
+		if (selectedShapes.size() == 2) {
+			Figure f0 = selectedShapes.get(0);
+			Figure f1 = selectedShapes.get(1);
+			
+			if (FigureRelation.isLegalRelation(CONGRUENT, f0, f1)) {
+				FigureRelation rel = new FigureRelation(CONGRUENT, f0, f1);
+				rel.setReason(ProofReasons.GIVEN);
+				FigureRelationPanel panel = new FigureRelationPanel(
+						FigureRelationPanel.Type.GIVEN, CONGRUENT, f0.toString(), f1.toString());
+				figRelListPanel.addFigureRelationPanel(panel);
+			}
+		}
+
 	}
 	
 	public UIRelationMaker getUIRelationMaker() {
