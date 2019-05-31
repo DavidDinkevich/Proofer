@@ -315,12 +315,26 @@ public final class Preprocessor {
 						diag.addComponentVertex(seg0.getName(), newVertex);
 						diag.addComponentVertex(seg1.getName(), newVertex);
 					}
-					// Even if there is a vertex at the poi, it is possible that
-					// the vertex is the endpoint of one of the intersecting segments.
-					// If so, we still want to count it.
+					/*
+					 * Even if there is a vertex at the poi, it is possible that
+					 * the vertex is the endpoint of one/both of the intersecting segments.
+					 * If so, we still want to count it.
+					 * There are two possibilities: either the segments form a T or they form
+					 * an L (not necessarily at right angles). In the former case, we want to 
+					 * make the segment that contains the other segment's endpoint into a 
+					 * compound segment
+					 */
 					else {
 						// See if the vertex is a segment end point
 						newVertex = getSegmentEndpoint(diag, poi);
+						final char vname = newVertex.getNameChar();
+						// If the segments form a T and not an L
+						if (!(seg0.containsVertex(vname) && seg1.containsVertex(vname))) {
+							Segment newCompSeg = seg0.containsVertex(newVertex.getNameChar()) ?
+									seg1 : seg0;
+							diag.markAsCompoundSegment(newCompSeg);
+							diag.addComponentVertex(newCompSeg.getName(), newVertex);							
+						}
 					}
 					// If a vertex at the point of intersection is made/found
 					if (newVertex != null) {
