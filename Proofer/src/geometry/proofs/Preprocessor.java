@@ -56,7 +56,7 @@ public final class Preprocessor {
 	 * Prepare a {@link Diagram} to be processed by {@link ProofSolver}.
 	 * @param canvas the {@link}
 	 * @param figRelPanel
-	 * @return the diagram
+	 * @return the diagram if successful, or null if not successful
 	 */
 	public static Diagram generateDiagram(DiagramCanvas canvas, 
 			FigureRelationListPanel figRelPanel) {
@@ -64,8 +64,9 @@ public final class Preprocessor {
 		// Compile the figures
 		Diagram diagram = compileFigures(canvas, Diagram.Policy.FIGURES_AND_RELATIONS);
 		
-		// Preprocess given
-		preprocessGiven(diagram, canvas, figRelPanel);
+		// Preprocess given, return null in case of error
+		if (preprocessGiven(diagram, canvas, figRelPanel) < 0)
+			return null;
 		
 		// Preprocess perpendicular pair
 		preprocessPerpendicularPairs(diagram);
@@ -75,63 +76,85 @@ public final class Preprocessor {
 		return diagram;
 	}
 	
-	private static void preprocessGiven(Diagram diag, DiagramCanvas canvas,
+	/**
+	 * Incorporates user-inputted information into the given Diagram
+	 * @return -1 in the case of failure, 0 in case of success
+	 */
+	private static int preprocessGiven(Diagram diag, DiagramCanvas canvas,
 			FigureRelationListPanel figRelPanel) {
 		
-		// Determine given
+		// Get given information
 		for (FigureRelationPanel panel : figRelPanel.getFigureRelationPanels()) {
 			// Ensure content
 			if (!panel.hasContent())
 				continue;
 			
-			// Figure relation type
-			FigureRelationType relType = panel.getRelationType();
-			// First figure name
-			String figText0 = panel.getFigTextField0().getText();
-			// Second figure name
-			String figText1 = panel.getFigTextField1().getText();
-			
-			/*
-			 * If there are no  figures that match the names
-			 * of figures given in the figure relation pair panel,
-			 * the following instantiation of a figure relation pair will
-			 * crash.
-			 */
-			FigureRelation rel = new FigureRelation(
-					relType,
-					// Get first figure
-					searchForFigure(diag, figText0),
-					// Get second figure
-					relType.isSingleFigureRelation() ? null : searchForFigure(diag, figText1)
-			);
+			FigureRelation rel = parseFigureRelationPanel(panel, diag);
+			if (rel == null)
+				return -1;
 			rel.setReason(ProofReasons.GIVEN);
 			// Add the given
 			diag.addFigureRelation(rel);
 		}
 		
-		/*
-		 * Determine proof goal (to prove)
-		 */
+		// Get proof objective
+		FigureRelationPanel objectivePanel = figRelPanel.getProofGoalPanel();
+		FigureRelation proofObjective = parseFigureRelationPanel(objectivePanel, diag);
+		if (proofObjective == null)
+			return -1;
+		proofObjective.setReason(ProofReasons.NONE);
+		diag.setProofGoal(proofObjective);
 		
-		FigureRelationPanel goalPanel = figRelPanel.getProofGoalPanel();
+		return 0; // Success
+	}
+	
+	/**
+	 * Ensure that the given {@link FigureRelationPanel} produces a valid {@link FigureRelation}
+	 * @return a {@link FigureRelation} containing the panel's contents, or null if the panel does
+	 * not contain a valid {@link FigureRelation}
+	 */
+	private static FigureRelation parseFigureRelationPanel(FigureRelationPanel panel,
+			Diagram diag) {
+		// Get the components of the panel
+		FigureRelationType relType = panel.getRelationType();
+		String figText0 = panel.getFigTextField0().getText();
+		String figText1 = panel.getFigTextField1().getText();
 		
-		// Check if the proof goal panel has content
-		if (!goalPanel.hasContent()) {
-			throw new UnsupportedOperationException("Diagram has no goal.");
+		// Get the first figure
+		Figure fig0 = searchForFigure(diag, figText0);
+		if (fig0 == null) {
+			showNonexistantFigureDialog(figText0);
+			return null;
 		}
-		
-		FigureRelationType goalRelType = goalPanel.getRelationType();
-		FigureRelation proofGoal = new FigureRelation(
-				goalRelType,
-				//  First figure
-				searchForFigure(diag, goalPanel.getFigTextField0().getText()),
-				// Second figure
-				goalRelType.isSingleFigureRelation() ? null : 
-					searchForFigure(diag, goalPanel.getFigTextField1().getText())
-		);
-		proofGoal.setReason(ProofReasons.NONE);
-		diag.setProofGoal(proofGoal);
+		// Get second figure
+		Figure fig1 = null;
+		if (!relType.isSingleFigureRelation()) {
+			fig1 = searchForFigure(diag, figText1);
+			if (fig1 == null) {
+				showNonexistantFigureDialog(figText1);
+				return null;
+			}
+		}
+		// Make sure the figure relation is legal
+		if (!FigureRelation.isLegalRelation(relType, fig0, fig1)) {
+			String message = fig0.getClass().getSimpleName() + " " + relType + " " + 
+						fig1.getClass().getSimpleName() + " is not a legal " + "statement";
+			Alert alert = new Alert(AlertType.ERROR, message, ButtonType.OK);
+			alert.showAndWait();
+			// Failure
+			return null;
+		}
 
+		return new FigureRelation(relType, fig0, fig1);
+	}
+		
+	/**
+	 * Display dialog showing that the figure was not found
+	 */
+	private static void showNonexistantFigureDialog(String name) {
+		Alert alert = new Alert(AlertType.ERROR, "\"" + name + "\" does not exist", 
+					ButtonType.OK);
+		alert.showAndWait();
 	}
 	
 	private static Figure searchForFigure(Diagram diagram, String name) {
@@ -151,15 +174,6 @@ public final class Preprocessor {
 			fig = diagram.getFigure(name);
 		}
 		
-		if (fig == null) {
-			System.err.println("Could not find figure with name: " + name);
-			// Display dialog showing that the figure was not found
-			Alert alert = new Alert(AlertType.ERROR, "\"" + name + "\" does not exist", 
-					ButtonType.OK);
-			alert.showAndWait();
-			// As of now, this thread will proceed to crash, but the program will be able
-			// to continue.
-		}
 		return fig;
 	}
 	

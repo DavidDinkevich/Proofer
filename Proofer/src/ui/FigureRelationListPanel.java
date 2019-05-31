@@ -134,7 +134,13 @@ public class FigureRelationListPanel extends VBox {
 		solveButton.setDisable(true);
 //		solveButton.setStyle("-fx-background-color: green");
 		solveButton.setOnAction(e -> {
+			// Attempt to create a Diagram with the current canvas
 			Diagram diagram = Preprocessor.generateDiagram(mainWindow.getCanvas(), this);
+			// Abort if no success
+			if (diagram == null) {
+				return;
+			}
+			// Request the proof to be solved
 			ProofSolveRequestManager.requestSolveProof(new Request(diagram) {
 				@Override
 				public void onRequestCompleted(ProofSolver solver) {
