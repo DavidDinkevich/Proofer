@@ -5,6 +5,7 @@ import java.util.List;
 
 import geometry.shapes.Vertex;
 import geometry.shapes.VertexBuffer;
+import ui.canvas.diagram.DiagramCanvas.UIDiagramLayers;
 
 /**
  * A class that renders the vertices in a {@link VertexBuffer}.
@@ -37,6 +38,11 @@ public class GraphicsVertexBuffer implements Drawable {
 					StyleManager.getVertexLabelBrush(), vertex);
 			gv.draw(c);
 		}
+	}
+	
+	@Override
+	public UIDiagramLayers getLayer() {
+		return UIDiagramLayers.VERTICES;
 	}
 
 	public VertexBuffer getVertexBuffer() {

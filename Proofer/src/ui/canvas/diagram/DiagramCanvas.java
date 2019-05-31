@@ -35,8 +35,8 @@ import ui.canvas.selection.UIRelationMaker;
 public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListener {
 	
 	public enum UIDiagramLayers {
-		DEFAULT, GRID, INVISIBLE_HIDDEN_FIGURES, 
-		GRAPHICS_SHAPE, POLYGON_COMPONENT, SELECTOR, KNOB
+		DEFAULT, GRID, GRAPHICS_SHAPE, POLYGON_COMPONENT, SELECTOR, KNOB,
+		INVISIBLE_HIDDEN_FIGURES, VERTICES
 	}
 	
 	private List<GraphicsShape<?>> diagramFigures;
