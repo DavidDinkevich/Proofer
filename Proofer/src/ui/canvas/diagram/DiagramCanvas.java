@@ -341,10 +341,6 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		return relMaker;
 	}
 	
-	public void setDisplayUIRelationMaker(boolean val) {
-		displayRelMaker = val;
-	}
-	
 	/**
 	 * Set whether or not the {@link SelectionBox} is rendered to the
 	 * canvas.

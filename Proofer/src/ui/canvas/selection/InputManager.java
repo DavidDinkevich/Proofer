@@ -188,9 +188,8 @@ public class InputManager {
 				
 		// Expand UI relation maker
 		if (canvas.displayUIRelationMaker()) {
-			canvas.setDisplayUIRelationMaker(true);
 			canvas.getUIRelationMaker().getShape().setVertexLoc(1, canvas.getMouseLocOnGrid());
-			canvas.redraw();
+			canvas.setDisplayUIRelationMaker(true, true);
 			return;
 		}
 		
