@@ -20,6 +20,7 @@ import geometry.shapes.Vertex;
 import geometry.shapes.VertexBuffer;
 import geometry.shapes.VertexBufferListener;
 import geometry.shapes.VertexShape;
+
 import ui.FigureRelationListPanel;
 import ui.FigureRelationPanel;
 import ui.canvas.AdvancedCanvas;
@@ -240,31 +241,13 @@ public class DiagramCanvas extends AdvancedCanvas implements VertexBufferListene
 		}
 	}
 	
+	/**
+	 * Get whether the given figure is an invisible hidden figure
+	 * NOTE: CURRENTLY THIS ONLY WORKS WITH TRIANGLES
+	 */
 	private boolean isHiddenInvisibleFigure(Diagram diag, String name) {
-		// If the figure is NOT contained in the Canvas, then it is a hidden figure
-		// so we'll add it to the canvas (UNLESS it has been already added, in which
-		// case we don't want duplicates). Finally, we don't want to add
-		// "secondary triangles" (see isSecondaryTriangle() for description). Doing so
-		// would result in ugly triangles being created on top of other ones.
 		return !containsDiagramFigure(name, Triangle.class);
-//		&& !containsHiddenInvisibleFigure(name)
 	}
-	
-//	private boolean containsHiddenInvisibleFigure(String name) {
-//		// Get list of invisible hidden figures
-//		List<Drawable> invisFigs = renderList.
-//				getLayerList(UIDiagramLayers.INVISIBLE_HIDDEN_FIGURES);
-//
-//		for (Drawable drawable : invisFigs) {
-//			// We know it's a GraphicsShape because we're the ones who add all the
-//			// invisible hidden figures and we only add GraphicsShapes
-//			GraphicsShape<?> invisFigure = (GraphicsShape<?>) drawable;
-//			if (invisFigure.getShape().isValidName(name))
-//				return true;
-//		}
-//		
-//		return false;
-//	}
 	
 	public boolean displayUIRelationMaker() {
 		// If no figures are selected AND the user is holding shift
