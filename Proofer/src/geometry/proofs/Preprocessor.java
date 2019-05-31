@@ -194,7 +194,7 @@ public final class Preprocessor {
 		
 		// Add hidden vertices
 		addHiddenVerticesAndSegments(diagram);
-		
+
 		do {
 			final int COUNT = diagram.getFigures().size();
 			figuresWereAdded = false;
@@ -636,28 +636,6 @@ public final class Preprocessor {
 		}
 		return null;
 	}
-	
-//	/**
-//	 * Get all of the shared vertices between two triangles
-//	 * @param tri0 the first triangle
-//	 * @param tri1 the second triangle
-//	 * @return the shared vertices
-//	 */
-//	private List<Vertex> getSharedVertices(Triangle tri0, Triangle tri1) {
-//		List<Vertex> commonVertices = null;
-//		outer:
-//		for (Vertex vert0 : tri0) {
-//			for (Vertex vert1 : tri1) {
-//				if (vert0.equals(vert1)) {
-//					if (commonVertices == null)
-//						commonVertices = new ArrayList<>();
-//					commonVertices.add(vert0);
-//					continue outer;
-//				}
-//			}
-//		}
-//		return commonVertices == null ? Collections.emptyList() : commonVertices;
-//	}
 	
 	private static char generateNewVertexName(Diagram diag) {
 		outer:
