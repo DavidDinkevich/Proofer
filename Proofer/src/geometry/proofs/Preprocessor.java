@@ -613,7 +613,8 @@ public final class Preprocessor {
 			if (fig.getClass() == Segment.class) {
 				Segment seg = (Segment) fig;
 				for (Vertex vertex : seg.getVertices()) {
-					if (vertex.getCenter().equals(loc)) {
+					// Dist to account for small rounding errors
+					if (Vec2.dist(vertex.getCenter(), loc) < 0.05f) {
 						return vertex;
 					}
 				}
