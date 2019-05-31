@@ -31,7 +31,7 @@ public class FigureRelation {
 			figure1 = fig1;
 		}
 		
-		if (!isLegalRelation(this)) {
+		if (!isLegalRelation(relType, figure0, figure1)) {
 			System.err.println("Illegal Relation: " + this);
 			throw new IllegalRelationException(this);
 		}
@@ -51,41 +51,37 @@ public class FigureRelation {
 		return isCongruentAndReflexive;
 	}
 	
-	public static boolean isLegalRelation(FigureRelation rel) {
-		Figure figure0 = rel.getFigure0();
-		Figure figure1 = rel.getFigure1();
-		FigureRelationType relType = rel.getRelationType();
-		
-		switch (relType) {
+	public static boolean isLegalRelation(FigureRelationType type, Figure f0, Figure f1) {		
+		switch (type) {
 		case CONGRUENT:
-			return figure0.getClass() == figure1.getClass()
-			&& figure0.getClass() != Vertex.class;
+			return f0.getClass() == f1.getClass()
+			&& f0.getClass() != Vertex.class;
 		case PARALLEL:
 		case PERPENDICULAR:
-			return figure0.getClass() == Segment.class
-			&& figure1.getClass() == Segment.class
-			&& !figure0.equals(figure1);
+			return f0.getClass() == Segment.class
+			&& f1.getClass() == Segment.class
+			&& !f0.equals(f1);
 		case BISECTS:
-			return figure0.getClass() == Segment.class &&
-			(figure1.getClass() == Segment.class ||
-			figure1.getClass() == Angle.class)
-			&& !figure0.equals(figure1);
+			return f0.getClass() == Segment.class &&
+			(f1.getClass() == Segment.class ||
+			f1.getClass() == Angle.class)
+			&& !f0.equals(f1);
 		case SIMILAR:
-			return figure0.getClass() == Triangle.class &&
-			figure1.getClass() == Triangle.class
-			&& !figure0.equals(figure1);
+			return f0.getClass() == Triangle.class &&
+			f1.getClass() == Triangle.class
+			&& !f0.equals(f1);
 		case ISOSCELES:
-			return figure0.getClass() == Triangle.class && figure1 == null;
+			return f0.getClass() == Triangle.class && f1 == null;
 		case RIGHT:
-			return figure0.getClass() == Angle.class && figure1 == null;
+			return f0.getClass() == Angle.class && f1 == null;
 		case COMPLEMENTARY:
 		case SUPPLEMENTARY:
 //		case VERTICAL:
 //			return figure0.getClass() == Angle.class && 
 //			figure1.getClass() == Angle.class;
 		case MIDPOINT:
-			return figure0.getClass() == Vertex.class &&
-			figure1.getClass() == Segment.class;
+			return f0.getClass() == Vertex.class &&
+			f1.getClass() == Segment.class;
 		default:
 			return false;
 		}
