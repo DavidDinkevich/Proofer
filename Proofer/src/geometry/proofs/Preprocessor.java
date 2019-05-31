@@ -189,36 +189,28 @@ public final class Preprocessor {
 	 * included in the diagram and can be safely referenced.
 	 * @param diagram the diagram that contains the hidden figures.
 	 */
-	private static void addHiddenFigures(Diagram diagram) {		
-		boolean figuresWereAdded = false;
-		
+	private static void addHiddenFigures(Diagram diagram) {				
 		// Add hidden vertices
 		addHiddenVerticesAndSegments(diagram);
 
+		boolean figuresWereAdded = false;
 		do {
 			final int COUNT = diagram.getFigures().size();
 			figuresWereAdded = false;
 			
-			// Loop through segments
 			for (int i = 0; i < COUNT-1; i++) {
-				// If the inspected figure is a segment
 				if (diagram.getFigures().get(i).getClass() != Segment.class)
 					continue;
-				// Get the segment
 				Segment seg0 = (Segment) diagram.getFigures().get(i);
-				// Loop through figures again
 				for (int j = i + 1; j < COUNT; j++) {
-					// If the inspected figure is a segment
 					if (diagram.getFigures().get(j).getClass() != Segment.class)
 						continue;
-					// Get the segment
 					Segment seg1 = (Segment) diagram.getFigures().get(j);
 					// Get/add the hidden figure created by the two segments (or null)
 					Figure hiddenFig = addHiddenSegmentOrAngle(diagram, seg0, seg1);
 					// If we've found a new hidden figure
-					if (hiddenFig != null) {
+					if (hiddenFig != null)
 						figuresWereAdded = true;
-					}
 				}
 			}
 		} while (figuresWereAdded);
@@ -234,13 +226,12 @@ public final class Preprocessor {
 	 * @param seg0 the first segment
 	 * @param seg1 the second segment
 	 * @return the hidden segment OR angle, or null if the two given segments
-	 * do not connect at one vertex, or if the hidden figure is already contained in
-	 * the {@link Diagram}
+	 * do not connect at one vertex
 	 */
 	private static Figure addHiddenSegmentOrAngle(Diagram diag, Segment seg0, Segment seg1) {
 		// If we're analyzing the same segment, we can't combine it
 		if (seg0.equals(seg1))
-			return seg0;
+			return null;
 		// Get the shared vertex between the two segments
 		Vertex sharedVertex = ProofUtils.getSharedVertex(seg0, seg1);
 		if (sharedVertex == null)
@@ -252,10 +243,8 @@ public final class Preprocessor {
 		// Get slope of segment 1
 		Slope seg1Slope = seg1.getSlope();
 		
-		/*
-		 * Compare slopes: if the slopes are the same, add a new hidden segment.
-		 * Otherwise, add the hidden angle
-		 */	
+		// Compare slopes: if the slopes are the same, add a new hidden segment.
+		// Otherwise, add the hidden angle
 		if (seg0Slope.equals(seg1Slope)) {
 			// Combine segments		
 			// The new, compound segment
