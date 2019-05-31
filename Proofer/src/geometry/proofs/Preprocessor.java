@@ -336,27 +336,25 @@ public final class Preprocessor {
 							diag.addComponentVertex(newCompSeg.getName(), newVertex);							
 						}
 					}
-					// If a vertex at the point of intersection is made/found
-					if (newVertex != null) {
-						// Add the 4 new "split" segments created by the hidden vertex
-						Vertex[] seg0Vertices = seg0.getVertices();
-						Vertex[] seg1Vertices = seg1.getVertices();
-						
-						Segment[] newSegs = {
-							new Segment(seg0Vertices[0], newVertex),
-							new Segment(seg0Vertices[1], newVertex),
-							new Segment(seg1Vertices[0], newVertex),
-							new Segment(seg1Vertices[1], newVertex)
-						};
+					
+					// Add the 4 new "split" segments created by the hidden vertex
+					Vertex[] seg0Vertices = seg0.getVertices();
+					Vertex[] seg1Vertices = seg1.getVertices();
+					
+					Segment[] newSegs = {
+						new Segment(seg0Vertices[0], newVertex),
+						new Segment(seg0Vertices[1], newVertex),
+						new Segment(seg1Vertices[0], newVertex),
+						new Segment(seg1Vertices[1], newVertex)
+					};
 
-						// Add each new segment
-						for (Segment newSeg : newSegs) {
-							// In the case where two segments intersect and the poi
-							// is one of the segment's end points, this can cause a bug
-							// where one of the segments is the poi listed twice
-							if (!newSeg.getVertexLoc(0).equals(newSeg.getVertexLoc(1))) {
-								diag.addHiddenFigure(newSeg);
-							}
+					// Add each new segment
+					for (Segment newSeg : newSegs) {
+						// In the case where two segments intersect and the poi
+						// is one of the segment's end points, this can cause a bug
+						// where one of the segments is the poi listed twice
+						if (!newSeg.getVertexLoc(0).equals(newSeg.getVertexLoc(1))) {
+							diag.addHiddenFigure(newSeg);
 						}
 					}
 				}
@@ -461,8 +459,9 @@ public final class Preprocessor {
 		// Get the vertex at that position
 		Vertex midpt = getVertexAtLoc(diagram, midptLoc);
 		
-		if (midpt == null)
-			throw new NullPointerException("No vertex at midpoint");
+		if (midpt == null) {
+			throw new NullPointerException("No vertex at midpoint of segment: " + bisectedSeg);
+		}
 
 		// Convert bisector to largest compound segment (for standardization)
 		Segment largestCompSegBisector = diagram
