@@ -578,7 +578,7 @@ public class Diagram {
 						// Figures in iter must NOT be the same figure congruent to itself
 						|| iter.isCongruentAndReflexive()
 						// Iter must not be equal to rel
-						|| iter.equals(rel)
+						|| FigureRelation.safeEquals(iter, rel)
 						// Iteration must contain figure
 						|| !iter.containsFigure(sharedFriend)
 						)
@@ -704,7 +704,7 @@ public class Diagram {
 	public FigureRelation getFigureRelation(FigureRelationType type, Figure f0, Figure f1) {
 		FigureRelation query = new FigureRelation(type, f0, f1);
 		for (FigureRelation rel : relations) {
-			if (rel.equals(query))
+			if (FigureRelation.safeEquals(rel, query))
 				return rel;
 		}
 		return null;

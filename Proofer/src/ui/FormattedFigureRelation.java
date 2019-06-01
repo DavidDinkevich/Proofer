@@ -24,7 +24,7 @@ public class FormattedFigureRelation {
 		if (!(o instanceof FormattedFigureRelation))
 			return false;
 		FormattedFigureRelation other = (FormattedFigureRelation) o;
-		return index == other.index && rel.equals(other.rel);
+		return index == other.index && FigureRelation.safeEquals(rel, other.rel);
 	}
 	
 	@Override

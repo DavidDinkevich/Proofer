@@ -73,7 +73,7 @@ public class ProofSolver {
 		// Check if the proof goal is included in the inflated given
 		for (int i = diagram.getFigureRelations().size() - 1; i >= 0; i--) {
 			FigureRelation pair = diagram.getFigureRelations().get(i);
-			if (pair.equals(diagram.getProofGoal())) {
+			if (FigureRelation.safeEquals(pair, diagram.getProofGoal())) {
 				// TRACEBACK PROCESS
 				Deque<FigureRelation> traceback = new ArrayDeque<>();
 				traceback(pair, traceback);
@@ -158,7 +158,7 @@ public class ProofSolver {
 		// also exist in the Diagram
 		FigureRelation hypoRel = new FigureRelation(CONGRUENT, f0, f1);
 		for (FigureRelation rel : diagram.getFigureRelations()) {
-			if (rel.equals(hypoRel))
+			if (FigureRelation.safeEquals(rel, hypoRel))
 				return rel;
 		}
 		return null;

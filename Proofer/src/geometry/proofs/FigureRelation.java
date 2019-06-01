@@ -12,6 +12,11 @@ import geometry.shapes.Segment;
 import geometry.shapes.Triangle;
 import geometry.shapes.Vertex;
 
+import static geometry.proofs.FigureRelationType.CONGRUENT;
+import static geometry.proofs.FigureRelationType.PERPENDICULAR;
+import static geometry.proofs.FigureRelationType.BISECTS;
+
+
 public class FigureRelation {
 	private FigureRelationType relType;
 	private Figure figure0;
@@ -36,8 +41,7 @@ public class FigureRelation {
 			throw new IllegalRelationException(this);
 		}
 		
-		isCongruentAndReflexive = relType == FigureRelationType.CONGRUENT
-				&& figure0.equals(figure1);
+		isCongruentAndReflexive = relType == CONGRUENT && figure0.equals(figure1);
 		
 		parents = new ArrayList<>();
 		reason = ProofReasons.NONE;
@@ -87,6 +91,32 @@ public class FigureRelation {
 		}
 	}
 	
+	/**
+	 * Get whether the two given {@link FigureRelation}s are equal. Unlike the default equals()
+	 * method, this accounts for two {@link Figure Relation}s of the same 
+	 * {@link FigureRelationType} but of different classes.
+	 * @param a the first {@link Figure Relation}
+	 * @param b the second {@link Figure Relation}
+	 * @return whether or not they are equal
+	 */
+	public static boolean safeEquals(FigureRelation a, FigureRelation b) {
+		FigureRelationType typeA = a.getRelationType();
+		FigureRelationType typeB = b.getRelationType();
+		// For types PERPENDICULAR and BISECTS, there are multiple classes that can
+		// hold such relations. In these cases, just compare the figures
+		// Perpendicular relations are symmetrical
+		if (typeA == PERPENDICULAR && typeB == PERPENDICULAR) {
+			return (a.figure0.equals(b.figure0) && a.figure1.equals(b.figure1))
+					|| (a.figure0.equals(b.figure1) && a.figure1.equals(b.figure0));
+		}
+		// Segment bisector relations are NOT symmetrical
+		else if (typeA == BISECTS && typeB == BISECTS) {
+			return a.getFigure0().equals(b.getFigure0()) && a.getFigure1().equals(b.getFigure1());
+		} else {
+			return a.equals(b);
+		}
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (o == this)
@@ -97,7 +127,7 @@ public class FigureRelation {
 		
 		// If the type of both of these pairs is "congruent", then it doesn't
 		// matter which figure is "figure0" and "figure1"--symmetry doesn't matter
-		if (pair.relType == relType && relType == FigureRelationType.CONGRUENT) {
+		if (pair.relType == relType && relType == CONGRUENT) {
 			return (figure0.equals(pair.figure0) && figure1.equals(pair.figure1))
 					|| (figure0.equals(pair.figure1) && figure1.equals(pair.figure0));
 		}
