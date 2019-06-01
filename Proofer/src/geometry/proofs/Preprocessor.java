@@ -128,7 +128,7 @@ public final class Preprocessor {
 		}
 		// Get second figure
 		Figure fig1 = null;
-		if (!relType.isSingleFigureRelationType()) {
+		if (!FigureRelationType.isSingleFigureRelationType(relType)) {
 			fig1 = searchForFigure(diag, figText1);
 			if (fig1 == null) {
 				showNonexistantFigureDialog(figText1);

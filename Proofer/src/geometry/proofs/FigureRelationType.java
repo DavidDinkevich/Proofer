@@ -18,18 +18,18 @@ public enum FigureRelationType {
 	}
 	
 	/**
-	 * Get whether this {@link FigureRelationType} is a relation type
+	 * Get whether the given {@link FigureRelationType} is a relation type
 	 * that only concerns one figure (such as RIGHT or ISOSCELES).
 	 */
-	public boolean isSingleFigureRelationType() {
-		return this == RIGHT || this == ISOSCELES;
+	public static boolean isSingleFigureRelationType(FigureRelationType type) {
+		return type == RIGHT || type == ISOSCELES;
 	}
 	
 	/**
 	 * Get whether the given {@link FigureRelationType} is symmetrical.
 	 */
 	public static boolean isSymmetricalFigureRelationType(FigureRelationType type) {
-		if (type.isSingleFigureRelationType())
+		if (isSingleFigureRelationType(type))
 			return false;
 		switch (type) {
 		case BISECTS: case ISOSCELES: case MIDPOINT: return false;

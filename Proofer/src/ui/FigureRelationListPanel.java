@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import geometry.proofs.Diagram;
+import geometry.proofs.FigureRelationType;
 import geometry.proofs.Preprocessor;
 import geometry.proofs.ProofSolveRequestManager;
 import geometry.proofs.ProofSolveRequestManager.Request;
@@ -209,8 +210,9 @@ public class FigureRelationListPanel extends VBox {
     			.isEmpty();
     	final boolean secondFieldEmpty = proofObjectivePanel.getFigTextField1().getText()
     			.isEmpty();
-    	final boolean disable = firstFieldEmpty || (secondFieldEmpty && 
-    			!proofObjectivePanel.getRelationType().isSingleFigureRelationType());
+    	FigureRelationType type = proofObjectivePanel.getRelationType();
+    	final boolean disable = firstFieldEmpty || (secondFieldEmpty &&
+    			!FigureRelationType.isSingleFigureRelationType(type));
     	solveButton.setDisable(disable);
 	}
 	

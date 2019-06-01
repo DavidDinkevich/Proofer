@@ -57,14 +57,14 @@ public class FigureRelationPanel extends HBox {
 					String oldValue, String newValue) {
 				// If we've changed to a single-figure relation, get rid of the
 				// second figure field and expand the first figure field
-				if (getRelationType().isSingleFigureRelationType()) {
+				if (FigureRelationType.isSingleFigureRelationType(getRelationType())) {
 					getChildren().remove(fig1TextField);
 					fig0TextField.setPrefColumnCount(15);
 				}
 				// If we're changing back from a single-figure relation, add the second
 				// figure field
-				else if (FigureRelationType.valueOf(oldValue.toUpperCase())
-						.isSingleFigureRelationType()) {
+				else if (FigureRelationType.isSingleFigureRelationType(
+						FigureRelationType.valueOf(oldValue.toUpperCase()))) {
 					getChildren().add(fig1TextField);
 					fig0TextField.setPrefColumnCount(5);
 				}
@@ -90,7 +90,7 @@ public class FigureRelationPanel extends HBox {
 			return false;
 		}
 		// If it is a single figure relation, second text field will be blank
-		if (getRelationType().isSingleFigureRelationType())
+		if (FigureRelationType.isSingleFigureRelationType(getRelationType()))
 			return true;
 		// If not, make sure the second field has text
 		return !getFigTextField1().getText().isEmpty();
