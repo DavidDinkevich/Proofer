@@ -59,11 +59,6 @@ public class CompoundFigureRelation<T extends Figure> extends FigureRelation {
 	}
 
 	@Override
-	public boolean isSingleFigureRelation() {
-		return false; // Not possible
-	}
-
-	@Override
 	public boolean containsFigure(Figure fig) {
 		return left.contains(fig) || right.contains(fig);
 	}

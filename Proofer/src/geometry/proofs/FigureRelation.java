@@ -154,14 +154,6 @@ public class FigureRelation {
 				+ (reason == null ? " -- " + reason : "");
 	}
 	
-	/**
-	 * Get whether this {@link FigureRelation} is a relation type
-	 * that only concerns one figure (such as RIGHT or ISOSCELES).
-	 */
-	public boolean isSingleFigureRelation() {
-		return relType.isSingleFigureRelation();
-	}
-	
 	public void addParents(Collection<FigureRelation> parents) {
 		this.parents.addAll(parents);
 	}
