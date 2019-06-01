@@ -701,6 +701,15 @@ public class Diagram {
 		return false; // Unsuccessful
 	}
 	
+	public FigureRelation getFigureRelation(FigureRelationType type, Figure f0, Figure f1) {
+		FigureRelation query = new FigureRelation(type, f0, f1);
+		for (FigureRelation rel : relations) {
+			if (rel.equals(query))
+				return rel;
+		}
+		return null;
+	}
+	
 	public void addFigureRelation(Collection<FigureRelation> figs) {
 		for (FigureRelation fig : figs) {
 			addFigureRelation(fig);
