@@ -373,7 +373,7 @@ public class ProofSolver {
 				if (parents.size() >= 2) {
 					FigureRelation rel = new FigureRelation(SIMILAR, tri0, tri1);
 					rel.addParents(parents);
-					rel.setReason(ProofReasons.NONE);
+					rel.setReason(ProofReasons.SIMILAR);
 					diagram.addFigureRelation(rel);
 				}
 			}
