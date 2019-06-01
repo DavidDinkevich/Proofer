@@ -487,6 +487,46 @@ public class ProofUtils {
 	}
 	
 	/**
+	 * PRECONDITION: given triangles are congruent in size <p>
+	 * Get a list of {@link FigureRelation}s making the corresponding segments and angles
+	 * of the two given triangles congruent.
+	 * @param diag the {@link Diagram}
+	 * @param tri0 the first triangle
+	 * @param tri1 the second triangle
+	 * @param parent the {@link FigureRelation} that makes the two triangles congruent
+	 * @return the list of {@link FigureRelation}s
+	 */
+	public static FigureRelation[] getCongruentPartsOfCongruentTriangles(
+							Diagram diag, Triangle tri0, Triangle tri1, FigureRelation parent) {
+		// List of congruent parts
+		FigureRelation[] congParts = new FigureRelation[6];
+		// Index in array
+		int index = 0;
+		// For all corresponding angles
+		for (Angle[] anglePair : ProofUtils.getCorrespondingAngles(tri0, tri1)) {
+			// Make congruent pair
+			FigureRelation newPair = new FigureRelation(
+					CONGRUENT,
+					diag.getPrimaryAngleSynonym(anglePair[0].getName()),
+					diag.getPrimaryAngleSynonym(anglePair[1].getName())
+			);
+			newPair.addParent(parent);
+			newPair.setReason(ProofReasons.CORR_ANGLES_CONG_TRIANGLES);
+			congParts[index++] = newPair;
+		}
+		// For all corresponding segments
+		for (Segment[] segPair : ProofUtils.getCorrespondingSegments(tri0, tri1)) {
+			// Make congruent pair
+			FigureRelation newPair = new FigureRelation(
+					CONGRUENT, segPair[0], segPair[1]);
+			newPair.addParent(parent);
+			newPair.setReason(ProofReasons.CORR_SEGMENTS);
+			congParts[index++] = newPair;
+		}
+		return congParts;
+	}
+	
+	/**
 	 * Get the corresponding segments of the given two angles <i>that share a
 	 * common vertex</i>
 	 * <p>

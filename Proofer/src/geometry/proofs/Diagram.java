@@ -11,9 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+
+import static geometry.proofs.FigureRelationType.CONGRUENT;
+import static geometry.proofs.FigureRelationType.RIGHT;
 
 
 public class Diagram {
@@ -343,7 +347,7 @@ public class Diagram {
 				return false;
 			}
 			// Otherwise, check if it is a synonym of the other angles in this sublist, and if it
-			// is the smallest, move it to the front (it will become the new primary angle synonym).
+			// is the smallest, move it to the front (it will become the new primary angle synonym)
 			final int result = ProofUtils.compareAngleSynonyms(angle, subList.get(0));
 			// The angle IS a synonym (as opposed to -3, -2, which mean that it is NOT a synonym)
 			if (result > -2) {				
@@ -542,7 +546,7 @@ public class Diagram {
 	private boolean applyReflexivePostulate(Figure fig) {
 		if (fig.getClass() == Vertex.class)
 			return false;
-		FigureRelation rel = new FigureRelation(FigureRelationType.CONGRUENT, fig, fig);
+		FigureRelation rel = new FigureRelation(CONGRUENT, fig, fig);
 		rel.setReason(ProofReasons.REFLEXIVE);
 		return addFigureRelation(rel);
 	}
@@ -554,13 +558,7 @@ public class Diagram {
 	 */
 	private void applyTransitivePostulate(FigureRelation rel) {
 		// Conditions
-		if (
-				// Figure relation type is not "congruent"
-//				rel.getRelationType() != FigureRelationType.CONGRUENT
-				// FigureRelation must not be reflexive
-//				|| rel.isCongruentAndReflexive()
-				rel.isCongruentAndReflexive()
-				)
+		if (rel.isCongruentAndReflexive())
 			return;
 		
 		final int COUNT = relations.size();
@@ -572,7 +570,7 @@ public class Diagram {
 				// Conditions
 				if (
 						// Figure relation type is not "congruent"
-						iter.getRelationType() != FigureRelationType.CONGRUENT
+						iter.getRelationType() != CONGRUENT
 						// Figures in iter must be same type as sharedFriend
 						|| iter.getFigure0().getClass() != sharedFriend.getClass()
 						// Figures in iter must NOT be the same figure congruent to itself
@@ -589,8 +587,7 @@ public class Diagram {
 				Figure newFriend1 = iter.getFigure0().equals(sharedFriend) ?
 						iter.getFigure1() : iter.getFigure0();
 								
-				FigureRelation newRel = new FigureRelation(
-						FigureRelationType.CONGRUENT, newFriend0, newFriend1);
+				FigureRelation newRel = new FigureRelation(CONGRUENT, newFriend0, newFriend1);
 				newRel.setReason(ProofReasons.TRANSITIVE);
 				newRel.addParent(iter);
 				newRel.addParent(rel);
@@ -603,7 +600,8 @@ public class Diagram {
 	
 	/**
 	 * Make the given angle congruent to all
-	 * other right angles in the list of {@link FigureRelation}s.
+	 * other right angles in the list of {@link FigureRelation}s.<p>
+	 * NOTE: this does NOT add the given {@link FigureRelation} to the {@link Diagram}.
 	 * @param rightAngleRel the {@link FigureRelation} that makes the angle
 	 * a right angle
 	 */
@@ -612,16 +610,16 @@ public class Diagram {
 		Angle angle = rightAngleRel.getFigure0();
 		// Make new right angle congruent to all other right angles in collection
 		for (int i = 0; i < relations.size() - 1; i++) {
-			// (Above): we say "i < relations() '-1' " bc we don't want to compare
+			// (Above): we say "i < relations.size() '-1' " bc we don't want to compare
 			// the relation pair to itself. Therefore, we must exclude it from the list.
 			// Since we just added it to the list, we know that it is at the very end
 			// of the list. The "-1" excludes the relation pair and makes sure that
 			// we don't compare it to itself.
 			
 			FigureRelation pair = relations.get(i);
-			if (pair.getRelationType() == FigureRelationType.RIGHT) {
+			if (pair.getRelationType() == RIGHT) {
 				FigureRelation newPair = new FigureRelation(
-						FigureRelationType.CONGRUENT, angle, pair.getFigure0());
+						CONGRUENT, angle, pair.getFigure0());
 				newPair.addParent(rightAngleRel);
 				newPair.addParent(pair);
 				newPair.setReason(ProofReasons.RIGHT_ANGLES_CONGRUENT);
@@ -631,9 +629,52 @@ public class Diagram {
 					relations.add(newPair);
 				}
 			}
+			/*
+			 * Add transitive right angles (angles that are congruent to this right angle
+			 * are also right angles themselves
+			 */
+			else if (pair.getRelationType() == CONGRUENT) {
+				// Get the pair of angles (this right angle and another congruent angle)
+				List<Figure> figs = pair.getFigures();
+				final int indexOfAngle = figs.indexOf(angle);
+				if (indexOfAngle >= 0) {
+					// Make the other angle a right angle
+					Angle otherAngle = (Angle) figs.get(indexOfAngle == 0 ? 1 : 0);
+					FigureRelation rightRel = new FigureRelation(RIGHT, otherAngle, null);
+					rightRel.addParents(Arrays.asList(pair, rightAngleRel));
+					rightRel.setReason(ProofReasons.TRANSITIVE);
+					addFigureRelation(rightRel);
+				}
+			}
 		}
 	}
-		
+	
+	/**
+	 * PRECONDITION: the given {@link FigureRelation} makes two angles congruent.<p>
+	 * If one of the angles in the given {@link FigureRelation} is a right angle, make
+	 * the other angle a right angle (because angles congruent to right angles are right).
+	 */
+	private void addTransitiveRightAngles(FigureRelation pair) {
+		// For each angle (2)
+		List<Figure> figs = pair.getFigures();
+		for (int i = 0; i < figs.size(); i++) {
+			Angle a = (Angle) figs.get(i);
+			// If this angle is a right angle
+			FigureRelation hypoRel = getFigureRelation(RIGHT, a, null);
+			if (hypoRel != null) {
+				// Get the other angle
+				final int indexOfOther = i == 0 ? 1 : 0;
+				Angle b = (Angle) figs.get(indexOfOther);
+				// Make the other angle a right angle
+				FigureRelation rightRel = new FigureRelation(RIGHT, b, null);
+				rightRel.addParents(Arrays.asList(pair, hypoRel));
+				rightRel.setReason(ProofReasons.TRANSITIVE);
+				addFigureRelation(rightRel);
+				break;
+			}
+		}
+	}
+	
 	/**
 	 * Add the given {@link FigureRelation} to this {@link Diagram}.
 	 * @param pair the {@link FigureRelation}
@@ -644,7 +685,8 @@ public class Diagram {
 	public boolean addFigureRelation(FigureRelation pair) {
 		// Enforce policy
 		if (policy == Policy.FIGURES_ONLY) {
-			throw new IllegalStateException("Operation goes against policy: " + Policy.FIGURES_ONLY);
+			throw new IllegalStateException("Operation goes against policy: " 
+				+ Policy.FIGURES_ONLY);
 		}
 		
 		// No duplicates!!
@@ -654,45 +696,27 @@ public class Diagram {
 		if (relations.add(pair)) {
 			// If the relation declares that an angle is a right angle,
 			// make this right angle congruent to all other right angles.
-			if (pair.getRelationType() == FigureRelationType.RIGHT) {
+			if (pair.getRelationType() == RIGHT) {
 				makeRightAngle(pair);
 			}
 			// If the pair declares two figures congruent, apply the transitive
 			// postulate
-			else if (pair.getRelationType() == FigureRelationType.CONGRUENT) {
+			else if (pair.getRelationType() == CONGRUENT) {
+				// Apply the transitive postulate
 				applyTransitivePostulate(pair);
-				// If two triangles are congruent, all of their corresponding children figures
-				// are congruent as well
-				if (!pair.isCongruentAndReflexive() && 
-						pair.getFigure0().getClass() == Triangle.class) {
-					// First triangle
-					Triangle tri0 = pair.getFigure0();
-					// Second triangle
-					Triangle tri1 = pair.getFigure1();
-					
-					// For all corresponding angles
-					for (Angle[] anglePair : ProofUtils.getCorrespondingAngles(tri0, tri1)) {
-						// Make congruent pair
-						FigureRelation newPair = new FigureRelation(
-								FigureRelationType.CONGRUENT,
-								getPrimaryAngleSynonym(anglePair[0].getName()),
-								getPrimaryAngleSynonym(anglePair[1].getName())
-						);
-						newPair.addParent(pair);
-						newPair.setReason(ProofReasons.CORR_ANGLES_CONG_TRIANGLES);
-						addFigureRelation(newPair);
+				// If the relation is not congruent and reflexive
+				if (!pair.isCongruentAndReflexive()) {
+					// If it's an angle, make it a right angle if it is congruent to a right
+					// angle
+					if (pair.getFigure0() instanceof Angle) {
+						addTransitiveRightAngles(pair);
 					}
-					// For all corresponding segments
-					for (Segment[] segPair : ProofUtils.getCorrespondingSegments(tri0, tri1)) {
-						// Make congruent pair
-						FigureRelation newPair = new FigureRelation(
-								FigureRelationType.CONGRUENT,
-								segPair[0],
-								segPair[1]
-						);
-						newPair.addParent(pair);
-						newPair.setReason(ProofReasons.CORR_SEGMENTS);
-						addFigureRelation(newPair);
+					// If two triangles are congruent, all of their corresponding children figures
+					// are congruent as well
+					else if (pair.getFigure0() instanceof Triangle) {
+						// Make parts of congruent triangles congruent
+						addFigureRelations(ProofUtils.getCongruentPartsOfCongruentTriangles(
+								this, pair.getFigure0(), pair.getFigure1(), pair));
 					}
 				}
 			}
@@ -710,7 +734,13 @@ public class Diagram {
 		return null;
 	}
 	
-	public void addFigureRelation(Collection<FigureRelation> figs) {
+	public void addFigureRelations(Collection<FigureRelation> figs) {
+		for (FigureRelation fig : figs) {
+			addFigureRelation(fig);
+		}
+	}
+	
+	public void addFigureRelations(FigureRelation[] figs) {
 		for (FigureRelation fig : figs) {
 			addFigureRelation(fig);
 		}
