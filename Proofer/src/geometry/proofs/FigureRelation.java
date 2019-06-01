@@ -125,9 +125,10 @@ public class FigureRelation {
 			return false;
 		FigureRelation pair = (FigureRelation)o;
 		
-		// If the type of both of these pairs is "congruent", then it doesn't
-		// matter which figure is "figure0" and "figure1"--symmetry doesn't matter
-		if (pair.relType == relType && relType == CONGRUENT) {
+		// If the relation type is symmetrical, then the order in which figures are congruent
+		// does not matter
+		if (pair.relType == relType && FigureRelationType
+				.isSymmetricalFigureRelationType(relType)) {
 			return (figure0.equals(pair.figure0) && figure1.equals(pair.figure1))
 					|| (figure0.equals(pair.figure1) && figure1.equals(pair.figure0));
 		}

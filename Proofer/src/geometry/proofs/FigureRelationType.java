@@ -24,4 +24,16 @@ public enum FigureRelationType {
 	public boolean isSingleFigureRelationType() {
 		return this == RIGHT || this == ISOSCELES;
 	}
+	
+	/**
+	 * Get whether the given {@link FigureRelationType} is symmetrical.
+	 */
+	public static boolean isSymmetricalFigureRelationType(FigureRelationType type) {
+		if (type.isSingleFigureRelationType())
+			return false;
+		switch (type) {
+		case BISECTS: case ISOSCELES: case MIDPOINT: return false;
+		default: return true;
+		}
+	}
 }
