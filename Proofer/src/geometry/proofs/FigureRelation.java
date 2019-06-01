@@ -40,7 +40,7 @@ public class FigureRelation {
 				&& figure0.equals(figure1);
 		
 		parents = new ArrayList<>();
-		reason = null;
+		reason = ProofReasons.NONE;
 	}
 	
 	protected FigureRelation(FigureRelationType type) {
