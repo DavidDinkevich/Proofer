@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -599,7 +600,8 @@ public class Diagram {
 	
 	/**
 	 * Make the given angle congruent to all
-	 * other right angles in the list of {@link FigureRelation}s.
+	 * other right angles in the list of {@link FigureRelation}s.<p>
+	 * NOTE: this does NOT add the given {@link FigureRelation} to the {@link Diagram}.
 	 * @param rightAngleRel the {@link FigureRelation} that makes the angle
 	 * a right angle
 	 */
@@ -627,9 +629,52 @@ public class Diagram {
 					relations.add(newPair);
 				}
 			}
+			/*
+			 * Add transitive right angles (angles that are congruent to this right angle
+			 * are also right angles themselves
+			 */
+			else if (pair.getRelationType() == CONGRUENT) {
+				// Get the pair of angles (this right angle and another congruent angle)
+				List<Figure> figs = pair.getFigures();
+				final int indexOfAngle = figs.indexOf(angle);
+				if (indexOfAngle >= 0) {
+					// Make the other angle a right angle
+					Angle otherAngle = (Angle) figs.get(indexOfAngle == 0 ? 1 : 0);
+					FigureRelation rightRel = new FigureRelation(RIGHT, otherAngle, null);
+					rightRel.addParents(Arrays.asList(pair, rightAngleRel));
+					rightRel.setReason(ProofReasons.TRANSITIVE);
+					addFigureRelation(rightRel);
+				}
+			}
 		}
 	}
-		
+	
+	/**
+	 * PRECONDITION: the given {@link FigureRelation} makes two angles congruent.<p>
+	 * If one of the angles in the given {@link FigureRelation} is a right angle, make
+	 * the other angle a right angle (because angles congruent to right angles are right).
+	 */
+	private void addTransitiveRightAngles(FigureRelation pair) {
+		// For each angle (2)
+		List<Figure> figs = pair.getFigures();
+		for (int i = 0; i < figs.size(); i++) {
+			Angle a = (Angle) figs.get(i);
+			// If this angle is a right angle
+			FigureRelation hypoRel = getFigureRelation(RIGHT, a, null);
+			if (hypoRel != null) {
+				// Get the other angle
+				final int indexOfOther = i == 0 ? 1 : 0;
+				Angle b = (Angle) figs.get(indexOfOther);
+				// Make the other angle a right angle
+				FigureRelation rightRel = new FigureRelation(RIGHT, b, null);
+				rightRel.addParents(Arrays.asList(pair, hypoRel));
+				rightRel.setReason(ProofReasons.TRANSITIVE);
+				addFigureRelation(rightRel);
+				break;
+			}
+		}
+	}
+	
 	/**
 	 * Add the given {@link FigureRelation} to this {@link Diagram}.
 	 * @param pair the {@link FigureRelation}
@@ -657,14 +702,22 @@ public class Diagram {
 			// If the pair declares two figures congruent, apply the transitive
 			// postulate
 			else if (pair.getRelationType() == CONGRUENT) {
+				// Apply the transitive postulate
 				applyTransitivePostulate(pair);
-				// If two triangles are congruent, all of their corresponding children figures
-				// are congruent as well
-				if (!pair.isCongruentAndReflexive() 
-						&& pair.getFigure0().getClass() == Triangle.class) {
-					// Make parts of congruent triangles congruent
-					addFigureRelations(ProofUtils.getCongruentPartsOfCongruentTriangles(
-							this, pair.getFigure0(), pair.getFigure1(), pair));
+				// If the relation is not congruent and reflexive
+				if (!pair.isCongruentAndReflexive()) {
+					// If it's an angle, make it a right angle if it is congruent to a right
+					// angle
+					if (pair.getFigure0() instanceof Angle) {
+						addTransitiveRightAngles(pair);
+					}
+					// If two triangles are congruent, all of their corresponding children figures
+					// are congruent as well
+					else if (pair.getFigure0() instanceof Triangle) {
+						// Make parts of congruent triangles congruent
+						addFigureRelations(ProofUtils.getCongruentPartsOfCongruentTriangles(
+								this, pair.getFigure0(), pair.getFigure1(), pair));
+					}
 				}
 			}
 			return true; // Successfully added relation pair
