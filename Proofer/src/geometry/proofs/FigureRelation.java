@@ -30,7 +30,7 @@ public class FigureRelation {
 		figure0 = Objects.requireNonNull(fig0);
 		
 		// In single figure relations, the second figure is null
-		if (!type.isSingleFigureRelation()) {
+		if (!type.isSingleFigureRelationType()) {
 			figure1 = Objects.requireNonNull(fig1);
 		} else {
 			figure1 = fig1;

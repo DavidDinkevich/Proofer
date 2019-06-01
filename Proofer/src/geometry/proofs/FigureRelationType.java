@@ -21,7 +21,7 @@ public enum FigureRelationType {
 	 * Get whether this {@link FigureRelationType} is a relation type
 	 * that only concerns one figure (such as RIGHT or ISOSCELES).
 	 */
-	public boolean isSingleFigureRelation() {
+	public boolean isSingleFigureRelationType() {
 		return this == RIGHT || this == ISOSCELES;
 	}
 }

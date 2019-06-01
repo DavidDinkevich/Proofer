@@ -210,7 +210,7 @@ public class FigureRelationListPanel extends VBox {
     	final boolean secondFieldEmpty = proofObjectivePanel.getFigTextField1().getText()
     			.isEmpty();
     	final boolean disable = firstFieldEmpty || (secondFieldEmpty && 
-    			!proofObjectivePanel.getRelationType().isSingleFigureRelation());
+    			!proofObjectivePanel.getRelationType().isSingleFigureRelationType());
     	solveButton.setDisable(disable);
 	}
 	
