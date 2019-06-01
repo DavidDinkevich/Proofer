@@ -71,7 +71,7 @@ public class ProofSolver {
 		inflateGiven();
 		
 		// Check if the proof goal is included in the inflated given
-		for (int i = diagram.getFigureRelations().size() - 1; i >= 0; i--) {
+		for (int i = 0; i < diagram.getFigureRelations().size(); i++) {
 			FigureRelation pair = diagram.getFigureRelations().get(i);
 			if (FigureRelation.safeEquals(pair, diagram.getProofGoal())) {
 				// TRACEBACK PROCESS
