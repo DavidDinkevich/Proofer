@@ -189,7 +189,7 @@ public final class Preprocessor {
 	 * included in the diagram and can be safely referenced.
 	 * @param diagram the diagram that contains the hidden figures.
 	 */
-	private static void addHiddenFigures(Diagram diagram) {				
+	private static void addHiddenFigures(Diagram diagram) {
 		// Add hidden vertices
 		addHiddenVerticesAndSegments(diagram);
 
@@ -214,6 +214,9 @@ public final class Preprocessor {
 				}
 			}
 		} while (figuresWereAdded);
+		
+		// Make sure segments that fully contain other segments are compounds
+		handleOverlappingSegments(diagram);
 		
 		// Add hidden triangles
 		addHiddenTriangles(diagram);
@@ -282,19 +285,13 @@ public final class Preprocessor {
 		// Total number of figures before we add more
 		final int numFigures = diag.getFigures().size();
 		
-		// For each figure
 		for (int i = 0; i < numFigures - 1; i++) {
-			// Only segments
 			if (diag.getFigures().get(i).getClass() != Segment.class)
 				continue;
-			// Get the segment
 			Segment seg0 = (Segment) diag.getFigures().get(i);
-			// For every other figure
 			for (int j = i + 1; j < numFigures; j++) {
-				// Only segments
 				if (diag.getFigures().get(j).getClass() != Segment.class)
 					continue;
-				// Get the segment
 				Segment seg1 = (Segment) diag.getFigures().get(j);
 				
 				// IF the segments intersect
@@ -399,6 +396,32 @@ public final class Preprocessor {
 						diag.addHiddenFigure(connectingSeg);
 						continue loop2;
 					}
+				}
+			}
+		}
+	}
+	
+	private static void handleOverlappingSegments(Diagram diag) {
+		// Total number of figures before we add more
+		final int numFigures = diag.getFigures().size();
+
+		for (int i = 0; i < numFigures - 1; i++) {
+			if (diag.getFigures().get(i).getClass() != Segment.class)
+				continue;
+			Segment seg0 = (Segment) diag.getFigures().get(i);
+			for (int j = i + 1; j < numFigures; j++) {
+				if (diag.getFigures().get(j).getClass() != Segment.class)
+					continue;
+				Segment seg1 = (Segment) diag.getFigures().get(j);
+				// If (1) the segments are not on top of each other, and (2) one contains both
+				// endpoints of the other
+				if (seg0.getLength() != seg1.getLength() &&
+						(seg0.containsSegment(seg1) || seg1.containsSegment(seg0))) {
+					// Make the longer one a compound segment
+					Segment longer = seg0.getLength() > seg1.getLength() ? seg0 : seg1;
+					Segment shorter = seg0.getLength() > seg1.getLength() ? seg1 : seg0;
+					diag.markAsCompoundSegment(longer);
+					diag.addComponentVertices(longer.getName(), shorter.getVerticesList());
 				}
 			}
 		}
