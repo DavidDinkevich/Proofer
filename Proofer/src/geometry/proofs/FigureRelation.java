@@ -80,9 +80,8 @@ public class FigureRelation {
 			return f0.getClass() == Angle.class && f1 == null;
 		case COMPLEMENTARY:
 		case SUPPLEMENTARY:
-//		case VERTICAL:
-//			return figure0.getClass() == Angle.class && 
-//			figure1.getClass() == Angle.class;
+			return f0.getClass() == Angle.class && f1.getClass() == Angle.class
+			&& !f0.equals(f1);
 		case MIDPOINT:
 			return f0.getClass() == Vertex.class &&
 			f1.getClass() == Segment.class;
