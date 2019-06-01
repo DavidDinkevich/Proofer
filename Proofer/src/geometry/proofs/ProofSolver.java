@@ -136,6 +136,8 @@ public class ProofSolver {
 			findIsoscelesTriangles();
 			// Discover similar triangles
 			findSimilarTriangles();
+			// Find perpendicular segments
+			findPerpendicularSegments();
 			
 			// Update
 			totalRelsAdded = diagram.getFigureRelations().size() - relCountBefore;
@@ -655,6 +657,31 @@ public class ProofSolver {
 		}
 		
 		return parents;
+	}
+	
+	private void findPerpendicularSegments() {
+		// For each angle
+		for (int i = 0; i < diagram.getFigures().size()-1; i++) {
+			if (!(diagram.getFigures().get(i) instanceof Angle))
+				continue;
+			Angle a = (Angle) diagram.getFigures().get(i);
+			// See if this angle is a right angle
+			FigureRelation rightAngleRelation = diagram.getFigureRelation(RIGHT, a, null);
+			if (rightAngleRelation != null) {
+				// Get the segments that compose the angle (they are perpendicular)
+				String name = a.getName();
+				String[] segs = { name.substring(0, 2), name.substring(1) };
+				// Make the segments perpendicular, account for compound segments
+				FigureRelation perpRel = new PerpendicularFigureRelation(
+						diagram.getLargestCompoundSegmentOf(segs[0]),
+						diagram.getLargestCompoundSegmentOf(segs[1]),
+						a.getNameShort().charAt(0)
+				);
+				perpRel.addParent(rightAngleRelation);
+				perpRel.setReason(ProofReasons.OPP_PERPENDICULAR);
+				diagram.addFigureRelation(perpRel);
+			}
+		}
 	}
 	
 	/**
