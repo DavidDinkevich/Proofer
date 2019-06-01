@@ -698,13 +698,10 @@ public class ProofSolver {
 		
 		for (Segment[] pair : ProofUtils.getCorrespondingSegments(tri0, tri1)) {
 			// Hypothetical FigureRelation with two congruent Segments
-			FigureRelation hypoRel = new FigureRelation(CONGRUENT, pair[0], pair[1]);
-			// Try to find this hypothetical FigureRelation (if exists)
-			for (FigureRelation rel : diagram.getFigureRelations()) {
-				if (rel.equals(hypoRel)) {
-					list.add(rel);
-					break;
-				}
+			FigureRelation hypoRel = getCongruentRel(pair[0], pair[1]);
+			if (hypoRel != null) {
+				list.add(hypoRel);
+				break;
 			}
 		}
 		
