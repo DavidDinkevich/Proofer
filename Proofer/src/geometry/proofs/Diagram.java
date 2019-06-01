@@ -660,34 +660,11 @@ public class Diagram {
 				applyTransitivePostulate(pair);
 				// If two triangles are congruent, all of their corresponding children figures
 				// are congruent as well
-				if (!pair.isCongruentAndReflexive() && 
-						pair.getFigure0().getClass() == Triangle.class) {
-					// First triangle
-					Triangle tri0 = pair.getFigure0();
-					// Second triangle
-					Triangle tri1 = pair.getFigure1();
-					
-					// For all corresponding angles
-					for (Angle[] anglePair : ProofUtils.getCorrespondingAngles(tri0, tri1)) {
-						// Make congruent pair
-						FigureRelation newPair = new FigureRelation(
-								CONGRUENT,
-								getPrimaryAngleSynonym(anglePair[0].getName()),
-								getPrimaryAngleSynonym(anglePair[1].getName())
-						);
-						newPair.addParent(pair);
-						newPair.setReason(ProofReasons.CORR_ANGLES_CONG_TRIANGLES);
-						addFigureRelation(newPair);
-					}
-					// For all corresponding segments
-					for (Segment[] segPair : ProofUtils.getCorrespondingSegments(tri0, tri1)) {
-						// Make congruent pair
-						FigureRelation newPair = new FigureRelation(
-								CONGRUENT, segPair[0], segPair[1]);
-						newPair.addParent(pair);
-						newPair.setReason(ProofReasons.CORR_SEGMENTS);
-						addFigureRelation(newPair);
-					}
+				if (!pair.isCongruentAndReflexive() 
+						&& pair.getFigure0().getClass() == Triangle.class) {
+					// Make parts of congruent triangles congruent
+					addFigureRelations(ProofUtils.getCongruentPartsOfCongruentTriangles(
+							this, pair.getFigure0(), pair.getFigure1(), pair));
 				}
 			}
 			return true; // Successfully added relation pair
@@ -704,7 +681,13 @@ public class Diagram {
 		return null;
 	}
 	
-	public void addFigureRelation(Collection<FigureRelation> figs) {
+	public void addFigureRelations(Collection<FigureRelation> figs) {
+		for (FigureRelation fig : figs) {
+			addFigureRelation(fig);
+		}
+	}
+	
+	public void addFigureRelations(FigureRelation[] figs) {
 		for (FigureRelation fig : figs) {
 			addFigureRelation(fig);
 		}
