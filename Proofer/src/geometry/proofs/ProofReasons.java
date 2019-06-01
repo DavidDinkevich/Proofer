@@ -8,6 +8,7 @@ public enum ProofReasons {
 	VERTICAL_ANGLES_CONGRUENT("Vertical angles are congruent"),
 	SSS("SSS"), SAS("SAS"), ASA("ASA"),
 	PERPENDICULAR("Perpendicular segments make right angles"),
+	OPP_PERPENDICULAR("Right angles make perpendicular segments"),
 	SEGMENT_BISECTOR("A segment bisector divides a segment into two congruent halves"),
 	ANGLE_BISECTOR("An angle bisector divides an angle into two congruent halves"),
 	MIDPOINT("A midpoint divides a segment into two congruent halves"),
