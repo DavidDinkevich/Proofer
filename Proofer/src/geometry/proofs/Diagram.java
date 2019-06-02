@@ -18,6 +18,7 @@ import java.util.HashMap;
 
 import static geometry.proofs.FigureRelationType.CONGRUENT;
 import static geometry.proofs.FigureRelationType.RIGHT;
+import static geometry.proofs.FigureRelationType.PARALLEL;
 
 
 public class Diagram {
@@ -552,11 +553,16 @@ public class Diagram {
 	}
 	
 	/**
-	 * Apply the transitive postulate.
-	 * @param rel the {@link FigureRelation} of type CONGRUENT to
-	 * which the transitive postulate will be applied.
+	 * Apply the transitive postulate to {@link FigureRelation}s of type CONGRUENT, SIMILAR,
+	 * or PARALLEL. Do not try with others, success is not guaranteed.
+	 * @param rel the {@link FigureRelation} to which the transitive postulate will be applied
+	 * @param newRelType the {@link FigureRelationType} of {@link FigureRelation}s that are
+	 * created as a result of the transitive postulate
+	 * @param reasonForNewRel the {@link ProofReasons} justifying the {@link FigureRelation}s
+	 * created by the transitive postulate
 	 */
-	private void applyTransitivePostulate(FigureRelation rel) {
+	private void applyTransitivePostulate(FigureRelation rel, FigureRelationType newRelType,
+			ProofReasons reasonForNewRel) {
 		// Conditions
 		if (rel.isCongruentAndReflexive())
 			return;
@@ -567,10 +573,10 @@ public class Diagram {
 			for (int i = 0; i < COUNT; i++) {
 				FigureRelation iter = relations.get(i);
 				
-				// Conditions
+				// EXIT CONDITIONS
 				if (
-						// Figure relation type is not "congruent"
-						iter.getRelationType() != CONGRUENT
+						// Figure relation type is not the same as rel (param)
+						iter.getRelationType() != rel.getRelationType()
 						// Figures in iter must be same type as sharedFriend
 						|| iter.getFigure0().getClass() != sharedFriend.getClass()
 						// Figures in iter must NOT be the same figure congruent to itself
@@ -579,7 +585,7 @@ public class Diagram {
 						|| FigureRelation.safeEquals(iter, rel)
 						// Iteration must contain figure
 						|| !iter.containsFigure(sharedFriend)
-						)
+					)
 					continue;
 				
 				Figure newFriend0 = rel.getFigure0().equals(sharedFriend) ?
@@ -587,8 +593,8 @@ public class Diagram {
 				Figure newFriend1 = iter.getFigure0().equals(sharedFriend) ?
 						iter.getFigure1() : iter.getFigure0();
 								
-				FigureRelation newRel = new FigureRelation(CONGRUENT, newFriend0, newFriend1);
-				newRel.setReason(ProofReasons.TRANSITIVE);
+				FigureRelation newRel = new FigureRelation(newRelType, newFriend0, newFriend1);
+				newRel.setReason(reasonForNewRel);
 				newRel.addParent(iter);
 				newRel.addParent(rel);
 				// Add the new relation
@@ -693,19 +699,19 @@ public class Diagram {
 		if (containsFigureRelation(pair))
 			return false;
 		
+		FigureRelationType relType = pair.getRelationType();
+		
 		if (relations.add(pair)) {
+			switch (relType) {
 			// If the relation declares that an angle is a right angle,
 			// make this right angle congruent to all other right angles.
-			if (pair.getRelationType() == RIGHT) {
-				makeRightAngle(pair);
-			}
-			// If the pair declares two figures congruent, apply the transitive
-			// postulate
-			else if (pair.getRelationType() == CONGRUENT) {
+			case RIGHT:
+				makeRightAngle(pair); break;
+			case CONGRUENT: case SIMILAR: case PARALLEL:
 				// Apply the transitive postulate
-				applyTransitivePostulate(pair);
+				applyTransitivePostulate(pair, relType, ProofReasons.TRANSITIVE);
 				// If the relation is not congruent and reflexive
-				if (!pair.isCongruentAndReflexive()) {
+				if (relType == CONGRUENT && !pair.isCongruentAndReflexive()) {
 					// If it's an angle, make it a right angle if it is congruent to a right
 					// angle
 					if (pair.getFigure0() instanceof Angle) {
@@ -719,8 +725,19 @@ public class Diagram {
 								this, pair.getFigure0(), pair.getFigure1(), pair));
 					}
 				}
+				break;
+			case SUPPLEMENTARY:
+				applyTransitivePostulate(pair, CONGRUENT, ProofReasons.CONG_COMPLEMENTARY);
+				break;
+			case COMPLEMENTARY:
+				applyTransitivePostulate(pair, CONGRUENT, ProofReasons.CONG_SUPPLEMENTARY);
+				break;
+			case PERPENDICULAR:
+				applyTransitivePostulate(pair, PARALLEL, ProofReasons.PERPENDICULAR_TRANSITIVE);
+				break;
+			default:
+				return true; // Successfully added relation pair
 			}
-			return true; // Successfully added relation pair
 		}
 		return false; // Unsuccessful
 	}
