@@ -21,7 +21,13 @@ public enum ProofReasons {
 			+ "are congruent"),
 	OPP_ISOSCELES("Opposite of the isosceles triangle theorem"),
 	ISOSCELES_OPP_SEGMENTS("Sides opposite of the base angles of an isosceles triangle "
-			+ "are congruent");
+			+ "are congruent"),
+	CONG_COMPLEMENTARY("If two angles are complementary to another angle (or congruent angles)"
+			+ " then they’re congruent"),
+	CONG_SUPPLEMENTARY("If two angles are supplementary to another angle (or congruent angles)"
+			+ " then they’re congruent"),
+	PERPENDICULAR_TRANSITIVE("If two segments are perpendicular to another segment, those"
+			+ " two segments are parallel");
 	
 	private String text;
 	
