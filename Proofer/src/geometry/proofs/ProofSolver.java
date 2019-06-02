@@ -150,21 +150,6 @@ public class ProofSolver {
 	}
 	
 	/**
-	 * Convenience method to check if two figures are congruent
-	 */	
-	private FigureRelation getCongruentRel(Figure f0, Figure f1) {
-		// Create a FigureRelation making the two figures congruent. If they are
-		// congruent according to the Diagram, then this FigureRelation will
-		// also exist in the Diagram
-		FigureRelation hypoRel = new FigureRelation(CONGRUENT, f0, f1);
-		for (FigureRelation rel : diagram.getFigureRelations()) {
-			if (FigureRelation.safeEquals(rel, hypoRel))
-				return rel;
-		}
-		return null;
-	}
-	
-	/**
 	 * <i>This method, and the {@link ProofSolver} in general, assumes that
 	 * the given {@link FigureRelation} is of type 
 	 * {@link PerpendicularFigureRelation}</i>
@@ -362,7 +347,7 @@ public class ProofSolver {
 				// Must find at least two congruent pairs of angles
 				for (Angle a : tri0.getAngles()) {
 					for (Angle b : tri1.getAngles()) {
-						FigureRelation query = getCongruentRel(a, b);
+						FigureRelation query = diagram.getFigureRelation(CONGRUENT, a, b);
 						if (query != null) {
 							parents.add(query);
 						}
@@ -408,7 +393,8 @@ public class ProofSolver {
 				// want to compare A to B and then B to A)
 				for (int j = i + 1; j < 3; j++) {					
 					// Find congruent segments, make opposite angles congruent
-					FigureRelation segsRel = getCongruentRel(segs[i], segs[j]);
+					FigureRelation segsRel = diagram
+							.getFigureRelation(CONGRUENT, segs[i], segs[j]);
 					if (segsRel != null) {
 						// Get the opposite vertex from the FIRST segment
 						String oppVert0 = ProofUtils.getOppositeVertex(triName, segs[i].getName());
@@ -443,7 +429,8 @@ public class ProofSolver {
 					}
 
 					// Find congruent angles, make opposite segments congruent
-					FigureRelation anglesRel = getCongruentRel(angles[i], angles[j]);
+					FigureRelation anglesRel = diagram
+							.getFigureRelation(CONGRUENT, angles[i], angles[j]);
 					if (anglesRel != null) {
 						// Get the middle vertex of the first angle
 						String midVertex0 = angles[i].getNameShort();
@@ -558,7 +545,7 @@ public class ProofSolver {
 				// Make sure this is a primary angle synonym
 				a1 = diagram.getPrimaryAngleSynonym(a1.getName());
 				// Try to find if these angles are congruent
-				FigureRelation congAngles = getCongruentRel(a0, a1);
+				FigureRelation congAngles = diagram.getFigureRelation(CONGRUENT, a0, a1);
 				// If they are congruent
 				if (congAngles != null) {
 					// Get the adjacent Segments of each angle
@@ -570,7 +557,7 @@ public class ProofSolver {
 					// of parents
 					for (Segment s0 : segs0) {
 						for (Segment s1 : segs1) {
-							FigureRelation segRel = getCongruentRel(s0, s1);
+							FigureRelation segRel = diagram.getFigureRelation(CONGRUENT, s0, s1);
 							if (segRel != null)
 								parents.add(segRel);
 						}
@@ -613,7 +600,7 @@ public class ProofSolver {
 			// For each side of the second triangle
 			for (Segment s1 : segs1) {
 				// Try to find if these segments are congruent
-				FigureRelation congSegs = getCongruentRel(s0, s1);
+				FigureRelation congSegs = diagram.getFigureRelation(CONGRUENT, s0, s1);
 				// If they are congruent
 				if (congSegs != null) {
 					// Get the adjacent angles around the first segment
@@ -632,7 +619,8 @@ public class ProofSolver {
 						for (String angle1 : adjacentAngles1) {
 							// Make sure this is a primary angle synonym
 							Angle a1 = diagram.getPrimaryAngleSynonym(angle1);
-							FigureRelation anglesRel = getCongruentRel(a0, a1);
+							FigureRelation anglesRel = diagram
+									.getFigureRelation(CONGRUENT, a0, a1);
 							if (anglesRel != null)
 								parents.add(anglesRel);
 						}
@@ -698,7 +686,7 @@ public class ProofSolver {
 		
 		for (Segment[] pair : ProofUtils.getCorrespondingSegments(tri0, tri1)) {
 			// Hypothetical FigureRelation with two congruent Segments
-			FigureRelation hypoRel = getCongruentRel(pair[0], pair[1]);
+			FigureRelation hypoRel = diagram.getFigureRelation(CONGRUENT, pair[0], pair[1]);
 			if (hypoRel != null) {
 				list.add(hypoRel);
 				break;
