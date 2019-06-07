@@ -19,6 +19,9 @@ import java.util.HashMap;
 import static geometry.proofs.FigureRelationType.CONGRUENT;
 import static geometry.proofs.FigureRelationType.RIGHT;
 import static geometry.proofs.FigureRelationType.PARALLEL;
+import static geometry.proofs.FigureRelationType.PERPENDICULAR;
+import static geometry.proofs.FigureRelationType.SUPPLEMENTARY;
+import static geometry.proofs.FigureRelationType.COMPLEMENTARY;
 
 
 public class Diagram {
@@ -556,13 +559,16 @@ public class Diagram {
 	 * Apply the transitive postulate to {@link FigureRelation}s of type CONGRUENT, SIMILAR,
 	 * or PARALLEL. Do not try with others, success is not guaranteed.
 	 * @param rel the {@link FigureRelation} to which the transitive postulate will be applied
+	 * @param queryType the type of relationship ({@link FigureRelationType}) that another
+	 * {@link FigureRelation} must have in order for the transitive postulate to be applied
+	 * on the original, given {@link FigureRelation}, and it
 	 * @param newRelType the {@link FigureRelationType} of {@link FigureRelation}s that are
 	 * created as a result of the transitive postulate
 	 * @param reasonForNewRel the {@link ProofReasons} justifying the {@link FigureRelation}s
 	 * created by the transitive postulate
 	 */
-	private void applyTransitivePostulate(FigureRelation rel, FigureRelationType newRelType,
-			ProofReasons reasonForNewRel) {
+	private void applyTransitivePostulate(FigureRelation rel, FigureRelationType queryType,
+			FigureRelationType newRelType, ProofReasons reasonForNewRel) {
 		// Conditions
 		if (rel.isCongruentAndReflexive())
 			return;
@@ -576,7 +582,7 @@ public class Diagram {
 				// EXIT CONDITIONS
 				if (
 						// Figure relation type is not the same as rel (param)
-						iter.getRelationType() != rel.getRelationType()
+						iter.getRelationType() != queryType
 						// Figures in iter must be same type as sharedFriend
 						|| iter.getFigure0().getClass() != sharedFriend.getClass()
 						// Figures in iter must NOT be the same figure congruent to itself
@@ -682,6 +688,65 @@ public class Diagram {
 	}
 	
 	/**
+	 * This method enforces the following principle: if a pair of supplementary/complementary
+	 * angles are supplementary/complementary to the same pair of congruent angles, they are
+	 * congruent.<p>
+	 * PRECONDITION: the given {@link FigureRelation} is not reflexive and makes two 
+	 * angles congruent
+	 * @param rel the pair of supplementary/complementary angles that are congruent
+	 * @param suppOrComp (MUST BE COMPLEMENTARY OR SUPPLEMENTARY); the type of relationship
+	 * ({@link FigureRelation}) that will be created by this method
+	 */
+	private void addTransitiveSuppCompAngles(FigureRelation rel, FigureRelationType suppOrComp) {
+		// Enforce preconditions
+		if (rel.getRelationType() != CONGRUENT || rel.isCongruentAndReflexive())
+			throw new IllegalArgumentException("FigureRelationType must be non-reflexice and "
+					+ "of type CONGRUENT");
+		else if (!(suppOrComp == SUPPLEMENTARY || suppOrComp == COMPLEMENTARY))
+			throw new IllegalArgumentException("supOrComp param must be of type COMPLEMENTARY"
+					+ " or SUPPLEMENTARY");
+		else if (!(rel.getFigure0() instanceof Angle))
+			throw new IllegalArgumentException("This method can only be applied to a "
+					+ "FigureRelation involving two congruent angles");
+		
+		// For each figure in the given FigureRelation, find another FigureRelation that contains
+		// that figure (whose FigureRelationType is the suppOrComp param)
+		final int count = relations.size();
+		FigureRelation friend0 = null, friend1 = null;
+		for (int i = 0; i < count; i++) {
+			FigureRelation currRel = relations.get(i);
+			FigureRelationType currRelType = currRel.getRelationType();
+			// Correct type
+			if (currRelType != suppOrComp)
+				continue;
+			// Must contain the first figure of the given FigureRelation
+			else if (currRel.containsFigure(rel.getFigure0())) {
+				friend0 = currRel;
+			}
+			// Must contain the second figure of the given FigureRelation
+			else if (currRel.containsFigure(rel.getFigure1())) {
+				friend1 = currRel;
+			}
+			// Once we've found both friends, we need look no more
+			if (friend0 != null && friend1 != null)
+				break;
+		}
+		// Make the two new friends congruent
+		if (friend0 != null && friend1 != null) {
+			Figure newFriend0 = friend0.getFigure0().equals(rel.getFigure0()) ? 
+					friend0.getFigure1() : friend0.getFigure0();
+			Figure newFriend1 = friend1.getFigure0().equals(rel.getFigure1()) ? 
+					friend1.getFigure1() : friend1.getFigure0();
+					
+			FigureRelation newRel = new FigureRelation(CONGRUENT, newFriend0, newFriend1);
+			newRel.addParents(Arrays.asList(rel, friend0, friend1));
+			newRel.setReason(suppOrComp == COMPLEMENTARY ? ProofReasons.COMP_ANGLES_TO_CONG_ANGLES
+					: ProofReasons.SUPP_ANGLES_TO_CONG_ANGLES);
+			addFigureRelation(newRel);
+		}
+	}
+	
+	/**
 	 * Add the given {@link FigureRelation} to this {@link Diagram}.
 	 * @param pair the {@link FigureRelation}
 	 * @return false if the given {@link FigureRelation} is already
@@ -710,13 +775,23 @@ public class Diagram {
 				makeRightAngle(pair); break;
 			case CONGRUENT: case SIMILAR: case PARALLEL:
 				// Apply the transitive postulate
-				applyTransitivePostulate(pair, relType, ProofReasons.TRANSITIVE);
+				applyTransitivePostulate(pair, relType, relType, ProofReasons.TRANSITIVE);
 				// If the relation is not congruent and reflexive
 				if (relType == CONGRUENT && !pair.isCongruentAndReflexive()) {
-					// If it's an angle, make it a right angle if it is congruent to a right
-					// angle
+					// If this FigureRelation involves two angles
 					if (pair.getFigure0() instanceof Angle) {
+						// Make it a right angle if it is congruent to a right angle
 						addTransitiveRightAngles(pair);
+						// If an angle is supp/complementary to one of a pair of congruent angles, 
+						// it is supp/comp to the other
+						applyTransitivePostulate(pair, SUPPLEMENTARY, SUPPLEMENTARY, 
+								ProofReasons.SUPP_ANGLE_TO_CONG_ANGLES);
+						applyTransitivePostulate(pair, COMPLEMENTARY, COMPLEMENTARY, 
+								ProofReasons.COMP_ANGLE_TO_CONG_ANGLES);
+						// If a pair of supp/comp angles are supp/comp to the same pair of
+						// congruent angles, they are congruent
+						addTransitiveSuppCompAngles(pair, SUPPLEMENTARY);
+						addTransitiveSuppCompAngles(pair, COMPLEMENTARY);
 					}
 					// If two triangles are congruent, all of their corresponding children figures
 					// are congruent as well
@@ -728,13 +803,19 @@ public class Diagram {
 				}
 				break;
 			case SUPPLEMENTARY:
-				applyTransitivePostulate(pair, CONGRUENT, ProofReasons.CONG_COMPLEMENTARY);
+				// If two angles are supplementary to the same angle, they are congruent
+				applyTransitivePostulate(pair, SUPPLEMENTARY, CONGRUENT, 
+						ProofReasons.SHARED_SUPPLEMENTARY_ANGLE);
 				break;
 			case COMPLEMENTARY:
-				applyTransitivePostulate(pair, CONGRUENT, ProofReasons.CONG_SUPPLEMENTARY);
+				// If two angles are complementary to the same angle, they are congruent
+				applyTransitivePostulate(pair, COMPLEMENTARY, CONGRUENT, 
+						ProofReasons.SHARED_COMPLEMENTARY_ANGLE);
 				break;
 			case PERPENDICULAR:
-				applyTransitivePostulate(pair, PARALLEL, ProofReasons.PERPENDICULAR_TRANSITIVE);
+				// If two segments are perpendicular to the same segment, they are parallel
+				applyTransitivePostulate(pair, PERPENDICULAR, PARALLEL, 
+						ProofReasons.PERPENDICULAR_TRANSITIVE);
 				break;
 			}
 			return true; // Added FigureRelation
