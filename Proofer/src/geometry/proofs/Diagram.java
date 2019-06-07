@@ -688,6 +688,7 @@ public class Diagram {
 	 * contained in this {@link Diagram}, true if the operation
 	 * was successful
 	 */
+	@SuppressWarnings("incomplete-switch") // Don't care--only want specific cases
 	public boolean addFigureRelation(FigureRelation pair) {
 		// Enforce policy
 		if (policy == Policy.FIGURES_ONLY) {
@@ -735,11 +736,10 @@ public class Diagram {
 			case PERPENDICULAR:
 				applyTransitivePostulate(pair, PARALLEL, ProofReasons.PERPENDICULAR_TRANSITIVE);
 				break;
-			default:
-				return true; // Successfully added relation pair
 			}
+			return true; // Added FigureRelation
 		}
-		return false; // Unsuccessful
+		return false; // Didn't add FigureRelation
 	}
 	
 	public FigureRelation getFigureRelation(FigureRelationType type, Figure f0, Figure f1) {
