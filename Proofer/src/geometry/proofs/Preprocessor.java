@@ -195,17 +195,13 @@ public final class Preprocessor {
 
 		boolean figuresWereAdded = false;
 		do {
-			final int COUNT = diagram.getFigures().size();
 			figuresWereAdded = false;
 			
-			for (int i = 0; i < COUNT-1; i++) {
-				if (diagram.getFigures().get(i).getClass() != Segment.class)
-					continue;
-				Segment seg0 = (Segment) diagram.getFigures().get(i);
-				for (int j = i + 1; j < COUNT; j++) {
-					if (diagram.getFigures().get(j).getClass() != Segment.class)
-						continue;
-					Segment seg1 = (Segment) diagram.getFigures().get(j);
+			List<Segment> segs = diagram.getFiguresOfType(Segment.class);
+			for (int i = 0; i < segs.size()-1; i++) {
+				Segment seg0 = segs.get(i);
+				for (int j = i + 1; j < segs.size(); j++) {
+					Segment seg1 = segs.get(j);
 					// Get/add the hidden figure created by the two segments (or null)
 					Figure hiddenFig = addHiddenSegmentOrAngle(diagram, seg0, seg1);
 					// If we've found a new hidden figure
@@ -282,18 +278,11 @@ public final class Preprocessor {
 	 * @param diag the diagram
 	 */
 	private static void addHiddenVerticesAndSegments(Diagram diag) {
-		// Total number of figures before we add more
-		final int numFigures = diag.getFigures().size();
-		
-		for (int i = 0; i < numFigures - 1; i++) {
-			if (diag.getFigures().get(i).getClass() != Segment.class)
-				continue;
-			Segment seg0 = (Segment) diag.getFigures().get(i);
-			for (int j = i + 1; j < numFigures; j++) {
-				if (diag.getFigures().get(j).getClass() != Segment.class)
-					continue;
-				Segment seg1 = (Segment) diag.getFigures().get(j);
-				
+		List<Segment> segs = diag.getFiguresOfType(Segment.class);
+		for (int i = 0; i < segs.size() - 1; i++) {
+			Segment seg0 = segs.get(i);
+			for (int j = i + 1; j < segs.size(); j++) {
+				Segment seg1 = segs.get(j);
 				// IF the segments intersect
 				if (Segment.segmentsDoIntersect(seg0, seg1)) {
 					// Get the point of intersection
@@ -385,10 +374,7 @@ public final class Preprocessor {
 				// hidden vertices
 				Segment connectingSeg = new Segment(hiddenVerts.get(i), hiddenVerts.get(j));
 				// For each segment
-				for (Figure fig : diag.getFigures()) {
-					if (fig.getClass() != Segment.class)
-						continue;
-					Segment seg = (Segment) fig;
+				for (Segment seg : diag.getFiguresOfType(Segment.class)) {
 					// Make sure the hypothetical segment lies completely on top of a
 					// pre-existing segment
 					if (seg.containsSegment(connectingSeg)) {
@@ -402,17 +388,11 @@ public final class Preprocessor {
 	}
 	
 	private static void handleOverlappingSegments(Diagram diag) {
-		// Total number of figures before we add more
-		final int numFigures = diag.getFigures().size();
-
-		for (int i = 0; i < numFigures - 1; i++) {
-			if (diag.getFigures().get(i).getClass() != Segment.class)
-				continue;
-			Segment seg0 = (Segment) diag.getFigures().get(i);
-			for (int j = i + 1; j < numFigures; j++) {
-				if (diag.getFigures().get(j).getClass() != Segment.class)
-					continue;
-				Segment seg1 = (Segment) diag.getFigures().get(j);
+		List<Segment> segs = diag.getFiguresOfType(Segment.class);
+		for (int i = 0; i < segs.size() - 1; i++) {
+			Segment seg0 = segs.get(i);
+			for (int j = i + 1; j < segs.size(); j++) {
+				Segment seg1 = segs.get(j);
 				// If (1) the segments are not on top of each other, and (2) one contains both
 				// endpoints of the other
 				if (seg0.getLength() != seg1.getLength() &&
@@ -606,20 +586,11 @@ public final class Preprocessor {
 	}
 		
 	private static void handleVerticalAngles(Diagram diagram) {
-		// For each figure
-		for (int i = 0; i < diagram.getFigures().size() - 1; i++) {
-			// If the figure is NOT an angle, we don't care about it
-			if (diagram.getFigures().get(i).getClass() != Angle.class)
-				continue;
-			// Get the angle
-			Angle a0 = (Angle) diagram.getFigures().get(i);
-			// For each other figure
-			for (int j = i + 1; j < diagram.getFigures().size(); j++) {
-				// Only angles
-				if (diagram.getFigures().get(j).getClass() != Angle.class)
-					continue;
-				// Get the other angle
-				Angle a1 = (Angle) diagram.getFigures().get(j);
+		List<Angle> angles = diagram.getFiguresOfType(Angle.class);
+		for (int i = 0; i < angles.size() - 1; i++) {
+			Angle a0 = angles.get(i);
+			for (int j = i + 1; j < angles.size(); j++) {
+				Angle a1 = angles.get(j);
 				// If they are vertical angles, make them congruent
 				if (ProofUtils.areVerticalAngles(a0, a1)) {
 					FigureRelation rel = new FigureRelation(CONGRUENT, a0, a1);
@@ -635,14 +606,11 @@ public final class Preprocessor {
 	 */
 	
 	private static Vertex getSegmentEndpoint(Diagram diag, Vec2 loc) {
-		for (Figure fig : diag.getFigures()) {
-			if (fig.getClass() == Segment.class) {
-				Segment seg = (Segment) fig;
-				for (Vertex vertex : seg.getVertices()) {
-					// Dist to account for small rounding errors
-					if (Vec2.dist(vertex.getCenter(), loc) < 0.05f) {
-						return vertex;
-					}
+		for (Segment seg : diag.getFiguresOfType(Segment.class)) {
+			for (Vertex vertex : seg.getVertices()) {
+				// Dist to account for small rounding errors
+				if (Vec2.dist(vertex.getCenter(), loc) < 0.05f) {
+					return vertex;
 				}
 			}
 		}
@@ -664,22 +632,10 @@ public final class Preprocessor {
 	}
 		
 	private static Vertex getVertexAtLoc(Diagram diag, Vec2 loc) {
-		// Check for vertex in given diagram
-		for (Figure fig : diag.getFigures()) {
-			// If the shape being checked is a vertex
-			if (fig.getClass() == Vertex.class) {
-				// Cast the shape as a vertex
-				Vertex vert = (Vertex)fig;
-				// If the vertex's loc is equal to the given loc
-//				if (vert.getCenter().equals(loc))
-				// This prevents minor rounding errors
-				if (Vec2.dist(vert.getCenter(), loc) < 0.05f) {
-					// Return the vertex
-					return vert;
-				}
-			}
-		}
-//		throw new NullPointerException("No vertex at given location");
+		for (Vertex vert : diag.getFiguresOfType(Vertex.class))
+			// This prevents minor rounding errors
+			if (Vec2.dist(vert.getCenter(), loc) < 0.05f)
+				return vert;
 		return null;
 	}
 	

@@ -275,6 +275,16 @@ public class Diagram {
 		return Collections.unmodifiableList(figures);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <T extends Figure> List<T> getFiguresOfType(Class<T> type) {
+		List<T> figs = new ArrayList<>();
+		for (Figure fig : figures) {
+			if (fig.getClass() == type)
+				figs.add((T) fig);
+		}
+		return figs;
+	}
+	
 	/*
 	 * ANGLE SYNONYMS
 	 */

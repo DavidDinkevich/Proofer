@@ -366,14 +366,7 @@ public class ProofSolver {
 	}
 	
 	private void findIsoscelesTriangles() {
-		// For each figure in the Diagram
-		for (Figure fig : diagram.getFigures()) {
-			// If the figure is not a Triangle, leave the function
-			if (!(fig instanceof Triangle))
-				continue;
-						
-			// Get the triangle
-			Triangle tri = (Triangle)fig;
+		for (Triangle tri : diagram.getFiguresOfType(Triangle.class)) {
 			// Get the name of the triangle
 			String triName = tri.getName();
 			// Get the triangle's segments
@@ -649,10 +642,7 @@ public class ProofSolver {
 	
 	private void findPerpendicularSegments() {
 		// For each angle
-		for (int i = 0; i < diagram.getFigures().size()-1; i++) {
-			if (!(diagram.getFigures().get(i) instanceof Angle))
-				continue;
-			Angle a = (Angle) diagram.getFigures().get(i);
+		for (Angle a : diagram.getFiguresOfType(Angle.class)) {
 			// See if this angle is a right angle
 			FigureRelation rightAngleRelation = diagram.getFigureRelation(RIGHT, a, null);
 			if (rightAngleRelation != null) {
