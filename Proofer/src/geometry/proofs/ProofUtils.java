@@ -528,7 +528,8 @@ public class ProofUtils {
 	
 	/**
 	 * Get the corresponding segments of the given two angles <i>that share a
-	 * common vertex</i>
+	 * common vertex</i>. NOTE: this method is not guaranteed to work as expected if the
+	 * angles are not vertical angles!
 	 * <p>
 	 * Format: [ [ a0s0, a1s0 ] , [ a0s1, a1s1 ]  ]
 	 * @param a the first angle
