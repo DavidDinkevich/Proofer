@@ -537,10 +537,12 @@ public class ProofUtils {
 	 * if the angles do not share a common vertex, empty if the angles are not aligned.
 	 */
 	public static Segment[][] getCorrespondingSegments(Angle a, Angle b) {
-		Segment a0s0 = a.getSides()[0];
-		Segment a0s1 = a.getSides()[1];
-		Segment a1s0 = b.getSides()[0];
-		Segment a1s1 = b.getSides()[1];
+		Segment[] aSides = a.getSides();
+		Segment[] bSides = b.getSides();
+		Segment a0s0 = aSides[0];
+		Segment a0s1 = aSides[1];
+		Segment a1s0 = bSides[0];
+		Segment a1s1 = bSides[1];
 		// Make sure the segments in the 2 pairs are parallel to each other
 		a1s0 = a1s0.getSlope().equals(a0s0.getSlope()) ? a1s0 : b.getSides()[1];
 		a1s1 = a1s1.getSlope().equals(a0s1.getSlope()) ? a1s1 : b.getSides()[0];
