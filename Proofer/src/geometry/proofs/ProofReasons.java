@@ -30,6 +30,10 @@ public enum ProofReasons {
 	ISOSCELES_OPP_SEGMENTS("Sides opposite of the base angles of an isosceles triangle "
 			+ "are congruent"),
 	
+	DEF_SUPP("If two angles form a straight angle, then they are supplementary (definition of "
+			+ "supplementary angles)"),
+	DEF_COMP("If two angles form a right angle, then they are complementary (definition of "
+			+ "complementary angles)"),
 	SHARED_SUPPLEMENTARY_ANGLE("If two angles are supplementary to the same angle, the two angles"
 			+ " are congruent"),
 	SHARED_COMPLEMENTARY_ANGLE("If two angles are complementary to the same angle, the two angles"

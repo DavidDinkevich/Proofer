@@ -20,6 +20,7 @@ import ui.canvas.GraphicsShape;
 import ui.canvas.diagram.DiagramCanvas;
 
 import static geometry.proofs.FigureRelationType.CONGRUENT;
+import static geometry.proofs.FigureRelationType.SUPPLEMENTARY;
 
 
 public final class Preprocessor {
@@ -72,6 +73,8 @@ public final class Preprocessor {
 		preprocessPerpendicularPairs(diagram);
 		// Preprocess bisecting pairs
 		preprocessBisectingPairs(diagram);
+		// Make supplementary angles supplementary
+		identifySupplementaryAngles(diagram);
 		
 		return diagram;
 	}
@@ -431,6 +434,46 @@ public final class Preprocessor {
 			Vertex shared = (Vertex) angle.getChild(sharedVert);
 			Triangle triangle = new Triangle(vertex0, shared, vertex1);
 			diagram.addHiddenFigure(triangle);
+		}
+	}
+	
+	private static void identifySupplementaryAngles(Diagram diag) {
+		List<Angle> angles = diag.getFiguresOfType(Angle.class);
+		for (int i = 0; i < angles.size() - 1; i++) {
+			Angle a = angles.get(i);
+			String aName = a.getName();
+			for (int j = i + 1; j < angles.size(); j++) {
+				Angle b = angles.get(j);
+				String bName = b.getName();
+				// Must share same vertex
+				if (aName.charAt(1) == bName.charAt(1)) {
+					// Get segments and slopes
+					Segment[][] corrSegs = ProofUtils.getCorrespondingSegments(a, b);
+					Slope a0s0Slope = corrSegs[0][0].getSlope();
+					Slope a1s0Slope = corrSegs[0][1].getSlope();
+					Slope a0s1Slope = corrSegs[1][0].getSlope();
+					Slope a1s1Slope = corrSegs[1][1].getSlope();
+						
+					if (
+						// A0S0 = A1S0 and m-A0S1 = m-A1S1
+						(corrSegs[0][0].equals(corrSegs[0][1]) && a0s1Slope.equals(a1s1Slope))
+						||
+						// A0S0 = A1S1 and m-A0S1 = m-A1S0
+						(corrSegs[0][0].equals(corrSegs[1][1]) && a0s1Slope.equals(a1s0Slope))
+						||
+						// A0S1 = A1S1 and m-A0S0 = m-A1S0
+						(corrSegs[1][0].equals(corrSegs[1][1]) && a0s0Slope.equals(a1s0Slope))
+						||
+						// A0S1 = A1S0 and m-A0S0 = m-A1S1
+						(corrSegs[0][1].equals(corrSegs[1][0]) && a0s0Slope.equals(a1s1Slope))
+					) {
+						// Add supplementary FigureRelation						
+						FigureRelation suppRel = new FigureRelation(SUPPLEMENTARY, a, b);
+						suppRel.setReason(ProofReasons.DEF_SUPP);
+						diag.addFigureRelation(suppRel);
+					}						
+				}
+			}
 		}
 	}
 	
