@@ -45,27 +45,25 @@ public final class Preprocessor {
 		// Add and include all hidden figures
 		addHiddenFigures(diagram);
 				
-		if (policy == Diagram.Policy.FIGURES_AND_RELATIONS) {
-			// Make vertical angles congruent
-			handleVerticalAngles(diagram);
-			// Make supplementary angles supplementary
-			identifySupplementaryAngles(diagram);
-		}
-		
 		return diagram;
 	}
 
 	/**
 	 * Prepare a {@link Diagram} to be processed by {@link ProofSolver}.
-	 * @param canvas the {@link}
-	 * @param figRelPanel
-	 * @return the diagram if successful, or null if not successful
+	 * @param canvas the {@link DiagramCanvas}
+	 * @param figRelPanel the {@link FigureRelationListPanel}
+	 * @return the {@link Diagram} if successful, or null if not successful
 	 */
 	public static Diagram generateDiagram(DiagramCanvas canvas, 
 			FigureRelationListPanel figRelPanel) {
 		
 		// Compile the figures
 		Diagram diagram = compileFigures(canvas, Diagram.Policy.FIGURES_AND_RELATIONS);
+		
+		// Make vertical angles congruent
+		handleVerticalAngles(diagram);
+		// Make supplementary angles supplementary
+		identifySupplementaryAngles(diagram);
 		
 		// Preprocess given, return null in case of error
 		if (preprocessGiven(diagram, canvas, figRelPanel) < 0)
