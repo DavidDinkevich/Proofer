@@ -48,6 +48,8 @@ public final class Preprocessor {
 		if (policy == Diagram.Policy.FIGURES_AND_RELATIONS) {
 			// Make vertical angles congruent
 			handleVerticalAngles(diagram);
+			// Make supplementary angles supplementary
+			identifySupplementaryAngles(diagram);
 		}
 		
 		return diagram;
@@ -73,8 +75,6 @@ public final class Preprocessor {
 		preprocessPerpendicularPairs(diagram);
 		// Preprocess bisecting pairs
 		preprocessBisectingPairs(diagram);
-		// Make supplementary angles supplementary
-		identifySupplementaryAngles(diagram);
 		
 		return diagram;
 	}
