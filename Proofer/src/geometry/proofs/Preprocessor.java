@@ -447,6 +447,10 @@ public final class Preprocessor {
 				if (aName.charAt(1) == bName.charAt(1)) {
 					// Get segments and slopes
 					Segment[][] corrSegs = ProofUtils.getCorrespondingSegments(a, b);
+					// Null array means angles are not aligned, not candidates for supp
+					if (corrSegs == null)
+						continue;
+
 					Slope a0s0Slope = corrSegs[0][0].getSlope();
 					Slope a1s0Slope = corrSegs[0][1].getSlope();
 					Slope a0s1Slope = corrSegs[1][0].getSlope();

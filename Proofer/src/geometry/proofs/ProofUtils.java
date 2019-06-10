@@ -333,7 +333,7 @@ public class ProofUtils {
 	 * Get whether the given two angles are vertical angles.
 	 * @param a the first angle
 	 * @param b the second angle
-	 * @return whether they are vertical angles
+	 * @return whether they are vertical angles, false if they are not
 	 */
 	public static boolean areVerticalAngles(Angle a, Angle b) {		
 		// Check if the two angles share ONE common vertex
@@ -348,28 +348,29 @@ public class ProofUtils {
 						|| endVerts0.contains(endVerts1.substring(1)));
 		
 		// Get corresponding segments, check if they're aligned
-		Segment[][] corrSegs = getCorrespondingSegments(a, b);
-		final boolean segsAligned = 
-				// a0s0 == a1s0
-				corrSegs[0][0].getSlope().equals(corrSegs[0][1].getSlope())
-				// a0s1 == a1s1
-			&&	corrSegs[1][0].getSlope().equals(corrSegs[1][1].getSlope());
-				
-		return shareVert && segsAligned;
+		return shareVert && getCorrespondingSegments(a, b) != null;
 	}
 	
 	/**
-	 * Compare the two Angles to see if they are synonyms.
+	 * Compare the two Angles to see if they are synonyms.<p>
+	 * NOTE: "aligned" in this context has the same meaning as it does in the
+	 * {@link ProofUtils#getCorrespondingSegments(Angle, Angle)}.
 	 * @param a the first {@link Angle}
 	 * @param b the second {@link Angle}
 	 * @return 0 if a = b, 1 if a > b, -1 if a < b, -2 if angles don't share a vertex, -3 if angles
-	 * share a vertex but are not aligned.
+	 * share a vertex but are not aligned, -4 if the angles share a vertex AND are aligned, but
+	 * one does not lie on top of the other
 	 */
 	public static int compareAngleSynonyms(Angle a, Angle b) {
 		// Check if the angles share a center vertex
 		final boolean shareVertex = a.getCenter().equals(b.getCenter());
 		if (shareVertex) {
+			// Get the angles' corresponding segments
 			Segment[][] corrSegs = getCorrespondingSegments(a, b);
+			// If array is null, angles are not aligned, no corr segs
+			if (corrSegs == null)
+				return -3;
+			
 			Segment a0s0 = corrSegs[0][0];
 			Segment a1s0 = corrSegs[0][1];
 			Segment a0s1 = corrSegs[1][0];
@@ -390,19 +391,16 @@ public class ProofUtils {
 			) {
 				return 0;
 			}
-			
 			// Angle b is on top of Angle a, Angle a is bigger
 			if (a0s0.containsPoints(a1s0Points) && a0s1.containsPoints(a1s1Points)) {
 				return 1;
 			}
-			
 			// Angle a is on top of Angle b, Angle b is bigger
 			if (a1s0.containsPoints(a0s0Points) && a1s1.containsPoints(a0s1Points)) {
 				return -1;
 			}
-			
-			// Angles are not aligned
-			return -3;
+			// Angles are aligned, but one does not lie on top of the other
+			return -4;
 		} else {
 			// Angles don't share a vertex, not synonyms
 			return -2;
@@ -527,15 +525,24 @@ public class ProofUtils {
 	}
 	
 	/**
-	 * Get the corresponding segments of the given two angles <i>that share a
-	 * common vertex</i>. NOTE: this method is not guaranteed to work as expected if the
-	 * angles are not vertical angles!
+	 * Get the corresponding segments of the given two angles.
 	 * <p>
-	 * Format: [ [ a0s0, a1s0 ] , [ a0s1, a1s1 ]  ]
+	 * DEFINITION: "aligned" in this context means that the angles share two pairs of 
+	 * corresponding segments with the same slope. They may form any one of the following three
+	 * orientations:
+	 * <ul>
+	 * <li>|_ - angles are on top of each other (note, segment lengths in this function do not
+	 * matter, only their slopes)</li>
+	 * <li>_|_ or _| |_ - there are two corresponding pairs of segments with
+	 * the same slopes</li>
+	 * <li>X - vertical angles</li>
+	 * </ul>
+	 * <p>
+	 * Format: [ [ a0s0, a1s0 ] , [ a0s1, a1s1 ] ]
 	 * @param a the first angle
 	 * @param b the second angle
-	 * @return the list of corresponding segments if the angles share a common vertex, null
-	 * if the angles do not share a common vertex, empty if the angles are not aligned.
+	 * @return the list of corresponding segments if the angles are aligned, null
+	 * if the angles are not aligned
 	 */
 	public static Segment[][] getCorrespondingSegments(Angle a, Angle b) {
 		Segment[] aSides = a.getSides();
@@ -548,7 +555,13 @@ public class ProofUtils {
 		a1s0 = a1s0.getSlope().equals(a0s0.getSlope()) ? a1s0 : b.getSides()[1];
 		a1s1 = a1s1.getSlope().equals(a0s1.getSlope()) ? a1s1 : b.getSides()[0];
 		
-		return new Segment[][] { { a0s0, a1s0 }, { a0s1, a1s1 } };
+		// Verify that the angles are aligned properly, otherwise return null
+		Segment[][] result = { { a0s0, a1s0 }, { a0s1, a1s1 } };
+		if (!result[0][0].getSlope().equals(result[0][1].getSlope())
+				|| !result[1][0].getSlope().equals(result[1][1].getSlope()))
+			return null;
+		
+		return result;
 	}
 	
 	/**
