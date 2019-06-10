@@ -629,7 +629,13 @@ public class Diagram {
 						rel.getFigure1() : rel.getFigure0();
 				Figure newFriend1 = iter.getFigure0().equals(sharedFriend) ?
 						iter.getFigure1() : iter.getFigure0();
-								
+				
+				// On rare occasions, both new friends can be equal to each other
+				// (a rel that says congruent(ABC, DEF) and supplementary(ABC, DEF)
+				// could yield two friends (DEF, DEF)
+				if (newFriend0.equals(newFriend1))
+					continue;
+				
 				FigureRelation newRel = new FigureRelation(newRelType, newFriend0, newFriend1);
 				newRel.setReason(reasonForNewRel);
 				newRel.addParent(iter);
@@ -846,10 +852,13 @@ public class Diagram {
 				identifyComplementaryAngles(pair);
 				break;
 			case CONGRUENT: case SIMILAR: case PARALLEL:
+				if (pair.isCongruentAndReflexive())
+					break;
+				
 				// Apply the transitive postulate
 				applyTransitivePostulate(pair, relType, relType, ProofReasons.TRANSITIVE);
 				// If the relation is not congruent and reflexive
-				if (relType == CONGRUENT && !pair.isCongruentAndReflexive()) {
+				if (relType == CONGRUENT) {
 					// If this FigureRelation involves two angles
 					if (pair.getFigure0() instanceof Angle) {
 						// Make it a right angle if it is congruent to a right angle
