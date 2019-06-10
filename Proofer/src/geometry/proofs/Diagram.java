@@ -530,22 +530,22 @@ public class Diagram {
 	 */
 	private List<Vertex> breakToUnitComponentVertices(Node<Segment, Vertex> node, 
 			List<Vertex> all) {
-		
-		if (node == null)
-			return all;
-		
-		// Add all children
-		for (Vertex v : node.getChildren()) {
-			ProofUtils.addLeastToGreatestDist(v, all);
+		if (node != null) {
+			// Add all children
+			for (Vertex v : node.getChildren()) {
+				ProofUtils.addLeastToGreatestDist(v, all);
+			}
+			// Do the same for each component segment
+			for (int i = 0; i < node.getChildren().size() - 1; i++) {
+				Vertex first = node.getChildren().get(i);
+				Vertex second = node.getChildren().get(i + 1);
+				// Don't call this method on the originally given segment, StackOverflowException
+				if (!node.getObject().isValidName(first.getName() + second.getName())) {
+					Segment segment = new Segment(first, second);
+					breakToUnitComponentVertices(getCompoundSegmentNode(segment.getName()), all);
+				}
+			}
 		}
-		// Do the same for each component segment
-		for (int i = 0; i < node.getChildren().size() - 1; i++) {
-			Vertex first = node.getChildren().get(i);
-			Vertex second = node.getChildren().get(i + 1);
-			Segment segment = new Segment(first, second);
-			breakToUnitComponentVertices(getCompoundSegmentNode(segment.getName()), all);
-		}
-		
 		return all;
 	}
 		
@@ -786,8 +786,8 @@ public class Diagram {
 				
 				FigureRelation compRel = new FigureRelation(
 						COMPLEMENTARY,
-						getFigure(angle0, Angle.class),
-						getFigure(angle1, Angle.class)
+						getPrimaryAngleSynonym(angle0),
+						getPrimaryAngleSynonym(angle1)
 				);
 				compRel.addParent(rel);
 				compRel.setReason(ProofReasons.DEF_COMP);
