@@ -25,6 +25,13 @@ import static geometry.proofs.FigureRelationType.COMPLEMENTARY;
 import static geometry.proofs.FigureRelationType.SUPPLEMENTARY;
 
 
+/**
+ * General-purpose utility methods related to all things regarding {@link Figure}s and
+ * {@link FigureRelation}s.
+ * <p>
+ * NOTE: this class assumes that two points with different names cannot exist at the same
+ * location--two points in the same location must have the same name.
+ */
 public class ProofUtils {
 	
 	// Don't instantiate an object of this class, or it'll bite you back...
