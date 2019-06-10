@@ -135,9 +135,9 @@ public class InputManager {
 		 */
 		for (int i = selectables.size()-1; i >= 0; i--) {
 			GraphicsShape<?> o = selectables.get(i);
+			Shape shape = o.getShape();
 			// If the object is selectable, and it was clicked on
-			if (o.getAllowSelections() && o.getShape()
-					.containsPoint(canvas.getMouseLocOnGrid())) {
+			if (o.getAllowSelections() && figureContainsPoint(shape, canvas.getMouseLocOnGrid())) {
 				objectClickedOn = o;
 				break; // We already found the selected figure, no need to search further
 			}
@@ -314,6 +314,19 @@ public class InputManager {
 	/*
 	 * BEGIN PRIVATE HELPER METHODS
 	 */
+	
+	/**
+	 * Get whether the given {@link Shape} contains the given {@link Vec2}. If the shape
+	 * is a {@link Segment}, this method will return true if the point is within 2px of the
+	 * segment.
+	 */
+	private boolean figureContainsPoint(Shape shape, Vec2 point) {
+		if (shape instanceof Segment) {
+			return ((Segment)shape).containsPointWithinRange(point, 2f);
+		} else {
+			return shape.containsPoint(point);
+		}
+	}
 	
 	public boolean addSelectableFigure(GraphicsShape<?> shape) {
 		// If the shape was successfully added

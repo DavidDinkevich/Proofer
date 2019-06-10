@@ -156,8 +156,17 @@ public class Segment extends AbstractShape implements VertexShape {
 	public boolean containsPoint(Vec2 point) {
 		final float dist1 = Vec2.dist(vertices[0].getCenter(), point);
 		final float dist2 = Vec2.dist(vertices[1].getCenter(), point);
-//		return dist1 + dist2 == getLength();
-		return Math.abs((dist1 + dist2) - getLength()) < 1f;
+		return dist1 + dist2 == getLength();
+	}
+	
+	/**
+	 * Get whether this {@link Segment} contains the given {@link Vec2} within the given
+	 * range.
+	 */
+	public boolean containsPointWithinRange(Vec2 point, float range) {
+		final float dist1 = Vec2.dist(vertices[0].getCenter(), point);
+		final float dist2 = Vec2.dist(vertices[1].getCenter(), point);
+		return Math.abs((dist1 + dist2) - getLength()) <= range;
 	}
 		
 	public float getLength() {
