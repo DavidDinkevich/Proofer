@@ -835,7 +835,6 @@ public class Diagram {
 		// No duplicates!!
 		if (containsFigureRelation(pair))
 			return false;
-		
 		FigureRelationType relType = pair.getRelationType();
 		
 		if (relations.add(pair)) {
@@ -884,6 +883,17 @@ public class Diagram {
 				// If two angles are complementary to the same angle, they are congruent
 				applyTransitivePostulate(pair, COMPLEMENTARY, CONGRUENT, 
 						ProofReasons.SHARED_COMPLEMENTARY_ANGLE);
+				// Now that we have a new pair of complementary angles, check to see
+				// if they are complementary to a pair of congruent angles, which would make
+				// them congruent
+				final int count = relations.size();
+				for (int i = 0; i < count; i++) {
+					FigureRelation rel = relations.get(i);
+					if (rel.getRelationType() == CONGRUENT && !rel.isCongruentAndReflexive()
+						&& rel.getFigure0() instanceof Angle) {
+						addTransitiveSuppCompAngles(rel, COMPLEMENTARY);
+					}
+				}
 				break;
 			case PERPENDICULAR:
 				// If two segments are perpendicular to the same segment, they are parallel
