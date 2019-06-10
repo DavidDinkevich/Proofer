@@ -423,7 +423,28 @@ public class Diagram {
 		Node<Segment, Vertex> node = getCompoundSegmentNode(seg);
 		if (node == null)
 			return false;
-		return ProofUtils.addLeastToGreatestDist(vertex, node.getChildren()) >= 0;
+		
+		// Add the vertex in order
+		if (ProofUtils.addLeastToGreatestDist(vertex, node.getChildren()) >= 0) {
+			// Create the segments connecting every other existing component vertex to
+			// this new component vertex
+			for (Vertex compV : getComponentVertices(seg)) {
+				// Don't make a segment between this vertex and itself
+				if (compV.isValidName(vertex.getName()))
+					continue;
+				// New segment
+				Segment newSeg = new Segment(compV, vertex);
+				
+				// In the case where two segments intersect and the poi
+				// is one of the segment's end points, this can cause a bug
+				// where one of the segments is the poi listed twice
+				if (!newSeg.getVertexLoc(0).equals(newSeg.getVertexLoc(1))) {
+					addHiddenFigure(newSeg);
+				}
+			}
+			return true; // Vertex was successfully added
+		}
+		return false;
 	}
 	
 	/**
@@ -710,7 +731,7 @@ public class Diagram {
 	private void addTransitiveSuppCompAngles(FigureRelation rel, FigureRelationType suppOrComp) {
 		// Enforce preconditions
 		if (rel.getRelationType() != CONGRUENT || rel.isCongruentAndReflexive())
-			throw new IllegalArgumentException("FigureRelationType must be non-reflexice and "
+			throw new IllegalArgumentException("FigureRelationType must be non-reflexive and "
 					+ "of type CONGRUENT");
 		else if (!(suppOrComp == SUPPLEMENTARY || suppOrComp == COMPLEMENTARY))
 			throw new IllegalArgumentException("supOrComp param must be of type COMPLEMENTARY"

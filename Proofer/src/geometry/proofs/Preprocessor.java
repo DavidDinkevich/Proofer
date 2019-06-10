@@ -272,9 +272,7 @@ public final class Preprocessor {
 	
 	/**
 	 * Find and add hidden vertices (vertices created by two intersecting segments,
-	 * not including segment end-points). This method will also create and add
-	 * the new segments created by the hidden vertex (the hidden vertex "chops" the segment
-	 * into two).
+	 * not including segment end-points).
 	 * @param diag the diagram
 	 */
 	private static void addHiddenVerticesAndSegments(Diagram diag) {
@@ -324,63 +322,6 @@ public final class Preprocessor {
 							diag.markAsCompoundSegment(newCompSeg);
 							diag.addComponentVertex(newCompSeg.getName(), newVertex);							
 						}
-					}
-					
-					// Add the 4 new "split" segments created by the hidden vertex
-					Vertex[] seg0Vertices = seg0.getVertices();
-					Vertex[] seg1Vertices = seg1.getVertices();
-					
-					Segment[] newSegs = {
-						new Segment(seg0Vertices[0], newVertex),
-						new Segment(seg0Vertices[1], newVertex),
-						new Segment(seg1Vertices[0], newVertex),
-						new Segment(seg1Vertices[1], newVertex)
-					};
-
-					// Add each new segment
-					for (Segment newSeg : newSegs) {
-						// In the case where two segments intersect and the poi
-						// is one of the segment's end points, this can cause a bug
-						// where one of the segments is the poi listed twice
-						if (!newSeg.getVertexLoc(0).equals(newSeg.getVertexLoc(1))) {
-							diag.addHiddenFigure(newSeg);
-						}
-					}
-				}
-			}
-		}
-		
-		// Last thing to do is add any segments that were created by two
-		// hidden vertices
-		addConnectionSegments(diag);
-	}
-	
-	/**
-	 * Adds "connection segments". Connection Segments are segments that were created by 
-	 * two hidden vertices (i.e., whose endpoints are both hidden vertices) AND lie 
-	 * completely on top of another pre-existing segment.
-	 * @param diag the diagram
-	 */
-	private static void addConnectionSegments(Diagram diag) {
-		// Get a list of all hidden vertices
-		List<Vertex> hiddenVerts = diag.getHiddenFigures(Vertex.class);
-		
-		// For each hidden vertex
-		for (int i = 0; i < hiddenVerts.size() - 1; i++) {
-			// For each other hidden vertex
-			loop2:
-			for (int j = i + 1; j < hiddenVerts.size(); j++) {
-				// Create the hypothetical segment that would exist between the two
-				// hidden vertices
-				Segment connectingSeg = new Segment(hiddenVerts.get(i), hiddenVerts.get(j));
-				// For each segment
-				for (Segment seg : diag.getFiguresOfType(Segment.class)) {
-					// Make sure the hypothetical segment lies completely on top of a
-					// pre-existing segment
-					if (seg.containsSegment(connectingSeg)) {
-						// Add the segment
-						diag.addHiddenFigure(connectingSeg);
-						continue loop2;
 					}
 				}
 			}
