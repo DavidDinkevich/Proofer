@@ -756,6 +756,46 @@ public class Diagram {
 		}
 	}
 	
+	private void identifyComplementaryAngles(FigureRelation rel) {
+		// Get information about the right angle
+		Angle rightAngle = rel.getFigure0();
+		Segment[] rightAngleSides = rightAngle.getSides();
+		
+		List<Segment> segs = getFiguresOfType(Segment.class);
+		for (Segment seg : segs) {
+			// CONDITIONS:
+			if (
+				// No component segments, just compound and independent segments
+				   seg.equals(getLargestCompoundSegmentOf(seg.getName()))
+				// Must run through the center of the angle
+				&& seg.containsPoint(rightAngle.getCenter())
+				// Cannot contain either side of the angle (we want it to go through the angle,
+				// not along it)
+				&& !seg.containsSegment(rightAngleSides[0])
+				&& !seg.containsSegment(rightAngleSides[1])
+			) {
+				// Name of the angle being bisected
+				String rightAngleName = rightAngle.getName();
+				// Get the smallest segment cutter
+				String smallestCutter = ProofUtils.getSmallestAngleCutter(this, rightAngle, seg);
+				// Smallest cutter endpoint (opposite of POI)
+				String smallestCutterEndpt = smallestCutter.substring(1);
+				// Get the two complementary angles
+				String angle0 = rightAngleName.substring(0, 2) + smallestCutterEndpt;
+				String angle1 = smallestCutterEndpt + rightAngleName.substring(1);
+				
+				FigureRelation compRel = new FigureRelation(
+						COMPLEMENTARY,
+						getFigure(angle0, Angle.class),
+						getFigure(angle1, Angle.class)
+				);
+				compRel.addParent(rel);
+				compRel.setReason(ProofReasons.DEF_COMP);
+				addFigureRelation(compRel);
+			}
+		}
+	}
+	
 	/**
 	 * Add the given {@link FigureRelation} to this {@link Diagram}.
 	 * @param pair the {@link FigureRelation}
@@ -782,7 +822,9 @@ public class Diagram {
 			// If the relation declares that an angle is a right angle,
 			// make this right angle congruent to all other right angles.
 			case RIGHT:
-				makeRightAngle(pair); break;
+				makeRightAngle(pair); 
+				identifyComplementaryAngles(pair);
+				break;
 			case CONGRUENT: case SIMILAR: case PARALLEL:
 				// Apply the transitive postulate
 				applyTransitivePostulate(pair, relType, relType, ProofReasons.TRANSITIVE);
